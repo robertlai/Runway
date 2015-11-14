@@ -2,6 +2,7 @@ doctype html
 html
     head
         title= title
+        script(src="jquery.min.js")
         link(rel='stylesheet', href='/stylesheets/style.css')
         link(rel="stylesheet",href="/css/bootstrap.min.css")
         script(src="/js/bootstrap.min.js")
@@ -15,3 +16,5 @@ html
             div.form-group
                 label(for="passwordInput" ) Password
                 input.form-control#passwordInput(type="password" placeholder="Password")
+            div
+                button(type="submit" class="btn btn-primary") Submit
