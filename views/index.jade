@@ -1,15 +1,10 @@
-doctype html
-html
-    head
-        title= title
-        link(rel='stylesheet', href='/stylesheets/style.css')
-        link(rel="stylesheet",href="/css/bootstrap.min.css")
-        script(src="/js/bootstrap.min.js")
-    body
-        form
-            div.form-group
-                label(for="exampleInputEmail1" ) Email address
-                input.form-control#exampleInputEmail1(type="email" placeholder="Email")
-            div.form-group
-                label(for="exampleInputPassword1" ) Password
-                input.form-control#exampleInputPassword1(type="password" placeholder="Password")
+extends layout
+
+block content
+    form
+        div.form-group
+            label(for="exampleInputEmail1" ) Email address
+            input.form-control#exampleInputEmail1(type="email" placeholder="Email")
+        div.form-group
+            label(for="exampleInputPassword1" ) Password
+            input.form-control#exampleInputPassword1(type="password" placeholder="Password")
