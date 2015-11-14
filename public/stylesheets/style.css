@@ -1,8 +1,17 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+#title {
+	font-size: 60px;
 }
 
-a {
-  color: #00B7FF;
+div {
+	margin-top: 30px;
+	margin-left: 400px;
+	margin-right: 400px;
+}
+
+body {
+  padding: 100px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-image: url("/images/background.jpg");
+  background-size: 100% 160%;
+  background-repeat: no-repeat;
 }
