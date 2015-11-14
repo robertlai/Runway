@@ -6,6 +6,8 @@ cookieParser = require('cookie-parser');
 bodyParser = require('body-parser');
 router = require('./routes/index')
 app = express()
+# http = require('http').Server(app)
+# io = require('socket.io')(http)
 
 
 app.set('views', __dirname + '/views')
@@ -18,6 +20,13 @@ app.use(express.static('node_modules/bootstrap/dist'))
 app.use(logger('dev'))
 app.use express.static(__dirname + 'public')
 app.use(router)
+
+
+# io.on 'connection',  (socket) ->
+#     console.log('a user connected')
+
+# http.listen 4000, ->
+#     console.log('listening on *:3000')
 
 
 app.use (req, res, next) ->
