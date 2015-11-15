@@ -2,9 +2,16 @@
 $(function(){
     var $dropzone=$('#dropzone')
     var mousex,mousey;
-    var f
     var reader = new FileReader();
-
+    function _arrayBufferToBase64( buffer ) {
+        var binary = '';
+        var bytes = new Uint8Array( buffer );
+        var len = bytes.byteLength;
+        for (var i = 0; i < len; i++) {
+            binary += String.fromCharCode( bytes[ i ] );
+        }
+        return window.btoa( binary );
+    }
     function drop(e,hover){
         e.preventDefault();
         e.stopPropagation();
@@ -32,21 +39,29 @@ $(function(){
         if(e.originalEvent.dataTransfer){
             if(e.originalEvent.dataTransfer.files.length) {
                 //console.log(e.originalEvent.dataTransfer.files);
-                reader.onload=function(e) {
+                f=e.originalEvent.dataTransfer.files[0]
+                reader.onload=function(dataURL) {
+                    //$('#img').attr('src',reader.result)
                     $('<img/>', {
                         //id: 'foo',
-                        src: reader.result,
+                        src: dataURL.target.result,
                         //title: 'Become a Googler',
                         //rel: 'external',
                         //text: 'Go to Google!'
                     }).appendTo($dropzone).offset({top:mousey,left:mousex}).draggable();
-                    $.post(
-                    "/api/picture",
-                    reader.result
-                    )
-                    //$('#img').attr('src',reader.result)
+
+                    reader.onload=function(arrayBuffer){
+                        $.ajax({
+                            method:"POST",
+                            url:"/api/picture",
+                            data:arrayBuffer.target.result,
+                            processData:false,
+                            contentType:"application/binary"
+                        })
+                    }
+                    reader.readAsArrayBuffer(f);
                 }
-                reader.readAsDataURL(e.originalEvent.dataTransfer.files[0]);
+                reader.readAsDataURL(f);
 
             }
         }
