@@ -56,7 +56,7 @@ window.onload = function() {
   var i, msgpanel;
   msgpanel = document.getElementById("msgpanel");
   msgpanel.scrollTop = msgpanel.scrollHeight;
-  return i = setInterval(scrollToBottom, 10);
+  return i = setInterval(scrollToBottom, 100);
 };
 
 updateScrollState = function() {
