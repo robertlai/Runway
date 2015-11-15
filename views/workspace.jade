@@ -16,9 +16,11 @@ block content
                     input#hide-btn(type='button' value='Hide' ng-click='hideChat()')
                 div.messages-panel
                     div.row(ng-repeat='message in messages')
-                        div.col-xs-3(ng-bind='message.user')
-                        div.col-xs-7.chatMessage(ng-bind='message.content')
+                        div.col-xs-1
+                        div.col-xs-2.user(ng-bind='message.user')
+                        div.col-xs-1
+                        div.col-xs-5.chatMessage(ng-bind='message.content')
+                        div.col-xs-2
                 div.text-bar
                     form(ng-submit='addComment()')
-                        input#messagebox(type='text' ng-model='newComment' placeholder='Type a message..')
-                div.tools-bar
+                        input#messagebox(type='text' ng-model='newComment' placeholder='  Type a message..')

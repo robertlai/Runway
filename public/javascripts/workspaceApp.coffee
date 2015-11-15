@@ -31,7 +31,7 @@ app.controller 'messagesController', ($scope, $http, $interval) ->
 
     $scope.showChat = ->
         $scope.chatVisible = true
-        document.getElementById('dropzone').style.width = '80%'
+        document.getElementById('dropzone').style.width = '75%'
 
     $scope.addComment = ->
         if $scope.newComment.trim().length > 0
