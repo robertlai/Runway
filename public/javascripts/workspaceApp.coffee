@@ -4,7 +4,7 @@ scrollAtBottom = true
 
 app.controller 'workspaceController', ($scope) ->
 
-app.controller 'messagesController', ($scope, $http, $interval) ->
+app.controller 'messagesController',  ($scope, $http, $interval) ->
 
 
     $scope.chatVisible = true
