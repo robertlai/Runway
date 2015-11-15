@@ -12,9 +12,6 @@ router.get '/workspace',(req,res,next)->
 router.get '/test',(req,res,next)->
     res.render('test',title:'Test')
 
-router.get '/messages', (req, res, next) ->
-    res.render('messages', title: "Messages")
-
 router.get '/login', (req, res, next) ->
     res.render('login', title: "Login")
 

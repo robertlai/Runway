@@ -1,13 +1,18 @@
 extends layout
 
 block content
-	script(type='text/javascript' src='/javascripts/workspaceApp.js')
-	div(ng-app="workspaceApp")
-		div(ng-controller="workspaceController")
-			div.space-panel
-			div.chat-panel
-				div.users-bar
-				div.messages-panel
-				div.text-bar
-				div.tools-bar
-			div.pages-panel
+    script(type='text/javascript' src='/javascripts/workspaceApp.js')
+
+    div(ng-app="workspaceApp")
+            div.space-panel(ng-controller="workspaceController")
+            div.chat-panel(ng-controller='messagesController')
+                div.users-bar
+                div.messages-panel
+                    div.row(ng-repeat='message in messages')
+                        div.col-xs-4(ng-bind='message.user')
+                        div.col-xs-8(ng-bind='message.content')
+                div.text-bar
+                    form(ng-submit='addComment()')
+                        input(type='text', ng-model='newComment' placeholder='message' required)
+                div.tools-bar
+            div.pages-panel

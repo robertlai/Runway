@@ -29,8 +29,8 @@ api.post '/api/message', (req, res) ->
         else
             res.sendStatus(200)
 
-api.get '/api/messages', (req, res) ->
 
+api.get '/api/messages', (req, res) ->
     Message.find({}).sort('timestamp').exec (err, messages) ->
         if err
             res.sendStatus(500)
