@@ -138,7 +138,7 @@ api.get('/api/picture', function(req, res) {
     } else {
       for (i = 0, len = files.length; i < len; i++) {
         file = files[i];
-        if (file.fileName === req.query.fileToGet) {
+        if (file.fileName.toString() === req.query.fileToGet) {
           res.set({
             'Content-Type': 'image/jpeg'
           });

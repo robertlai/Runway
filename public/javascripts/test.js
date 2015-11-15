@@ -26,7 +26,7 @@ $(function(){
                             total.push(value.fileName)
                             $('<img/>', {
                             id: value.fileName,
-                            src: "/api/picture/?fileToGet="+value.fileName,
+                            src: "/api/picture?fileToGet="+value.fileName,
                             //title: 'Become a Googler',
                             //rel: 'external',
                             //text: 'Go to Google!'
@@ -71,7 +71,7 @@ $(function(){
                 f=e.originalEvent.dataTransfer.files[0]
                 reader.onload=function(dataURL) {
                     //$('#img').attr('src',reader.result)
-                    
+
                     reader.onload=function(arrayBuffer){
                         $.ajax({
                             method:"POST",

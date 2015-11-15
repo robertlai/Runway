@@ -111,7 +111,7 @@ api.get '/api/picture', (req, res) ->
             res.sendStatus(500)
         else
             (
-                if file.fileName == req.query.fileToGet
+                if file.fileName.toString() == req.query.fileToGet
                     res.set('Content-Type': 'image/jpeg')
                     res.set('lastFile': file.fileName)
                     res.send(file.file)
