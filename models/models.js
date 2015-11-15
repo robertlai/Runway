@@ -14,4 +14,4 @@ var postSchema = new mongoose.Schema({
 
 //declare models
 mongoose.model("User", userSchema);
-mongoose.model("Post", postSchema)
+mongoose.model("Post", postSchema);

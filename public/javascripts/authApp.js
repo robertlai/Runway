@@ -14,7 +14,6 @@ app.controller('authController', function($scope, $http, $rootScope, $location) 
       if (data.state === 'success') {
         $rootScope.authenticated = true;
         $rootScope.current_user = data.user.username;
-        $location.path('/workspace');
       } else {
         $scope.error_message = data.message;
       }
@@ -25,7 +24,6 @@ app.controller('authController', function($scope, $http, $rootScope, $location) 
       if (data.state === 'success') {
         $rootScope.authenticated = true;
         $rootScope.current_user = data.user.username;
-        $location.path('/index');
       } else {
         $scope.error_message = data.message;
       }

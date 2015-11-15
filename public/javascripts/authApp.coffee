@@ -30,7 +30,7 @@ app.controller 'authController', ($scope, $http, $rootScope, $location) ->
       if data.state == 'success'
         $rootScope.authenticated = true
         $rootScope.current_user = data.user.username
-        $location.path '/workspace'
+        #window.location = '/workspace'
       else
         $scope.error_message = data.message
       return
@@ -41,7 +41,7 @@ app.controller 'authController', ($scope, $http, $rootScope, $location) ->
       if data.state == 'success'
         $rootScope.authenticated = true
         $rootScope.current_user = data.user.username
-        $location.path '/index'
+        #window.location = '/login'
       else
         $scope.error_message = data.message
       return
