@@ -8,13 +8,19 @@
 }
 
 #dndText {
-    margin-top: 28%;
+    position:absolute;
+    width: 100%;
+    top:50%;
+    margin-top: -28px;
+    line-height: 55px;
     font-size: 55px;
     color: #cccccc;
 }
+
 #dndText{
     color:black;
 }
+
 #dropzone.hover{
     border-color: red;
 }
