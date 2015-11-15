@@ -17,30 +17,12 @@
     color: #cccccc;
 }
 
-#dndText{
-    color:black;
-}
-
 #dropzone.hover{
     border-color: red;
 }
 
 .space-content {
     position: absolute;
-}
-
-#un-hide-btn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    border: none;
-    background-color:#222;
-    color: #888;
-    font-size:14px;
-    font-weight:bold;
-    height: 48px;
-    line-height:16px;
-    padding: 16px;
 }
 
 .chat-panel {
@@ -64,7 +46,7 @@
     top: 48px;
     width: 100%;
     background-color: #ffffff;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
@@ -73,7 +55,7 @@
 }
 
 .user {
-    text-align: center;
+    text-align: center; 
     line-height: 25px;
 }
 
@@ -82,6 +64,7 @@
     margin-top: 2.5px;
     margin-bottom: 2.5px;
     background-color: #c2f0c2;
+    word-wrap: break-word;
 }
 
 .text-bar {
@@ -116,6 +99,6 @@
     padding: 16px;
 }
 
-#hide-btn:hover, #un-hide-btn:hover {
-    background-color:#5d176a;
+#hide-btn:hover{
+    background-color: #5d176a;
 }
