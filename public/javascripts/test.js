@@ -50,16 +50,16 @@ $(function(){
                         //text: 'Go to Google!'
                     }).appendTo($dropzone).offset({top:mousey,left:mousex}).draggable();
 
-                    reader.onload=function(arrayBuffer){
+                    //reader.onload=function(arrayBuffer){
                         $.ajax({
                             method:"POST",
                             url:"/api/picture",
-                            data:arrayBuffer.target.result,
-                            processData:false,
-                            contentType:"application/binary"
+                            data:{"data":dataURL.target.result},
+                            //processData:false,
+                            //contentType:"application/binary"
                         })
-                    }
-                    reader.readAsArrayBuffer(f);
+                    //}
+                    //reader.readAsArrayBuffer(f);
                 }
                 reader.readAsDataURL(f);
 
