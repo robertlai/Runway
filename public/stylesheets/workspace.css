@@ -46,8 +46,15 @@
     position: relative;
     float: right;
     height: 100%;
-    width: 25%;
+    width: 100%;
     overflow: visible;
+}
+
+.right-panel{
+  position:absolute;
+  height:100%;
+  width:25%;
+  left:75%;
 }
 
 .users-bar {
