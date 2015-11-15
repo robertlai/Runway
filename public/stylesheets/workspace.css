@@ -26,9 +26,7 @@
     -ms-user-select: none;
     user-select: none;
 }
-#dropzone{
-  border:2px solid black;
-}
+
 #dropzone.hover{
     border-color: red;
 }
@@ -181,7 +179,6 @@
           box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.28);
 }
 
-/* This bridges the gap so you can mouse into the tooltip without it disappearing */
 .user .tooltip:before {
   bottom: -20px;
   content: " ";
@@ -192,7 +189,6 @@
   width: 100%;
 }  
 
-/* CSS Triangles - see Trevor's post */
 .user .tooltip:after {
   border-left: solid transparent 10px;
   border-right: solid transparent 10px;
