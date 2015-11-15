@@ -1,8 +1,8 @@
 app = angular.module('workspaceApp', [])
 
+scrollAtBottom = true
+
 app.controller 'workspaceController', ($scope) ->
-
-
 
 app.controller 'messagesController', ($scope, $http, $interval) ->
 
@@ -20,8 +20,6 @@ app.controller 'messagesController', ($scope, $http, $interval) ->
             .success (message) ->
                 lastMessageId = message.timestamp
                 $scope.messages.push(message)
-
-
 
     $scope.hideChat = ->
         $scope.chatVisible = false
@@ -49,3 +47,17 @@ app.controller 'messagesController', ($scope, $http, $interval) ->
 
     fetchInitialMessages().then ->
         $interval(fetchNewMessages, 500)
+
+window.onload = ->
+    msgpanel = document.getElementById("msgpanel")
+    msgpanel.scrollTop = msgpanel.scrollHeight
+    i = setInterval(scrollToBottom, 10)
+
+updateScrollState = ->
+    scrollAtBottom = msgpanel.scrollTop == (msgpanel.scrollHeight - msgpanel.offsetHeight)
+
+scrollToBottom = ->
+    if scrollAtBottom
+        msgpanel.scrollTop = msgpanel.scrollHeight
+
+
