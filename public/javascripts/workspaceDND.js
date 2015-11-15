@@ -32,7 +32,7 @@ var $dropzone
 function buttonClicked(event){
     var lolz=$(event).parent().children().eq(2).children().text()
     console.log(lolz)
-    uploadText(lolz,0,0)
+    uploadText(lolz,1,1)
 }
 function queryDropZone(){
         maxy=$dropzone.outerHeight()
