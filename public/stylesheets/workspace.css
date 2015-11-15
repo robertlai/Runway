@@ -1,64 +1,81 @@
-.chatMessage{
-    border-radius: 5px;
-    margin-top: 5px;
-    background-color: #d9edf7;
-}
 .space-panel {
-    position:relative;
-    float:left;
-    border: 2px solid black;
+    position: relative;
+    float: left;
     text-align: center;
     height: 100%;
-    width: 75%;
-    background-color: #333;
+    width: 80%;
+    background-color: #d6f5d6;
+}
+
+#dndText {
+    margin-top: 28%;
+    font-size: 55px;
+    color: #cccccc;
 }
 
 #dropzone.hover{
-    border-color:red;
+    border-color: red;
 }
+
 .space-content {
     position: absolute;
 }
 
 .chat-panel {
     position:relative;
-    float:right;
+    float: right;
     height: 100%;
-    width: 25%;
+    width: 20%;
 }
 
 .users-bar {
     position:absolute;
-    top:0px;
-    height:48px;
-    width:100%;
-    background-color:#222;
+    top: 0px;
+    height: 48px;
+    width: 100%;
+    background-color: #adebad;
 }
 
 .messages-panel {
-    position:absolute;
-    bottom:72px;
-    top:48px;
-    width:100%;
-    background-color:#CCC;
-  overflow-y: scroll;
-  overflow-x: hidden;
+    position: absolute;
+    bottom: 48px;
+    top: 48px;
+    width: 100%;
+    background-color: #ffffff;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#messagebox {
+    width: 100%;
+}
+
+.user {
+    text-align: center; 
+    line-height: 25px;
+}
+
+.chatMessage {
+    border-radius: 5px;
+    margin-top: 2.5px;
+    margin-bottom: 2.5px;
+    background-color: #c2f0c2;
 }
 
 .text-bar {
-    position:absolute;
-    bottom:24px;
-    height:48px;
-    width:100%;
-    background-color:#777;
+    position: absolute;
+    bottom: 24px;
+    height: 24px;
+    width: 100%;
+    background-color:#ffffff;
 }
 
 .tools-bar {
     position:absolute;
-    bottom:0px;
-    height:24px;
-    width:100%;
-    background-color:#555;
+    bottom: 0px;
+    height: 24px;
+    width: 100%;
+    background-color:#ffffff;
 }
 
 .fill {
@@ -70,7 +87,7 @@
     border: none;
     background-color: transparent;
     color: #888;
-    font-size:14px;
+    font-size: 14px;
     font-weight:bold;
     height: 48px;
     line-height:16px;
@@ -78,5 +95,5 @@
 }
 
 #hide-btn:hover{
-    background-color:#5d176a;
+    background-color: #5d176a;
 }

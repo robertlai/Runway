@@ -2,23 +2,20 @@ extends layout
 block scripts
     script(type='text/javascript' src='/javascripts/workspaceApp.js')
     script(type='text/javascript' src='/javascripts/workspaceDND.js')
-    script(type='text/javascript' src='/javascripts/workspace.js')
     link(rel="stylesheet" href="/stylesheets/workspace.css")
 
 block content
-
     div.fill(ng-app="workspaceApp")
         div.space-panel#dropzone(ng-controller="workspaceController")
-            h1#dndText Drag and drop files here
+            p#dndText Drag and drop files here
         div.chat-panel(ng-controller='messagesController')
             div.users-bar
-                input#hide-btn(type="button" value="Hide" )
             div.messages-panel
                 div.row(ng-repeat='message in messages')
-                    div.col-xs-4(ng-bind='message.user')
+                    div.col-xs-4.user(ng-bind='message.user')
                     div.col-xs-8.chatMessage(ng-bind='message.content')
             div.text-bar
                 form(ng-submit='addComment()')
-                    input(type='text', ng-model='newComment' placeholder='message' required)
+                    input#messagebox(type='text', ng-model='newComment' placeholder='Type a message..' required)
             div.tools-bar
         //- div.pages-panel
