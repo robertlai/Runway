@@ -4,7 +4,7 @@ $(function(){
     var mousex,mousey;
     var f
     var reader = new FileReader();
-    
+
     function drop(e,hover){
         e.preventDefault();
         e.stopPropagation();
@@ -39,7 +39,7 @@ $(function(){
                         //title: 'Become a Googler',
                         //rel: 'external',
                         //text: 'Go to Google!'
-                    }).appendTo('#dropzone').offset({top:mousey,left:mousex}).draggable();
+                    }).appendTo($dropzone).offset({top:mousey,left:mousex}).draggable();
                     //$('#img').attr('src',reader.result)
                 }
                 reader.readAsDataURL(e.originalEvent.dataTransfer.files[0]);
