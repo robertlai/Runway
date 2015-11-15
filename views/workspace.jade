@@ -8,7 +8,7 @@ block content
     div.fill(ng-app='workspaceApp')
         div.fill(ng-controller='messagesController')
             div.space-panel#dropzone(ng-controller='workspaceController')
-                h1#dndText Drag and drop files here
+                h1.noselect#dndText Drag and drop files here
             div.right-panel
                 input#un-hide-btn(type='button' value='Show' ng-hide='chatVisible' ng-click='showChat()')
                 div.chat-panel(ng-show='chatVisible')

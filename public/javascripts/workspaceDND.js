@@ -15,22 +15,24 @@ $(function(){
                     for(var x=0;x<data.length;x++){
                         var value=data[x]
                         if(total.indexOf(value.fileName)!=-1){
-                            $('#'+value.fileName).offset({top:value.x,left:value.y})
+                            $('#'+value.fileName).offset({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx})
+                            console.log({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx})
                         }
                         else{
                             total.push(value.fileName)
+                            console.log({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx})
                             $('<img/>', {
                             id: value.fileName,
                             src: "/api/picture?fileToGet="+value.fileName,
                             style: "position:absolute;"
-                        }).appendTo($dropzone).offset({top:value.x,left:value.y}).draggable({
+                        }).appendTo($dropzone).offset({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx}).draggable({
                             containment:'parent',
                             stop:function(event,ui){
-                                
                                 $.ajax({
                                     method:"PUT",
-                                    url:"/api/picture?fileName="+$(this).attr('id')+"&x="+ui.offset.top+"&y="+ui.offset.left
+                                    url:"/api/picture?fileName="+$(this).attr('id')+"&x="+ui.offset.left*100.0/maxx+"&y="+ui.offset.top*100.0/maxy
                                 })
+                                console.log("&x="+ui.offset.left*100.0/maxx+"&y="+ui.offset.left*100.0/maxy)
                             }
                         }).on('resize',function(){
                             var width=$(this).outerWidth();
@@ -77,11 +79,12 @@ $(function(){
                 reader.onload=function(arrayBuffer){
                     $.ajax({
                         method:"POST",
-                        url:"/api/picture/?x="+mousex+"&y="+mousey,
+                        url:"/api/picture/?x="+mousex*100/maxx+"&y="+mousey*100/maxy,
                         data:arrayBuffer.target.result,
                         processData:false,
                         contentType:"application/binary",
                     })
+                    console.log("/api/picture/?x="+mousex*100/maxx+"&y="+mousey*100/maxy)
                 }
                 reader.readAsArrayBuffer(f);
             }
