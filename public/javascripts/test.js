@@ -48,7 +48,7 @@ $(function(){
                 }
                 reader.readAsDataURL(e.originalEvent.dataTransfer.files[0]);
 
-            }   
+            }
         }
     })
     //$('#img').draggable();
