@@ -4,7 +4,7 @@
     text-align: center;
     height: 100%;
     width: 80%;
-    background-color: #d6f5d6;
+    background-color: #f9edd2;
 }
 
 #dndText {
@@ -14,7 +14,7 @@
     margin-top: -28px;
     line-height: 55px;
     font-size: 55px;
-    color: #cccccc;
+    color: #e6e6e6;
 }
 
 #dropzone.hover{
@@ -26,18 +26,18 @@
 }
 
 .chat-panel {
-    position:relative;
+    position: relative;
     float: right;
     height: 100%;
     width: 20%;
 }
 
 .users-bar {
-    position:absolute;
+    position: absolute;
     top: 0px;
     height: 48px;
     width: 100%;
-    background-color: #adebad;
+    background-color: #ffdd99;
 }
 
 .messages-panel {
@@ -63,7 +63,7 @@
     border-radius: 5px;
     margin-top: 2.5px;
     margin-bottom: 2.5px;
-    background-color: #c2f0c2;
+    background-color: #ffe5b3;
     word-wrap: break-word;
 }
 
