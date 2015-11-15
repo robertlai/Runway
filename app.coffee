@@ -1,5 +1,9 @@
 express = require('express')
 logger = require('morgan')
+passport = require('passport');
+session = require('express-session');
+cookieParser = require('cookie-parser');
+bodyParser = require('body-parser');
 router = require('./routes/index')
 app = express()
 

@@ -1,17 +1,76 @@
 #title {
-	font-size: 60px;
+	font-size: 70px;
+    font-family: myFirstFont;
 }
 
-div {
-	margin-top: 30px;
-	margin-left: 400px;
-	margin-right: 400px;
+@font-face {
+   font-family: myFirstFont;
+   src: url(/fonts/Zapfino.ttf);
 }
 
 body {
+  position:absolute;
+  width:100%;
+  height:100%;
   padding: 100px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-image: url("/images/background.jpg");
-  background-size: 100% 160%;
-  background-repeat: no-repeat;
+  background: url(/images/background.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.login-form {
+	margin-top: 370px;
+ 	margin-left: 400px;
+	margin-right: 400px;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.space-panel {
+	position:relative;
+	float:left;
+	height: 100%;
+	width: 75%;
+	background-color: #333;
+}
+
+.chat-panel {
+	position:relative;
+	float:right;
+	height: 100%;
+	width: 25%;
+}
+
+.users-bar {
+	position:absolute;
+	top:0px;
+	height:48px;
+	width:100%;
+	background-color:#222;
+}
+
+.messages-panel {
+	position:absolute;
+	bottom:72px;
+	top:48px;
+	width:100%;
+	background-color:#CCC;
+}
+
+.text-bar {
+	position:absolute;
+	bottom:24px;
+	height:48px;
+	width:100%;
+	background-color:#777;
+}
+
+.tools-bar {
+	position:absolute;
+	bottom:0px;
+	height:24px;
+	width:100%;
+	background-color:#555;
 }
