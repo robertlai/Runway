@@ -106,13 +106,18 @@ api.get '/api/pictures', (req, res) ->
             res.json(picturesInfo)
 
 api.get '/api/picture', (req, res) ->
-    File.findOne {fileName: req.query.fileToGet}, (err, file) ->
+    File.find({}).sort('fileName').exec (err, files) ->
         if err
             res.sendStatus(500)
-            throw err
         else
-            res.set('Content-Type': 'image/jpeg')
-            res.set('lastFile': file.fileName)
+            (
+                if file.fileName = req.query.fileToGet
+                    res.set('Content-Type': 'image/jpeg')
+                    res.set('lastFile': file.fileName)
+                    res.send(file.file)
+                    return
+            ) for file in files
+            res.sendStatus(500)
 
 
 module.exports = api

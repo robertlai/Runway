@@ -131,19 +131,25 @@ api.get('/api/pictures', function(req, res) {
 });
 
 api.get('/api/picture', function(req, res) {
-  return File.findOne({
-    fileName: req.query.fileToGet
-  }, function(err, file) {
+  return File.find({}).sort('fileName').exec(function(err, files) {
+    var file, i, len;
     if (err) {
-      res.sendStatus(500);
-      throw err;
+      return res.sendStatus(500);
     } else {
-      res.set({
-        'Content-Type': 'image/jpeg'
-      });
-      return res.set({
-        'lastFile': file.fileName
-      });
+      for (i = 0, len = files.length; i < len; i++) {
+        file = files[i];
+        if (file.fileName = req.query.fileToGet) {
+          res.set({
+            'Content-Type': 'image/jpeg'
+          });
+          res.set({
+            'lastFile': file.fileName
+          });
+          res.send(file.file);
+          return;
+        }
+      }
+      return res.sendStatus(500);
     }
   });
 });
