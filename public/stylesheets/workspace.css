@@ -46,7 +46,7 @@
     top: 48px;
     width: 100%;
     background-color: #ffffff;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 

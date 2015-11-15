@@ -1,9 +1,10 @@
-var f
-var reader = new FileReader();
+
 $(function(){
     var $dropzone=$('#dropzone')
     var mousex,mousey;
-
+    var f
+    var reader = new FileReader();
+    
     function drop(e,hover){
         e.preventDefault();
         e.stopPropagation();
@@ -19,7 +20,6 @@ $(function(){
     $(document).on('mousemove',function(e){
         mousex=e.pageX
         mousey=e.pageY
-        console.log(mousex+" "+mousey)
     })
     $dropzone.on('dragover',function(e) {
         drop(e,1)
