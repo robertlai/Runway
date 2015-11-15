@@ -40,6 +40,10 @@ $(function(){
                         //rel: 'external',
                         //text: 'Go to Google!'
                     }).appendTo($dropzone).offset({top:mousey,left:mousex}).draggable();
+                    $.post(
+                    "/api/picture",
+                    reader.result
+                    )
                     //$('#img').attr('src',reader.result)
                 }
                 reader.readAsDataURL(e.originalEvent.dataTransfer.files[0]);
