@@ -17,6 +17,12 @@ router.get('/workspace', function(req, res, next) {
   });
 });
 
+router.get('/test', function(req, res, next) {
+  return res.render('test', {
+    title: 'Test'
+  });
+});
+
 router.get('/messages', function(req, res, next) {
   return res.render('messages', {
     title: "Messages"
