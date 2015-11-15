@@ -6,6 +6,10 @@ app.controller 'workspaceController', ($scope) ->
 
 app.controller 'messagesController', ($scope, $http, $interval) ->
 
+
+    $scope.chatVisible = true
+    $scope.newCommentNotValide = false
+
     lastMessageId = -1
 
     $scope.messages = []
@@ -14,13 +18,25 @@ app.controller 'messagesController', ($scope, $http, $interval) ->
     fetchNewMessages = ->
         $http.get('/api/messages')
             .success (messages) ->
-                $scope.messages = messages;
+                $scope.messages = messages
             .error (error, status) ->
                 console.log "no new messages"
 
 
     $interval(fetchNewMessages, 500)
 
+    $scope.hideChat = ->
+        $scope.chatVisible = false
+        document.getElementById('dropzone').style.width = '100%'
+
+    $scope.showChat = ->
+        $scope.chatVisible = true
+        document.getElementById('dropzone').style.width = '75%'
+
+    $scope.validateNewComment = ->
+        newCommentNotValide = $scope.newComment.trim().length > 0
+
     $scope.addComment = ->
-        $http.post('/api/message?user=Test User&content=' + $scope.newComment).then ->
-            $scope.newComment = ''
+        if !$scope.newCommentNotValide
+            $http.post('/api/message?user=Test User&content=' + $scope.newComment).then ->
+                $scope.newComment = ''

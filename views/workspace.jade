@@ -3,22 +3,24 @@ block scripts
     script(type='text/javascript' src='/javascripts/workspaceApp.js')
     script(type='text/javascript' src='/javascripts/workspaceDND.js')
     script(type='text/javascript' src='/javascripts/workspace.js')
-    link(rel="stylesheet" href="/stylesheets/workspace.css")
+    link(rel='stylesheet' href='/stylesheets/workspace.css')
 
 block content
 
-    div.fill(ng-app="workspaceApp")
-        div.space-panel#dropzone(ng-controller="workspaceController")
+    div.fill(ng-app='workspaceApp')
+        div.space-panel#dropzone(ng-controller='workspaceController')
             h1#dndText Drag and drop files here
-        div.chat-panel(ng-controller='messagesController')
-            div.users-bar
-                input#hide-btn(type="button" value="Hide" )
-            div.messages-panel
-                div.row(ng-repeat='message in messages')
-                    div.col-xs-4(ng-bind='message.user')
-                    div.col-xs-8.chatMessage(ng-bind='message.content')
-            div.text-bar
-                form(ng-submit='addComment()')
-                    input(type='text', ng-model='newComment' placeholder='message' required)
-            div.tools-bar
+        div.fill(ng-controller='messagesController')
+            input#un-hide-btn(type='button' value='Show' ng-hide='chatVisible' ng-click='showChat()')
+            div.chat-panel(ng-show='chatVisible')
+                div.users-bar
+                    input#hide-btn(type='button' value='Hide' ng-click='hideChat()')
+                div.messages-panel
+                    div.row(ng-repeat='message in messages')
+                        div.col-xs-4(ng-bind='message.user')
+                        div.col-xs-8.chatMessage(ng-bind='message.content')
+                div.text-bar
+                    form(ng-submit='addComment()')
+                        input(type='text' ng-model='newComment' ng-change='validateNewComment()' placeholder='message')
+                div.tools-bar
         //- div.pages-panel

@@ -24,14 +24,8 @@ router.get('/test', function(req, res, next) {
 });
 
 router.get('/login', function(req, res, next) {
-  return res.render('login', {
-    title: "Login"
-  });
-});
-
-router.get('*', function(req, res, next) {
   return res.render('index', {
-    title: 'Runway'
+    title: "Login"
   });
 });
 

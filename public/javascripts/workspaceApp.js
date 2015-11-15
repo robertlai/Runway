@@ -7,6 +7,8 @@ app.controller('workspaceController', function($scope) {});
 
 app.controller('messagesController', function($scope, $http, $interval) {
   var fetchNewMessages, lastMessageId;
+  $scope.chatVisible = true;
+  $scope.newCommentNotValide = false;
   lastMessageId = -1;
   $scope.messages = [];
   fetchNewMessages = function() {
@@ -17,9 +19,23 @@ app.controller('messagesController', function($scope, $http, $interval) {
     });
   };
   $interval(fetchNewMessages, 500);
+  $scope.hideChat = function() {
+    $scope.chatVisible = false;
+    return document.getElementById('dropzone').style.width = '100%';
+  };
+  $scope.showChat = function() {
+    $scope.chatVisible = true;
+    return document.getElementById('dropzone').style.width = '75%';
+  };
+  $scope.validateNewComment = function() {
+    var newCommentNotValide;
+    return newCommentNotValide = $scope.newComment.trim().length > 0;
+  };
   return $scope.addComment = function() {
-    return $http.post('/api/message?user=Test User&content=' + $scope.newComment).then(function() {
-      return $scope.newComment = '';
-    });
+    if (!$scope.newCommentNotValide) {
+      return $http.post('/api/message?user=Test User&content=' + $scope.newComment).then(function() {
+        return $scope.newComment = '';
+      });
+    }
   };
 });
