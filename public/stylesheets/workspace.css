@@ -89,8 +89,13 @@
     border-radius: 5px;
     margin-top: 7.5px;
     margin-bottom: 7.5px;
-    background-color: #ffe5b3;
     word-wrap: break-word;
+}
+
+#chat {
+    padding: 5px;
+    border-radius: 10px;
+    background-color: #ffe5b3;
 }
 
 .text-bar {
