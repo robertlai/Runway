@@ -15,6 +15,8 @@ Message = mongoose.model('message', messageSchema)
 
 pictureSchema = new mongoose.Schema({
     file: Buffer
+    x: Number
+    y: Number
     fileName: Number
 })
 Picture = mongoose.model('picture', pictureSchema)
@@ -63,11 +65,15 @@ api.get '/api/message', (req, res) ->
 
 api.post '/api/picture', (req, res) ->
     fileName = (new Date()).getTime()
+    x = req.query.x
+    y = req.query.y
     fullFilePath = __dirname + '/' + fileName + Math.floor(Math.random() * 20000)
 
     req.pipe(fs.createWriteStream(fullFilePath)).on 'finish', ->
         picture = new Picture {
             fileName: fileName
+            x: x
+            y: y
             file: fs.readFileSync(fullFilePath)
         }
         picture.save (err, picture) ->
@@ -92,6 +98,8 @@ api.get '/api/picture', (req, res) ->
                 if file.fileName > lastFile
                     res.set('Content-Type': 'image/jpeg')
                     res.set('fileName': file.fileName)
+                    res.set('x': file.x)
+                    res.set('y': file.y)
                     res.send(file.file)
                     return
             ) for file in files

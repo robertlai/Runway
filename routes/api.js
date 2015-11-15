@@ -21,6 +21,8 @@ Message = mongoose.model('message', messageSchema);
 
 pictureSchema = new mongoose.Schema({
   file: Buffer,
+  x: Number,
+  y: Number,
   fileName: Number
 });
 
@@ -78,13 +80,17 @@ api.get('/api/message', function(req, res) {
 });
 
 api.post('/api/picture', function(req, res) {
-  var fileName, fullFilePath;
+  var fileName, fullFilePath, x, y;
   fileName = (new Date()).getTime();
+  x = req.query.x;
+  y = req.query.y;
   fullFilePath = __dirname + '/' + fileName + Math.floor(Math.random() * 20000);
   return req.pipe(fs.createWriteStream(fullFilePath)).on('finish', function() {
     var picture;
     picture = new Picture({
       fileName: fileName,
+      x: x,
+      y: y,
       file: fs.readFileSync(fullFilePath)
     });
     return picture.save(function(err, picture) {
@@ -117,6 +123,12 @@ api.get('/api/picture', function(req, res) {
           });
           res.set({
             'fileName': file.fileName
+          });
+          res.set({
+            'x': file.x
+          });
+          res.set({
+            'y': file.y
           });
           res.send(file.file);
           return;
