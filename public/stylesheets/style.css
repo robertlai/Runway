@@ -2,11 +2,6 @@ div {
 	position: relative;
 }
 
-@font-face {
-   font-family: myFirstFont;
-   src: url(/fonts/Zapfino.ttf);
-}
-
 body {
   position:absolute;
   width:100%;
@@ -17,36 +12,6 @@ body {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-}
-
-#title-text {
-    text-align:center;
-    width:100%;
-    margin:auto;
-    font-size: 70px;
-    font-family: myFirstFont;
-}
-
-.title {
-    position:absolute;
-    margin-top:100px;
-    height:20%;
-    width:100%
-}
-
-#subtitle-text {
-    text-align:center;
-    width:100%;
-    margin:auto;
-    font-size: 24px;
-    font-family: myFirstFont;
-}
-
-.subtitle {
-    position:absolute;
-    margin-top:501px;
-    height:20%;
-    width:100%
 }
 
 .login-form {
@@ -60,82 +25,4 @@ body {
 #signin {
     position: absolute;
     right: 0px;
-}
-
-.space-panel {
-	position:relative;
-	float:left;
-    border: 2px solid black;
-    text-align: center;
-	height: 100%;
-	width: 75%;
-	background-color: #333;
-}
-
-#dropzone.hover{
-    border-color:red;
-}
-.space-content {
-	position: absolute;
-}
-
-.chat-panel {
-	position:relative;
-	float:right;
-	height: 100%;
-	width: 25%;
-}
-
-.users-bar {
-	position:absolute;
-	top:0px;
-	height:48px;
-	width:100%;
-	background-color:#222;
-}
-
-.messages-panel {
-	position:absolute;
-	bottom:72px;
-	top:48px;
-	width:100%;
-	background-color:#CCC;
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
-.text-bar {
-	position:absolute;
-	bottom:24px;
-	height:48px;
-	width:100%;
-	background-color:#777;
-}
-
-.tools-bar {
-	position:absolute;
-	bottom:0px;
-	height:24px;
-	width:100%;
-	background-color:#555;
-}
-
-.fill {
-    height:100%;
-    width:100%;
-}
-
-#hide-btn {
-    border: none;
-    background-color: transparent;
-    color: #888;
-    font-size:14px;
-    font-weight:bold;
-    height: 48px;
-    line-height:16px;
-    padding: 16px;
-}
-
-#hide-btn:hover{
-    background-color:#5d176a;
 }
