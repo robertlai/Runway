@@ -121,23 +121,15 @@ api.get '/api/picture', (req, res) ->
 
 
 api.put '/api/picture', (req, res) ->
-    fileName = req.query.fileName
-    x = req.query.x
-    y = req.query.y
-
-    Picture.remove {fileName: fileName}, (err, removed) ->
+    console.log req.query.fileName
+    Picture.findOne {fileName: req.query.fileName}, (err, picture) ->
         if err
             res.sendStatus(500)
         else
-            picture = new Picture {
-                fileName: fileName
-                x: x
-                y: y
-            }
-            picture.save (err2, picture) ->
-                if err2
-                    res.sendStatus(500)
-                else
-                    res.sendStatus(201)
+            picture.x = req.query.x
+            picture.y = req.query.y
+            picture.save();
+            res.sendStatus(200)
+
 
 module.exports = api
