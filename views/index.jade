@@ -1,13 +1,14 @@
 extends layout
 
 block content
-
-    div.login-form
-        form
-            div.form-group
-                label(for="exampleInputEmail1" ) Email Address
-                input.form-control#exampleInputEmail1(type="email" placeholder="Email")
-            div.form-group
-                label(for="exampleInputPassword1" ) Password
-                input.form-control#exampleInputPassword1(type="password" placeholder="Password")
-            input.btn.btn-primary#signin(type="submit" value="Sign in")
+    script(type='text/javascript' src='/javascripts/authApp.js')
+    div.login-form(ng-app="authApp")
+        div(ng-controller="authController")
+            form.form-auth(ng-submit="login()")
+                div.form-group
+                    label(for="exampleInputEmail1" ) Email Address
+                    input.form-control#exampleInputEmail1(type="email" placeholder="Email")
+                div.form-group
+                    label(for="exampleInputPassword1" ) Password
+                    input.form-control#exampleInputPassword1(type="password" placeholder="Password")
+                input.btn.btn-primary#signin(type="submit" value="Sign in")
