@@ -15,13 +15,12 @@ block content
                 div.users-bar
                     input#hide-btn(type='button' value='Hide' ng-click='hideChat()')
                 div.messages-panel
-                    div.row(ng-repeat='message in messages track by $index')
+                    div.row(ng-repeat='message in messages')
                         div.col-xs-1
-                        div.col-xs-1.user
-                        div.col-xs-1
-                        div.col-xs-6.chatMessage
+                        div.col-xs-1.user(ng-bind='message.user')
+                        div.col-xs-7.chatMessage
                             span#chat(ng-bind='message.content')
                         div.col-xs-2
                 div.text-bar
                     form(ng-submit='addComment()')
-                        input#messagebox(type='text' ng-model='newComment' placeholder='  Type a message..' autofocus)
+                        input#messagebox(type='text' ng-model='newComment' placeholder='  Type a message..')
