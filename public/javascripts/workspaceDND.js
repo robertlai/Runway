@@ -1,3 +1,4 @@
+var temp
 $(function(){
     var $dropzone=$('#dropzone')
     var mousex,mousey;
@@ -26,24 +27,23 @@ $(function(){
                             total.push(value.fileName)
                             console.log({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx})
                             $('<img/>', {
-                            id: value.fileName,
-                            src: "/api/picture?fileToGet="+value.fileName,
-                            style: "position:absolute;"
-                        }).appendTo($dropzone).offset({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx}).draggable({
-                            containment:'parent',
-                            cursor:'move',
-                            stop:function(event,ui){
-                                $.ajax({
-                                    method:"PUT",
-                                    url:"/api/picture?fileName="+$(this).attr('id')+"&x="+ui.offset.left*100.0/maxx+"&y="+ui.offset.top*100.0/maxy
-                                })
-                                console.log("&x="+ui.offset.left*100.0/maxx+"&y="+ui.offset.left*100.0/maxy)
-                            }
-                        }).on('resize',function(){
-                            var width=$(this).outerWidth();
-                            var height=$(this).outerHeight();
-                            console.log(width+" "+height)
-                        });
+                            src: "/api/picture?fileToGet="+value.fileName
+                            //style: "position:r;"
+                            }).appendTo($dropzone).wrap("<div id="+value.fileName+" style='position:absolute;'></div>").parent().offset({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx}).draggable({
+                                containment:'parent',
+                                cursor:'move',
+                                stop:function(event,ui){
+                                    $.ajax({
+                                        method:"PUT",
+                                        url:"/api/picture?fileName="+$(this).attr('id')+"&x="+ui.offset.left*100.0/maxx+"&y="+ui.offset.top*100.0/maxy
+                                    })
+                                    console.log("&x="+ui.offset.left*100.0/maxx+"&y="+ui.offset.left*100.0/maxy)
+                                }
+                            }).on('resize',function(){
+                                var width=$(this).outerWidth();
+                                var height=$(this).outerHeight();
+                                console.log(width+" "+height)
+                            });
                         }
                     }
                 }
@@ -77,6 +77,7 @@ $(function(){
         drop(e,0)
     })
     $dropzone.on('drop',function(e){
+        temp=e
         drop(e,0)
         if(e.originalEvent.dataTransfer){
             if(e.originalEvent.dataTransfer.files.length) {

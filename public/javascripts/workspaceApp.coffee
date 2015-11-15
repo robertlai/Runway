@@ -51,7 +51,7 @@ app.controller 'messagesController', ($scope, $http, $interval) ->
 window.onload = ->
     msgpanel = document.getElementById("msgpanel")
     msgpanel.scrollTop = msgpanel.scrollHeight
-    i = setInterval(scrollToBottom, 100)
+    i = setInterval(scrollToBottom, 10)
 
 updateScrollState = ->
     scrollAtBottom = msgpanel.scrollTop == (msgpanel.scrollHeight - msgpanel.offsetHeight)

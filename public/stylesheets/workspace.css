@@ -26,7 +26,9 @@
     -ms-user-select: none;
     user-select: none;
 }
-
+#dropzone{
+  border:2px solid black;
+}
 #dropzone.hover{
     border-color: red;
 }
@@ -136,7 +138,7 @@
 
 .user {
     color: #ffffff;
-    font-size: 5px;
+    font-size: 12px;
     text-align: center;
     line-height: 30px;
     border-radius: 100px;
@@ -151,7 +153,9 @@
 .user .tooltip {
   text-align: center;
   background: #1496bb;
-  top: -50px;
+  left:175px;
+  z-index: 999;
+  top: 0px;
   color: #fff;
   display: block;
   margin-left: -290%;
