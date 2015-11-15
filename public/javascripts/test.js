@@ -49,10 +49,17 @@ $(function(){
                         //rel: 'external',
                         //text: 'Go to Google!'
                     }).appendTo($dropzone).offset({top:mousey,left:mousex}).draggable();
+
+                    reader.onload=function(arrayBuffer){
                         $.ajax({
                             method:"POST",
-                            url:"/api/picture/?contentType=image&data="+dataURL.target.result
+                            url:"/api/picture/?x="+mousex+"&y="+mousey,
+                            data:arrayBuffer.target.result,
+                            processData:false,
+                            contentType:"application/binary"
                         })
+                    }
+                    reader.readAsArrayBuffer(f);
                 }
                 reader.readAsDataURL(f);
 
