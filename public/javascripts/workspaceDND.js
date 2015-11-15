@@ -4,8 +4,11 @@ $(function(){
     var reader = new FileReader();
     var total=[]
     var maxx,maxy
-    maxy=$dropzone.outerHeight()
-    maxx=$dropzone.outerWidth()
+    function queryDropZone(){
+        maxy=$dropzone.outerHeight()
+        maxx=$dropzone.outerWidth()
+    }
+    queryDropZone()
     console.log(maxx+" "+maxy)
     function poll(){
         $.ajax({
@@ -14,6 +17,7 @@ $(function(){
                 if(textStatus=="success"){
                     for(var x=0;x<data.length;x++){
                         var value=data[x]
+                        queryDropZone()
                         if(total.indexOf(value.fileName)!=-1){
                             $('#'+value.fileName).offset({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx})
                             console.log({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx})
@@ -27,6 +31,7 @@ $(function(){
                             style: "position:absolute;"
                         }).appendTo($dropzone).offset({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx}).draggable({
                             containment:'parent',
+                            cursor:'move',
                             stop:function(event,ui){
                                 $.ajax({
                                     method:"PUT",
@@ -77,6 +82,7 @@ $(function(){
             if(e.originalEvent.dataTransfer.files.length) {
                 f=e.originalEvent.dataTransfer.files[0]
                 reader.onload=function(arrayBuffer){
+                    queryDropZone()
                     $.ajax({
                         method:"POST",
                         url:"/api/picture/?x="+mousex*100/maxx+"&y="+mousey*100/maxy,
@@ -90,5 +96,4 @@ $(function(){
             }
         }
     })
-    //$('#img').draggable();
 })
