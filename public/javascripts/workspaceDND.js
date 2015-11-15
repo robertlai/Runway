@@ -1,6 +1,9 @@
 var temp
 var reader = new FileReader();
-
+var $dropzone
+var maxx,maxy
+var mousex,mousey;
+var total=[]
 function dataURLtoBlob(dataurl) {
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
@@ -19,7 +22,7 @@ function uploadText(str,x,y){
         queryDropZone()
         $.ajax({
             method:"POST",
-            url:"/api/picture/?x=0&y=0",
+            url:"/api/picture?x="+x+"&y="+y,
             data:arrayBuffer.target.result,
             processData:false,
             contentType:"application/binary",
@@ -28,7 +31,7 @@ function uploadText(str,x,y){
     }
     reader.readAsArrayBuffer(dataURLtoBlob(tCtx.canvas.toDataURL()));
 }
-var $dropzone
+
 function buttonClicked(event){
     var lolz=$(event).parent().children().eq(2).children().text()
     console.log(lolz)
@@ -40,10 +43,8 @@ function queryDropZone(){
     }
 $(function(){
     $dropzone=$('#dropzone')
-    var mousex,mousey;
-    var total=[]
-    var maxx,maxy
-    
+
+
     queryDropZone()
     console.log(maxx+" "+maxy)
     function poll(){
@@ -53,6 +54,8 @@ $(function(){
                 if(textStatus=="success"){
                     for(var x=0;x<data.length;x++){
                         var value=data[x]
+                        if(value.x==0)value.x=1
+                        if(value.y==0)value.y=1  
                         queryDropZone()
                         if(total.indexOf(value.fileName)!=-1){
                             $('#'+value.fileName).offset({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx})
@@ -122,12 +125,12 @@ $(function(){
                     temp=arrayBuffer.target.result
                     $.ajax({
                         method:"POST",
-                        url:"/api/picture/?x="+mousex*100/maxx+"&y="+mousey*100/maxy,
+                        url:"/api/picture?x="+mousex*100.0/maxx+"&y="+mousey*100.0/maxy,
                         data:arrayBuffer.target.result,
                         processData:false,
                         contentType:"application/binary",
                     })
-                    console.log("/api/picture/?x="+mousex*100/maxx+"&y="+mousey*100/maxy)
+                    console.log("/api/picture?x="+mousex*100.0/maxx+"&y="+mousey*100.0/maxy)
                 }
                 reader.readAsArrayBuffer(f);
             }
