@@ -6,7 +6,7 @@ app = angular.module('workspaceApp', []);
 app.controller('workspaceController', function($scope) {});
 
 app.controller('messagesController', function($scope, $http, $interval) {
-  var fetchNewMessages, lastMessageId;
+  var fetchNewMessages, lastMessageId, scrollToBottom;
   $scope.chatVisible = true;
   $scope.newCommentNotValide = false;
   lastMessageId = -1;
@@ -17,6 +17,11 @@ app.controller('messagesController', function($scope, $http, $interval) {
     }).error(function(error, status) {
       return console.log("no new messages");
     });
+  };
+  scrollToBottom = function() {
+    var msgpanel;
+    msgpanel = document.getElementById("msgpanel");
+    return msgpanel.scrollTop = msgpanel.scrollHeight;
   };
   $interval(fetchNewMessages, 500);
   $scope.hideChat = function() {

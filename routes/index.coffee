@@ -15,6 +15,9 @@ router.get '/test',(req, res, next)->
 router.get '/login', (req, res, next) ->
     res.render('index', title: "Login")
 
+router.get '/register', (req, res, next) ->
+    res.render('register', title: "Register")
+
 router.get '*', (req, res, next) ->
     res.render('index')
 

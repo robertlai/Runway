@@ -19,11 +19,17 @@ app.controller 'messagesController', ($scope, $http, $interval) ->
         $http.get('/api/messages')
             .success (messages) ->
                 $scope.messages = messages
+                #scrollToBottom()
             .error (error, status) ->
                 console.log "no new messages"
 
+    scrollToBottom = ->
+        msgpanel = document.getElementById("msgpanel")
+        msgpanel.scrollTop = msgpanel.scrollHeight
+
 
     $interval(fetchNewMessages, 500)
+    #$interval(scrollToBottom, 50)
 
     $scope.hideChat = ->
         $scope.chatVisible = false
