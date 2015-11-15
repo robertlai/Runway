@@ -154,4 +154,32 @@ api.get('/api/picture', function(req, res) {
   });
 });
 
+api.put('/api/picture', function(req, res) {
+  var fileName, x, y;
+  fileName = req.query.fileName;
+  x = req.query.x;
+  y = req.query.y;
+  return Picture.remove({
+    fileName: fileName
+  }, function(err, removed) {
+    var picture;
+    if (err) {
+      return res.sendStatus(500);
+    } else {
+      picture = new Picture({
+        fileName: fileName,
+        x: x,
+        y: y
+      });
+      return picture.save(function(err2, picture) {
+        if (err2) {
+          return res.sendStatus(500);
+        } else {
+          return res.sendStatus(201);
+        }
+      });
+    }
+  });
+});
+
 module.exports = api;
