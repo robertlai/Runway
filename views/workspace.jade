@@ -15,7 +15,7 @@ block content
                 div.users-bar
                     input#hide-btn(type='button' value='Hide' ng-click='hideChat()')
                 div.messages-panel
-                    div.row(ng-repeat='message in messages')
+                    div.row(ng-repeat='message in messages track by $index')
                         div.col-xs-1
                         div.col-xs-2.user(ng-bind='message.user')
                         div.col-xs-1
@@ -23,4 +23,4 @@ block content
                         div.col-xs-2
                 div.text-bar
                     form(ng-submit='addComment()')
-                        input#messagebox(type='text' ng-model='newComment' placeholder='  Type a message..')
+                        input#messagebox(type='text' ng-model='newComment' placeholder='  Type a message..' autofocus)

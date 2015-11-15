@@ -56,6 +56,27 @@ api.get('/api/messages', function(req, res) {
   });
 });
 
+api.get('/api/message', function(req, res) {
+  var lastMessageId;
+  lastMessageId = req.query.lastMessageId ? req.query.lastMessageId : -1;
+  return Message.find({}).sort('timestamp').exec(function(err, messages) {
+    var i, len, message;
+    if (err) {
+      res.sendStatus(500);
+      throw err;
+    } else {
+      for (i = 0, len = messages.length; i < len; i++) {
+        message = messages[i];
+        if (message.timestamp > lastMessageId) {
+          res.json(message);
+          return;
+        }
+      }
+      return res.sendStatus(404);
+    }
+  });
+});
+
 api.post('/api/picture', function(req, res) {
   var fileName, fullFilePath;
   fileName = (new Date()).getTime();

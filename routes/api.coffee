@@ -44,6 +44,23 @@ api.get '/api/messages', (req, res) ->
         else
             res.json(messages)
 
+
+api.get '/api/message', (req, res) ->
+    lastMessageId = if req.query.lastMessageId then req.query.lastMessageId else -1
+
+    Message.find({}).sort('timestamp').exec (err, messages) ->
+        if err
+            res.sendStatus(500)
+            throw err
+        else
+            (
+                if message.timestamp > lastMessageId
+                    res.json(message)
+                    return
+            ) for message in messages
+            res.sendStatus(404)
+
+
 api.post '/api/picture', (req, res) ->
     fileName = (new Date()).getTime()
     fullFilePath = __dirname + '/' + fileName + Math.floor(Math.random() * 20000)

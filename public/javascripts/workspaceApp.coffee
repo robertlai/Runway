@@ -16,14 +16,12 @@ app.controller 'messagesController', ($scope, $http, $interval) ->
 
 
     fetchNewMessages = ->
-        $http.get('/api/messages')
-            .success (messages) ->
-                $scope.messages = messages
-            .error (error, status) ->
-                console.log "no new messages"
+        $http.get('/api/message?lastMessageId=' + lastMessageId)
+            .success (message) ->
+                lastMessageId = message.timestamp
+                $scope.messages.push(message)
 
 
-    $interval(fetchNewMessages, 500)
 
     $scope.hideChat = ->
         $scope.chatVisible = false
@@ -38,3 +36,16 @@ app.controller 'messagesController', ($scope, $http, $interval) ->
             $http.post('/api/message?user=Test User&content=' + $scope.newComment).then ->
                 $scope.newComment = ''
                 $scope.newCommentNotValide = false
+
+    fetchInitialMessages = ->
+        $http.get('/api/messages')
+            .success (messages) ->
+                (
+                    if message.timestamp > lastMessageId
+                        lastMessageId = message.timestamp
+                ) for message in messages
+
+                $scope.messages = messages
+
+    fetchInitialMessages().then ->
+        $interval(fetchNewMessages, 500)
