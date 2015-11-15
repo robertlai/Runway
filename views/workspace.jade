@@ -2,10 +2,9 @@ extends layout
 block scripts
     script(type='text/javascript' src='/javascripts/workspaceApp.js')
     script(type='text/javascript' src='/javascripts/workspaceDND.js')
-    link(rel="stylesheet" herf="/stylesheets/workspaceDND.css")
+    link(rel="stylesheet" href="/stylesheets/workspace.css")
 
 block content
-
     div.fill(ng-app="workspaceApp")
         div.space-panel#dropzone(ng-controller="workspaceController")
             h1#dndText Drag and drop files here
@@ -14,7 +13,7 @@ block content
             div.messages-panel
                 div.row(ng-repeat='message in messages')
                     div.col-xs-4(ng-bind='message.user')
-                    div.col-xs-8(ng-bind='message.content')
+                    div.col-xs-8.chatMessage(ng-bind='message.content')
             div.text-bar
                 form(ng-submit='addComment()')
                     input(type='text', ng-model='newComment' placeholder='message' required)
