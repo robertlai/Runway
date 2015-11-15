@@ -1,30 +1,33 @@
+var f
 $(function(){
     var $dropzone=$('#dropzone')
-    console.log("HI")
     function drop(e,hover){
         e.preventDefault();
         e.stopPropagation();
-        if(hover)
+        if(hover){
             $(e.target).addClass('hover')
-        else
+            $('#dndText').text("Drop to upload")
+        }
+        else{
             $(e.target).removeClass('hover')
+            $('#dndText').text("Drag and drop files here")
+        }
     }
     $dropzone.on(
     'dragover',
     function(e) {
         drop(e,1)
-    }
-    )
+    })
     $dropzone.on(
     'dragleave',
     function(e) {
         drop(e,0)
-    }
-    )
+    })
     $dropzone.on('drop',function(e){
+        drop(e,0)
         if(e.originalEvent.dataTransfer){
             if(e.originalEvent.dataTransfer.files.length) {
-                drop(e,0)
+                f=e.originalEvent.dataTransfer.files
                 console.log(e.originalEvent.dataTransfer.files);
             }   
         }

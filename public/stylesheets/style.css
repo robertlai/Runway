@@ -1,11 +1,5 @@
-#title {
-	font-size: 70px;
-    font-family: myFirstFont;
-}
-
 div {
 	position: relative;
-	height:100%;
 }
 
 @font-face {
@@ -18,29 +12,64 @@ body {
   width:100%;
   height:100%;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background: url(/images/background.jpg) no-repeat center center fixed; 
+  background: url(/images/background.png) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
 }
 
+#title-text {
+    text-align:center;
+    width:100%;
+    margin:auto;
+    font-size: 70px;
+    font-family: myFirstFont;
+}
+
+.title{
+    position:absolute;
+    margin-top:100px;
+    height:20%;
+    width:100%
+}
+
+#subtitle-text {
+    text-align:center;
+    width:100%;
+    margin:auto;
+    font-size: 24px;
+    font-family: myFirstFont;
+}
+
+.subtitle{
+    position:absolute;
+    margin-top:501px;
+    height:20%;
+    width:100%
+}
+
 .login-form {
-	padding: 100px;
-	margin-top: 370px;
- 	margin-left: 400px;
-	margin-right: 400px;
+    position:absolute;
+    bottom:10px;
+ 	left: 35%;
+	right: 35%;
     font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 .space-panel {
 	position:relative;
 	float:left;
+    border: 2px solid black;
+    border-radius: 5px;
+    text-align: center;
 	height: 100%;
 	width: 75%;
 	background-color: #333;
 }
-
+#dropzone.hover{
+    border-color:red;
+}
 .space-content {
 	position: absolute;
 }
@@ -66,6 +95,8 @@ body {
 	top:48px;
 	width:100%;
 	background-color:#CCC;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .text-bar {
@@ -82,4 +113,9 @@ body {
 	height:24px;
 	width:100%;
 	background-color:#555;
+}
+
+.fill {
+    height:100%;
+    width:100%;
 }
