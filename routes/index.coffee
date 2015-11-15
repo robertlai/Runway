@@ -15,5 +15,8 @@ router.get '/test',(req, res, next)->
 router.get '/login', (req, res, next) ->
     res.render('index', title: "Login")
 
+router.get '*', (req, res, next) ->
+    res.render('index')
+
 
 module.exports = router
