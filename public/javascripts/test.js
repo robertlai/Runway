@@ -6,36 +6,41 @@ $(function(){
     var lastFile=-1
     var total=[]
     //$('#img').draggable({containment:'parent'})
-    $.ajax({
-        url:"/api/pictures",
-        //data:{'lastFile':lastFile},
-        success:function(data,textStatus,jqXHR){
-            if(textStatus=="success"){
-                //$('#img').attr('src',data)
-                //console.log(jqXHR.getAllResponseHeaders())
-                //var temp=jqXHR.getResponseHeader("fileName")
-                //if(temp)
-                //    fileName=temp
-                for(var x=0;x<data.length;x++){
-                    var value=data[x]
-                    if(total.indexOf(value.fileName)!=-1){
-                        $('#'+value.fileName).offset({top:value.x,left:value.y})
-                    }
-                    else{
-                        total.push(value.fileName)
-                        $('<img/>', {
-                        id: value.fileName,
-                        src: "/api/picture/?fileToGet="+value.fileName,
-                        //title: 'Become a Googler',
-                        //rel: 'external',
-                        //text: 'Go to Google!'
-                    }).appendTo($dropzone).offset({top:value.x,left:value.y}).draggable({containment:'parent'});
-
+    function poll(){
+        $.ajax({
+            url:"/api/pictures",
+            //data:{'lastFile':lastFile},
+            success:function(data,textStatus,jqXHR){
+                if(textStatus=="success"){
+                    //$('#img').attr('src',data)
+                    //console.log(jqXHR.getAllResponseHeaders())
+                    //var temp=jqXHR.getResponseHeader("fileName")
+                    //if(temp)
+                    //    fileName=temp
+                    for(var x=0;x<data.length;x++){
+                        var value=data[x]
+                        if(total.indexOf(value.fileName)!=-1){
+                            $('#'+value.fileName).offset({top:value.x,left:value.y})
+                        }
+                        else{
+                            total.push(value.fileName)
+                            $('<img/>', {
+                            id: value.fileName,
+                            src: "/api/picture/?fileToGet="+value.fileName,
+                            //title: 'Become a Googler',
+                            //rel: 'external',
+                            //text: 'Go to Google!'
+                        }).appendTo($dropzone).offset({top:value.x,left:value.y}).draggable({containment:'parent'});
+                        }
                     }
                 }
+            },
+            complete:function(jqXHR,textStatus){
+                setTimeout(poll,1000)
             }
-        }
-    })
+        })
+    }
+    poll()
     function drop(e,hover){
         e.preventDefault();
         e.stopPropagation();
