@@ -27,14 +27,11 @@ app.controller('messagesController', function($scope, $http, $interval) {
     $scope.chatVisible = true;
     return document.getElementById('dropzone').style.width = '80%';
   };
-  $scope.validateNewComment = function() {
-    var newCommentNotValide;
-    return newCommentNotValide = $scope.newComment.trim().length > 0;
-  };
   return $scope.addComment = function() {
-    if (!$scope.newCommentNotValide) {
+    if ($scope.newComment.trim().length > 0) {
       return $http.post('/api/message?user=Test User&content=' + $scope.newComment).then(function() {
-        return $scope.newComment = '';
+        $scope.newComment = '';
+        return $scope.newCommentNotValide = false;
       });
     }
   };
