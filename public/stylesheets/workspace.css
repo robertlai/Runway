@@ -30,7 +30,7 @@
     top: 0;
     right: 0;
     border: none;
-    background-color:#222;
+    background-color:#ffdd99;
     color: #888;
     font-size:14px;
     font-weight:bold;
@@ -65,34 +65,35 @@
 }
 
 #messagebox {
+    height: 48px;
     width: 100%;
 }
 
 .user {
+    color: #ffffff;
+    font-size: 5px;
     text-align: center;
-    line-height: 25px;
+    line-height: 30px;
+    border-radius: 100px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: #bfbfbf;
+    word-wrap: break-word;
 }
 
 .chatMessage {
+    line-height: 25px;
     border-radius: 5px;
-    margin-top: 2.5px;
-    margin-bottom: 2.5px;
+    margin-top: 7.5px;
+    margin-bottom: 7.5px;
     background-color: #ffe5b3;
     word-wrap: break-word;
 }
 
 .text-bar {
     position: absolute;
-    bottom: 24px;
-    height: 24px;
-    width: 100%;
-    background-color:#ffffff;
-}
-
-.tools-bar {
-    position:absolute;
     bottom: 0px;
-    height: 24px;
+    height: 48px;
     width: 100%;
     background-color:#ffffff;
 }
