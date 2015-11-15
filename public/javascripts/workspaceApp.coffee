@@ -35,7 +35,6 @@ app.controller 'messagesController', ($scope, $http, $interval) ->
             $http.post('/api/message?user=' + $scope.username.substring(0, 1).toUpperCase() + '&content=' + $scope.newComment).then ->
                 $scope.newComment = ''
                 $scope.newCommentNotValide = false
-
     fetchInitialMessages = ->
         $http.get('/api/messages')
             .success (messages) ->
