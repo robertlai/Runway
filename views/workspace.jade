@@ -1,10 +1,13 @@
 extends layout
 
 block content
-	div.space-panel
-	div.chat-panel
-		div.users-bar
-		div.messages-panel
-		div.text-bar
-		div.tools-bar
-	div.pages-panel
+	script(type='text/javascript' src='/javascripts/workspaceApp.js')
+	div(ng-app="workspaceApp")
+		div(ng-controller="workspaceController")
+			div.space-panel
+			div.chat-panel
+				div.users-bar
+				div.messages-panel
+				div.text-bar
+				div.tools-bar
+			div.pages-panel
