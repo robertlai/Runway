@@ -2,7 +2,7 @@ extends layout
 
 block content
     script(type='text/javascript' src='/javascripts/authApp.js')
-    div(ng-app="authApp")
+    div.login-form(ng-app="authApp")
         div(ng-controller="authController")
             row
                 h1 Runway
