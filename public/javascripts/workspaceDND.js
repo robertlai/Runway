@@ -43,8 +43,6 @@ function queryDropZone(){
     }
 $(function(){
     $dropzone=$('#dropzone')
-
-
     queryDropZone()
     console.log(maxx+" "+maxy)
     function poll(){
