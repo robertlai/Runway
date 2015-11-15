@@ -27,7 +27,7 @@ app.controller('messagesController', function($scope, $http, $interval) {
   };
   $scope.addComment = function() {
     if ($scope.newComment.trim().length > 0) {
-      return $http.post('/api/message?user=Test User&content=' + $scope.newComment).then(function() {
+      return $http.post('/api/message?user=T&content=' + $scope.newComment).then(function() {
         $scope.newComment = '';
         return $scope.newCommentNotValide = false;
       });

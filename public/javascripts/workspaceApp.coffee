@@ -33,7 +33,7 @@ app.controller 'messagesController', ($scope, $http, $interval) ->
 
     $scope.addComment = ->
         if $scope.newComment.trim().length > 0
-            $http.post('/api/message?user=Test User&content=' + $scope.newComment).then ->
+            $http.post('/api/message?user=T&content=' + $scope.newComment).then ->
                 $scope.newComment = ''
                 $scope.newCommentNotValide = false
 

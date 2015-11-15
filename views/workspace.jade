@@ -17,9 +17,10 @@ block content
                 div.messages-panel
                     div.row(ng-repeat='message in messages track by $index')
                         div.col-xs-1
-                        div.col-xs-2.user(ng-bind='message.user')
+                        div.col-xs-1.user
                         div.col-xs-1
-                        div.col-xs-5.chatMessage(ng-bind='message.content')
+                        div.col-xs-6.chatMessage
+                            span#chat(ng-bind='message.content')
                         div.col-xs-2
                 div.text-bar
                     form(ng-submit='addComment()')
