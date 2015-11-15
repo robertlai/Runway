@@ -25,7 +25,7 @@ app.controller('messagesController', function($scope, $http, $interval) {
   };
   $scope.showChat = function() {
     $scope.chatVisible = true;
-    return document.getElementById('dropzone').style.width = '75%';
+    return document.getElementById('dropzone').style.width = '80%';
   };
   $scope.validateNewComment = function() {
     var newCommentNotValide;
