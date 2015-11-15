@@ -25,6 +25,20 @@
     position: absolute;
 }
 
+#un-hide-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: none;
+    background-color:#222;
+    color: #888;
+    font-size:14px;
+    font-weight:bold;
+    height: 48px;
+    line-height:16px;
+    padding: 16px;
+}
+
 .chat-panel {
     position: relative;
     float: right;
@@ -55,7 +69,7 @@
 }
 
 .user {
-    text-align: center; 
+    text-align: center;
     line-height: 25px;
 }
 
@@ -99,6 +113,6 @@
     padding: 16px;
 }
 
-#hide-btn:hover{
+#hide-btn:hover, #un-hide-btn:hover {
     background-color: #5d176a;
 }

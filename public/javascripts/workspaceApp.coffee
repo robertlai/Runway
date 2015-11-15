@@ -33,10 +33,8 @@ app.controller 'messagesController', ($scope, $http, $interval) ->
         $scope.chatVisible = true
         document.getElementById('dropzone').style.width = '80%'
 
-    $scope.validateNewComment = ->
-        newCommentNotValide = $scope.newComment.trim().length > 0
-
     $scope.addComment = ->
-        if !$scope.newCommentNotValide
+        if $scope.newComment.trim().length > 0
             $http.post('/api/message?user=Test User&content=' + $scope.newComment).then ->
                 $scope.newComment = ''
+                $scope.newCommentNotValide = false
