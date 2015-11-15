@@ -27,7 +27,7 @@ body {
     font-family: myFirstFont;
 }
 
-.title{
+.title {
     position:absolute;
     margin-top:100px;
     height:20%;
@@ -42,7 +42,7 @@ body {
     font-family: myFirstFont;
 }
 
-.subtitle{
+.subtitle {
     position:absolute;
     margin-top:501px;
     height:20%;
@@ -51,10 +51,15 @@ body {
 
 .login-form {
     position:absolute;
-    bottom:10px;
+    bottom: 60px;
  	left: 35%;
 	right: 35%;
     font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+#signin {
+    position: absolute;
+    right: 0px;
 }
 
 .space-panel {
