@@ -1,6 +1,9 @@
 var f
+var reader = new FileReader();
 $(function(){
     var $dropzone=$('#dropzone')
+    var mousex,mousey;
+
     function drop(e,hover){
         e.preventDefault();
         e.stopPropagation();
@@ -13,23 +16,36 @@ $(function(){
             $('#dndText').text("Drag and drop files here")
         }
     }
-    $dropzone.on(
-    'dragover',
-    function(e) {
+    $(document).on('mousemove',function(e){
+        mousex=e.pageX
+        mousey=e.pageY
+        console.log(mousex+" "+mousey)
+    })
+    $dropzone.on('dragover',function(e) {
         drop(e,1)
     })
-    $dropzone.on(
-    'dragleave',
-    function(e) {
+    $dropzone.on('dragleave',function(e) {
         drop(e,0)
     })
     $dropzone.on('drop',function(e){
         drop(e,0)
         if(e.originalEvent.dataTransfer){
             if(e.originalEvent.dataTransfer.files.length) {
-                f=e.originalEvent.dataTransfer.files
-                console.log(e.originalEvent.dataTransfer.files);
+                //console.log(e.originalEvent.dataTransfer.files);
+                reader.onload=function(e) {
+                    $('<img/>', {
+                        //id: 'foo',
+                        src: reader.result,
+                        //title: 'Become a Googler',
+                        //rel: 'external',
+                        //text: 'Go to Google!'
+                    }).appendTo('#dropzone').offset({top:mousey,left:mousex}).draggable();
+                    //$('#img').attr('src',reader.result)
+                }
+                reader.readAsDataURL(e.originalEvent.dataTransfer.files[0]);
+
             }   
         }
     })
+    //$('#img').draggable();
 })

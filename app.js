@@ -29,6 +29,8 @@ app.use(express["static"]('node_modules/jquery/dist'));
 
 app.use(express["static"]('node_modules/bootstrap/dist'));
 
+app.use(express["static"]('node_modules/jquery-ui-bundle'));
+
 app.use(logger('dev'));
 
 app.use(express["static"](__dirname + 'public'));

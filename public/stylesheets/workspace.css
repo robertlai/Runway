@@ -12,7 +12,9 @@
     width: 75%;
     background-color: #333;
 }
-
+#dndText{
+    color:black;
+}
 #dropzone.hover{
     border-color:red;
 }
