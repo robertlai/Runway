@@ -1,13 +1,17 @@
 extends layout
+block scripts
+    script(type='text/javascript' src='/javascripts/workspaceApp.js')
+    script(type='text/javascript' src='/javascripts/workspaceDND.js')
+    link(rel="stylesheet" herf="/stylesheets/workspaceDND.css")
 
 block content
-	script(type='text/javascript' src='/javascripts/workspaceApp.js')
-	div(ng-app="workspaceApp")
-		div(ng-controller="workspaceController")
-			div.space-panel
-			div.chat-panel
-				div.users-bar
-				div.messages-panel
-				div.text-bar
-				div.tools-bar
-			div.pages-panel
+    div(ng-app="workspaceApp")
+        div(ng-controller="workspaceController")
+            div.space-panel#dropzone
+                h1#dndText Drag and drop files here
+            div.chat-panel
+                div.users-bar
+                div.messages-panel
+                div.text-bar
+                div.tools-bar
+            //div.pages-panel

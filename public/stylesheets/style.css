@@ -36,11 +36,16 @@ body {
 .space-panel {
 	position:relative;
 	float:left;
+    border: 2px solid black;
+    border-radius: 5px;
+    text-align: center;
 	height: 100%;
 	width: 75%;
 	background-color: #333;
 }
-
+#dropzone.hover{
+    border-color:red;
+}
 .space-content {
 	position: absolute;
 }
