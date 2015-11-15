@@ -3,14 +3,14 @@ var app;
 
 app = angular.module('authApp', []);
 
-app.controller('authController', function($scope, $http) {
+app.controller('authController', function($scope, $http, $window) {
   $scope.user = {
     username: '',
     password: ''
   };
   $scope.error_message = '';
   $scope.login = function() {
-    $http.post('/api/login');
+    $window.location.href = '/workspace?username=' + $scope.user.username;
   };
   $scope.register = function() {
     $scope.error_message = 'Registration request for ' + $scope.user.username;

@@ -1,6 +1,6 @@
 app = angular.module('authApp', [])
 
-app.controller 'authController', ($scope, $http) ->
+app.controller 'authController', ($scope, $http, $window) ->
     $scope.user =
       username: ''
       password: ''
@@ -9,7 +9,7 @@ app.controller 'authController', ($scope, $http) ->
     $scope.login = ->
       #placeholder until authentication is implemented
       #$scope.error_message = 'Login request for ' + $scope.user.username
-      $http.post('/api/login');
+      $window.location.href = '/workspace?username=' + $scope.user.username;
       return
 
     $scope.register = ->

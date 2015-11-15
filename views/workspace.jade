@@ -5,7 +5,7 @@ block scripts
     link(rel='stylesheet' href='/stylesheets/workspace.css')
 
 block content
-    div.fill(ng-app='workspaceApp')
+    div.fill(ng-app='workspaceApp' ng-init="username='#{username}'")
         div.fill(ng-controller='messagesController')
             div.space-panel#dropzone(ng-controller='workspaceController')
                 h1.noselect#dndText Drag and drop files here

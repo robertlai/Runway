@@ -13,24 +13,15 @@ DB = require('../Utilities/DB');
 
 router.get('/workspace', function(req, res, next) {
   return res.render('workspace', {
-    title: 'Workspace'
-  });
-});
-
-router.get('/test', function(req, res, next) {
-  return res.render('test', {
-    title: 'Test'
-  });
-});
-
-router.get('/login', function(req, res, next) {
-  return res.render('index', {
-    title: "Login"
+    title: 'Workspace',
+    username: req.query.username
   });
 });
 
 router.get('*', function(req, res, next) {
-  return res.render('index');
+  return res.render('index', {
+    title: "Login"
+  });
 });
 
 module.exports = router;

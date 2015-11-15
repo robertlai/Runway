@@ -7,16 +7,10 @@ router.use(api)
 DB = require('../Utilities/DB')
 
 router.get '/workspace',(req, res, next)->
-    res.render('workspace', title:'Workspace')
-
-router.get '/test',(req, res, next)->
-    res.render('test', title:'Test')
-
-router.get '/login', (req, res, next) ->
-    res.render('index', title: "Login")
+    res.render('workspace', title:'Workspace', username: req.query.username)
 
 router.get '*', (req, res, next) ->
-    res.render('index')
+    res.render('index', title: "Login")
 
 
 module.exports = router
