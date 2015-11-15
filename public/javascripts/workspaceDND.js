@@ -13,14 +13,10 @@ $(function(){
             $('#dndText').text("Drag and drop files here")
         }
     }
-    $dropzone.on(
-    'dragover',
-    function(e) {
+    $dropzone.on('dragover',function(e) {
         drop(e,1)
     })
-    $dropzone.on(
-    'dragleave',
-    function(e) {
+    $dropzone.on('dragleave',function(e) {
         drop(e,0)
     })
     $dropzone.on('drop',function(e){
