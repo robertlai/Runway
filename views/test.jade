@@ -9,7 +9,7 @@ block content
     div.fill(ng-app="workspaceApp")
         div.space-panel#dropzone(ng-controller="workspaceController")
             h1#dndText Drag and drop files here
-            img#img
+            //img#img(src="/api/picture/?fileName=-1")
         div.chat-panel(ng-controller='messagesController')
             div.users-bar
                 input#hide-btn(type="button" value="Hide" )

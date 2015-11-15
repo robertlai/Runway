@@ -3,15 +3,39 @@ $(function(){
     var $dropzone=$('#dropzone')
     var mousex,mousey;
     var reader = new FileReader();
-    function _arrayBufferToBase64( buffer ) {
-        var binary = '';
-        var bytes = new Uint8Array( buffer );
-        var len = bytes.byteLength;
-        for (var i = 0; i < len; i++) {
-            binary += String.fromCharCode( bytes[ i ] );
+    var lastFile=-1
+    var total=[]
+    //$('#img').draggable({containment:'parent'})
+    $.ajax({
+        url:"/api/pictures",
+        //data:{'lastFile':lastFile},
+        success:function(data,textStatus,jqXHR){
+            if(textStatus=="success"){
+                //$('#img').attr('src',data)
+                //console.log(jqXHR.getAllResponseHeaders())
+                //var temp=jqXHR.getResponseHeader("fileName")
+                //if(temp)
+                //    fileName=temp
+                for(var x=0;x<data.length;x++){
+                    var value=data[x]
+                    if(total.indexOf(value.fileName)!=-1){
+                        $('#'+value.fileName).offset({top:value.x,left:value.y})
+                    }
+                    else{
+                        total.push(value.fileName)
+                        $('<img/>', {
+                        id: value.fileName,
+                        src: "/api/picture/?fileToGet="+value.fileName,
+                        //title: 'Become a Googler',
+                        //rel: 'external',
+                        //text: 'Go to Google!'
+                    }).appendTo($dropzone).offset({top:value.x,left:value.y}).draggable({containment:'parent'});
+
+                    }
+                }
+            }
         }
-        return window.btoa( binary );
-    }
+    })
     function drop(e,hover){
         e.preventDefault();
         e.stopPropagation();
@@ -42,14 +66,7 @@ $(function(){
                 f=e.originalEvent.dataTransfer.files[0]
                 reader.onload=function(dataURL) {
                     //$('#img').attr('src',reader.result)
-                    $('<img/>', {
-                        //id: 'foo',
-                        src: dataURL.target.result,
-                        //title: 'Become a Googler',
-                        //rel: 'external',
-                        //text: 'Go to Google!'
-                    }).appendTo($dropzone).offset({top:mousey,left:mousex}).draggable();
-
+                    
                     reader.onload=function(arrayBuffer){
                         $.ajax({
                             method:"POST",
