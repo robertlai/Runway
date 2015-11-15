@@ -14,7 +14,7 @@ block content
             div.chat-panel(ng-show='chatVisible')
                 div.users-bar
                     input#hide-btn(type='button' value='Hide' ng-click='hideChat()')
-                div.messages-panel
+                div.messages-panel#msgpanel(onscroll='updateScrollState()')
                     div.row(ng-repeat='message in messages')
                         div.col-xs-1
                         div.col-xs-1.user(ng-bind='message.user')
