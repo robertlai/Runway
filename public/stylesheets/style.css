@@ -66,12 +66,12 @@ body {
 	position:relative;
 	float:left;
     border: 2px solid black;
-    border-radius: 5px;
     text-align: center;
 	height: 100%;
 	width: 75%;
 	background-color: #333;
 }
+
 #dropzone.hover{
     border-color:red;
 }
@@ -123,4 +123,19 @@ body {
 .fill {
     height:100%;
     width:100%;
+}
+
+#hide-btn {
+    border: none;
+    background-color: transparent;
+    color: #888;
+    font-size:14px;
+    font-weight:bold;
+    height: 48px;
+    line-height:16px;
+    padding: 16px;
+}
+
+#hide-btn:hover{
+    background-color:#5d176a;
 }
