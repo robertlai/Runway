@@ -16,7 +16,8 @@ block content
                 div.messages-panel#msgpanel(onscroll='updateScrollState()')
                     div.row(ng-repeat='message in messages')
                         div.col-xs-1
-                        div.col-xs-1.user(ng-bind='message.user')
+                        div.col-xs-1.user {{message.user}}
+                            div.tooltip(ng-bind='message.user')
                         div.col-xs-7.chatMessage
                             span#chat(ng-bind='message.content')
                         div.col-xs-3

@@ -153,18 +153,17 @@
 .user .tooltip {
   text-align: center;
   background: #1496bb;
-  left:175px;
   z-index: 999;
-  top: 0px;
+  top: -50px;
   color: #fff;
   display: block;
-  margin-left: -290%;
+  margin-left: -28px;
   margin-bottom: 15px;
   opacity: 0;
   padding: 10px;
   pointer-events: none;
   position: absolute;
-  width: 600%;
+  width: 200%;
   -webkit-transform: translateY(10px);
      -moz-transform: translateY(10px);
       -ms-transform: translateY(10px);
