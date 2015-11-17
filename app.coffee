@@ -3,7 +3,7 @@ logger = require('morgan')
 router = require('./routes/index')
 http = require('http')
 
-port = '3000'
+port = process.env.PORT || 3000
 
 app = express()
 
