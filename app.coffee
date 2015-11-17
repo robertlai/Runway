@@ -1,9 +1,12 @@
 express = require('express')
 logger = require('morgan')
-router = require('./routes/index')
 http = require('http')
+apiRouter = require('./routes/apiRouter')
+pageRouter = require('./routes/pageRouter')
 
-port = process.env.PORT || 3000
+
+port = (process.env.PORT || 3000)
+
 
 app = express()
 
@@ -18,7 +21,9 @@ app.use(express.static(__dirname + '/node_modules/angular'))
 app.use(express.static(__dirname + '/node_modules/jquery/dist'))
 app.use(express.static(__dirname + '/node_modules/bootstrap/dist'))
 
-app.use(router)
+
+app.use('/api', apiRouter)
+app.use('/', pageRouter)
 
 app.set('port', port)
 server = http.createServer(app)

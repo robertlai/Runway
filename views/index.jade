@@ -3,7 +3,7 @@ extends layout
 block content
     script(type='text/javascript' src='/javascripts/authApp.js')
     div.login-form(ng-app="authApp")
-        p.text-warning {{error_message}}
+        //- p.text-warning {{error_message}}
         div(ng-controller="authController")
             form.form-auth(ng-submit="login()")
                 div.form-group

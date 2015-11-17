@@ -1,34 +1,12 @@
 fs = require('fs')
 express = require('express')
 api = express.Router()
-mongoose = require('mongoose')
-db = require('../Utilities/DB')
+Message = require('../models/Message')
+PictureMetadata = require('../models/pictureMetadata')
+PictureFile = require('../models/PictureFile')
 
 
-messageSchema = new mongoose.Schema({
-    timestamp: Number
-    user: String
-    content: String
-})
-Message = mongoose.model('message', messageSchema)
-
-
-pictureSchema = new mongoose.Schema({
-    fileName: Number
-    x: Number
-    y: Number
-})
-Picture = mongoose.model('picture', pictureSchema)
-
-
-fileSchema = new mongoose.Schema({
-    fileName: Number
-    file: Buffer
-})
-File = mongoose.model('file', fileSchema)
-
-
-api.post '/api/message', (req, res) ->
+api.post '/message', (req, res) ->
     timestamp = (new Date()).getTime()
     user = req.query.user;
     content = req.query.content;
@@ -44,16 +22,14 @@ api.post '/api/message', (req, res) ->
         else
             res.sendStatus(200)
 
-
-api.get '/api/messages', (req, res) ->
+api.get '/messages', (req, res) ->
     Message.find({}).sort('timestamp').exec (err, messages) ->
         if err
             res.sendStatus(500)
         else
             res.json(messages)
 
-
-api.get '/api/message', (req, res) ->
+api.get '/message', (req, res) ->
     lastMessageId = if req.query.lastMessageId then req.query.lastMessageId else -1
 
     Message.find({}).sort('timestamp').exec (err, messages) ->
@@ -68,20 +44,19 @@ api.get '/api/message', (req, res) ->
             ) for message in messages
             res.sendStatus(404)
 
-
-api.post '/api/picture', (req, res) ->
+api.post '/picture', (req, res) ->
     fileName = (new Date()).getTime()
     x = req.query.x
     y = req.query.y
     fullFilePath = __dirname + '/' + fileName + Math.floor(Math.random() * 20000)
 
     req.pipe(fs.createWriteStream(fullFilePath)).on 'finish', ->
-        picture = new Picture {
+        picture = new PictureMetadata {
             fileName: fileName
             x: x
             y: y
         }
-        file = new File {
+        file = new PictureFile {
             fileName: fileName
             file: fs.readFileSync(fullFilePath)
         }
@@ -97,16 +72,15 @@ api.post '/api/picture', (req, res) ->
         .then ->
             fs.unlinkSync(fullFilePath)
 
-
-api.get '/api/pictures', (req, res) ->
-    Picture.find({}).sort('fileName').exec (err, picturesInfo) ->
+api.get '/pictures', (req, res) ->
+    PictureMetadata.find({}).sort('fileName').exec (err, picturesInfo) ->
         if err
             res.sendStatus(500)
         else
             res.json(picturesInfo)
 
-api.get '/api/picture', (req, res) ->
-    File.find({}).sort('fileName').exec (err, files) ->
+api.get '/picture', (req, res) ->
+    PictureFile.find({}).sort('fileName').exec (err, files) ->
         if err
             res.sendStatus(500)
         else
@@ -119,9 +93,8 @@ api.get '/api/picture', (req, res) ->
             ) for file in files
             res.sendStatus(500)
 
-
-api.put '/api/picture', (req, res) ->
-    Picture.findOne {fileName: req.query.fileName}, (err, picture) ->
+api.put '/picture', (req, res) ->
+    PictureMetadata.findOne {fileName: req.query.fileName}, (err, picture) ->
         if err
             res.sendStatus(500)
         else
@@ -130,13 +103,13 @@ api.put '/api/picture', (req, res) ->
             picture.save();
             res.sendStatus(200)
 
-api.delete '/api/picture', (req, res) ->
+api.delete '/picture', (req, res) ->
     fileNameToDelete = req.query.fileName
-    Picture.find({fileName: fileNameToDelete}).remove (err1, removedPicture) ->
+    PictureMetadata.find({fileName: fileNameToDelete}).remove (err1, removedPicture) ->
         if err1
             res.sendStatus(500)
         else
-            File.find({fileName: fileNameToDelete}).remove (err2, removedFile) ->
+            PictureFile.find({fileName: fileNameToDelete}).remove (err2, removedFile) ->
                 if err2
                     res.sendStatus(500)
                 else
