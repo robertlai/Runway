@@ -1,6 +1,8 @@
 express = require('express')
 logger = require('morgan')
 http = require('http')
+
+DB = require('./Utilities/DB')
 apiRouter = require('./routes/apiRouter')
 pageRouter = require('./routes/pageRouter')
 
