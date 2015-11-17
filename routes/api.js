@@ -155,7 +155,6 @@ api.get('/api/picture', function(req, res) {
 });
 
 api.put('/api/picture', function(req, res) {
-  console.log(req.query.fileName);
   return Picture.findOne({
     fileName: req.query.fileName
   }, function(err, picture) {
@@ -166,6 +165,28 @@ api.put('/api/picture', function(req, res) {
       picture.y = req.query.y;
       picture.save();
       return res.sendStatus(200);
+    }
+  });
+});
+
+api["delete"]('/api/picture', function(req, res) {
+  var fileNameToDelete;
+  fileNameToDelete = req.query.fileName;
+  return Picture.find({
+    fileName: fileNameToDelete
+  }).remove(function(err1, removedPicture) {
+    if (err1) {
+      return res.sendStatus(500);
+    } else {
+      return File.find({
+        fileName: fileNameToDelete
+      }).remove(function(err2, removedFile) {
+        if (err2) {
+          return res.sendStatus(500);
+        } else {
+          return res.sendStatus(200);
+        }
+      });
     }
   });
 });

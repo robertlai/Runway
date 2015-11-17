@@ -121,7 +121,6 @@ api.get '/api/picture', (req, res) ->
 
 
 api.put '/api/picture', (req, res) ->
-    console.log req.query.fileName
     Picture.findOne {fileName: req.query.fileName}, (err, picture) ->
         if err
             res.sendStatus(500)
@@ -130,6 +129,18 @@ api.put '/api/picture', (req, res) ->
             picture.y = req.query.y
             picture.save();
             res.sendStatus(200)
+
+api.delete '/api/picture', (req, res) ->
+    fileNameToDelete = req.query.fileName
+    Picture.find({fileName: fileNameToDelete}).remove (err1, removedPicture) ->
+        if err1
+            res.sendStatus(500)
+        else
+            File.find({fileName: fileNameToDelete}).remove (err2, removedFile) ->
+                if err2
+                    res.sendStatus(500)
+                else
+                    res.sendStatus(200)
 
 
 module.exports = api
