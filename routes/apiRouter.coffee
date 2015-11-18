@@ -44,6 +44,15 @@ api.get '/message', (req, res) ->
             ) for message in messages
             res.sendStatus(404)
 
+
+api.delete '/message', (req, res) ->
+    messageTimeStampToDelete = req.query.timestamp
+    Message.find({timestamp: messageTimeStampToDelete}).remove (err, removedMessage) ->
+        if err
+            res.sendStatus(500)
+        else
+            res.sendStatus(200)
+
 api.post '/picture', (req, res) ->
     fileName = (new Date()).getTime()
     x = req.query.x
@@ -105,6 +114,7 @@ api.put '/picture', (req, res) ->
 
 api.delete '/picture', (req, res) ->
     fileNameToDelete = req.query.fileName
+    console.log 'dleeteing: ' + fileNameToDelete
     PictureMetadata.find({fileName: fileNameToDelete}).remove (err1, removedPicture) ->
         if err1
             res.sendStatus(500)

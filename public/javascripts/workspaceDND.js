@@ -4,6 +4,7 @@ var $dropzone
 var maxx,maxy
 var mousex,mousey;
 var total=[]
+
 function dataURLtoBlob(dataurl) {
     var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
         bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
@@ -12,6 +13,7 @@ function dataURLtoBlob(dataurl) {
     }
     return new Blob([u8arr], {type:mime});
     }
+
 function uploadText(str,x,y){
     var tCtx = $('<canvas/>')[0].getContext('2d'); //Hidden canvas
     tCtx.font = "20px Arial";
@@ -38,10 +40,12 @@ function buttonClicked(event){
     // console.log(lolz)
     uploadText(lolz,1,1)
 }
+
 function queryDropZone(){
         maxy=$dropzone.outerHeight()
         maxx=$dropzone.outerWidth()
-    }
+}
+
 $(function(){
     $dropzone=$('#dropzone')
     queryDropZone()

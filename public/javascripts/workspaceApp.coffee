@@ -36,6 +36,18 @@ app.controller 'messagesController',  ($scope, $http, $interval) ->
             $http.post('/api/message?user=' + $scope.username + '&content=' + $scope.newComment).then ->
                 $scope.newComment = ''
 
+
+    $scope.removeComment = (timestamp) ->
+        $http.delete('/api/message?timestamp=' + timestamp).then ->
+            i = 0
+            (
+                if (message.timestamp == timestamp)
+                    $scope.messages.splice(i, 1)
+                    break
+                i++
+            ) for message in $scope.messages
+            return
+
     fetchInitialMessages = ->
         $http.get('/api/messages')
             .success (messages) ->
@@ -52,7 +64,7 @@ app.controller 'messagesController',  ($scope, $http, $interval) ->
 window.onload = ->
     msgpanel = document.getElementById("msgpanel")
     msgpanel.scrollTop = msgpanel.scrollHeight
-    i = setInterval(scrollToBottom, 10)
+    i = setInterval(scrollToBottom, 100)
 
 updateScrollState = ->
     scrollAtBottom = msgpanel.scrollTop == (msgpanel.scrollHeight - msgpanel.offsetHeight)

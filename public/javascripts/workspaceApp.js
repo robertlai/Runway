@@ -35,6 +35,21 @@ app.controller('messagesController', function($scope, $http, $interval) {
       });
     }
   };
+  $scope.removeComment = function(timestamp) {
+    return $http["delete"]('/api/message?timestamp=' + timestamp).then(function() {
+      var i, j, len, message, ref;
+      i = 0;
+      ref = $scope.messages;
+      for (j = 0, len = ref.length; j < len; j++) {
+        message = ref[j];
+        if (message.timestamp === timestamp) {
+          $scope.messages.splice(i, 1);
+          break;
+        }
+        i++;
+      }
+    });
+  };
   fetchInitialMessages = function() {
     return $http.get('/api/messages').success(function(messages) {
       var j, len, message;
@@ -56,7 +71,7 @@ window.onload = function() {
   var i, msgpanel;
   msgpanel = document.getElementById("msgpanel");
   msgpanel.scrollTop = msgpanel.scrollHeight;
-  return i = setInterval(scrollToBottom, 10);
+  return i = setInterval(scrollToBottom, 100);
 };
 
 updateScrollState = function() {

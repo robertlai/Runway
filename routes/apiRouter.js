@@ -64,6 +64,20 @@ api.get('/message', function(req, res) {
   });
 });
 
+api["delete"]('/message', function(req, res) {
+  var messageTimeStampToDelete;
+  messageTimeStampToDelete = req.query.timestamp;
+  return Message.find({
+    timestamp: messageTimeStampToDelete
+  }).remove(function(err, removedMessage) {
+    if (err) {
+      return res.sendStatus(500);
+    } else {
+      return res.sendStatus(200);
+    }
+  });
+});
+
 api.post('/picture', function(req, res) {
   var fileName, fullFilePath, x, y;
   fileName = (new Date()).getTime();
@@ -151,6 +165,7 @@ api.put('/picture', function(req, res) {
 api["delete"]('/picture', function(req, res) {
   var fileNameToDelete;
   fileNameToDelete = req.query.fileName;
+  console.log('dleeteing: ' + fileNameToDelete);
   return PictureMetadata.find({
     fileName: fileNameToDelete
   }).remove(function(err1, removedPicture) {

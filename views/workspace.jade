@@ -18,9 +18,10 @@ block content
                         div.col-xs-1
                         div.col-xs-1.user {{message.user.substring(0, 1).toUpperCase()}}
                             div.tooltip{{message.user}}
-                        div.col-xs-8.chatMessage
+                        div.col-xs-7.chatMessage
                             span#chat(ng-bind='message.content')
                         button.col-xs-1.btn.btn-primary(type='button' onclick='buttonClicked(this);') +
+                        button.col-xs-1.btn.btn-primary(type='button' ng-if='message.user === username' ng-click='removeComment(message.timestamp)') x
                 div.text-bar
                     form(ng-submit='addComment()')
                         input#messagebox(type='text' ng-model='newComment' placeholder='  Type a message..' autofocus)
