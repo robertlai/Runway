@@ -12,21 +12,25 @@ isLoggedIn = function(req, res, next) {
 module.exports = function(app, passport) {
   app.get('/login', function(req, res) {
     return res.render('login', {
-      title: 'Login'
+      title: 'Login',
+      message: req.flash('loginMessage')
     });
   });
   app.post('/login', passport.authenticate('local-login', {
     successRedirect: '/workspace',
-    failureRedirect: '/login'
+    failureRedirect: '/login',
+    failureFlash: true
   }));
   app.get('/register', function(req, res) {
     return res.render('register', {
-      title: 'Register'
+      title: 'Register',
+      message: req.flash('registerMessage')
     });
   });
   app.post('/register', passport.authenticate('local-register', {
     successRedirect: '/workspace',
-    failureRedirect: '/register'
+    failureRedirect: '/register',
+    failureFlash: true
   }));
   app.get('/workspace', isLoggedIn, function(req, res) {
     return res.render('workspace', {

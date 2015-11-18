@@ -9,19 +9,27 @@ module.exports = (app, passport) ->
 
 
     app.get '/login', (req, res) ->
-        res.render('login', {title: 'Login'})
+        res.render('login', {
+            title: 'Login'
+            message: req.flash('loginMessage')
+        })
 
     app.post '/login', passport.authenticate('local-login',
         successRedirect: '/workspace'
         failureRedirect: '/login'
+        failureFlash : true
     )
 
     app.get '/register', (req, res) ->
-        res.render('register', {title: 'Register'})
+        res.render('register', {
+            title: 'Register'
+            message: req.flash('registerMessage')
+        })
 
     app.post '/register', passport.authenticate('local-register',
         successRedirect: '/workspace'
         failureRedirect: '/register'
+        failureFlash : true
     )
 
     app.get '/workspace', isLoggedIn, (req, res) ->

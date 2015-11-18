@@ -5,6 +5,7 @@ passport = require('passport')
 cookieParser = require('cookie-parser')
 bodyParser = require('body-parser')
 session = require('express-session')
+flash = require('connect-flash')
 
 DB = require('./Utilities/DB')
 
@@ -24,8 +25,8 @@ app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
 
 app.use(logger('dev'))
-app.use(cookieParser());
-app.use(bodyParser());
+app.use(cookieParser())
+app.use(bodyParser())
 
 app.use(express.static(__dirname + '/public'))
 app.use(express.static(__dirname + '/node_modules'))
@@ -34,9 +35,10 @@ app.use(express.static(__dirname + '/node_modules/jquery/dist'))
 app.use(express.static(__dirname + '/node_modules/bootstrap/dist'))
 
 
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch' }));
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(session({ secret: 'ilovescotchscotchyscotchscotch' }))
+app.use(passport.initialize())
+app.use(passport.session())
+app.use(flash())
 
 
 
