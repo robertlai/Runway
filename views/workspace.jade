@@ -16,11 +16,11 @@ block content
                 div.messages-panel#msgpanel(onscroll='updateScrollState()')
                     div.row(ng-repeat='message in messages')
                         div.col-xs-1
-                        div.col-xs-1.user {{message.user}}
-                            div.tooltip(ng-bind='message.user')
+                        div.col-xs-1.user {{message.user.substring(0, 1).toUpperCase()}}
+                            div.tooltip{{message.user}}
                         div.col-xs-8.chatMessage
                             span#chat(ng-bind='message.content')
-                        button.col-xs-1.btn.btn-primary(type="button" onclick="buttonClicked(this);" ) +
+                        button.col-xs-1.btn.btn-primary(type='button' onclick='buttonClicked(this);') +
                 div.text-bar
                     form(ng-submit='addComment()')
-                        input#messagebox(type='text' ng-model='newComment' placeholder='  Type a message..')
+                        input#messagebox(type='text' ng-model='newComment' placeholder='  Type a message..' autofocus)

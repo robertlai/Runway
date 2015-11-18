@@ -29,7 +29,9 @@ module.exports = function(app, passport) {
     failureRedirect: '/register'
   }));
   app.get('/workspace', isLoggedIn, function(req, res) {
-    return res.render('workspace');
+    return res.render('workspace', {
+      username: req.user.local.username
+    });
   });
   app.get('/logout', function(req, res) {
     req.logout();

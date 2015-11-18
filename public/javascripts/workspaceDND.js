@@ -15,7 +15,8 @@ function dataURLtoBlob(dataurl) {
 function uploadText(str,x,y){
     var tCtx = $('<canvas/>')[0].getContext('2d'); //Hidden canvas
     tCtx.font = "20px Arial";
-    tCtx.canvas.width=tCtx.measureText(str).width
+    tCtx.canvas.width=tCtx.measureText(str).width;
+    tCtx.canvas.height=25;
     tCtx.font = "20px Arial";
     tCtx.fillText(str, 0, 20);
     reader.onload=function(arrayBuffer){
@@ -34,7 +35,7 @@ function uploadText(str,x,y){
 
 function buttonClicked(event){
     var lolz=$(event).parent().children().eq(2).children().text()
-    console.log(lolz)
+    // console.log(lolz)
     uploadText(lolz,1,1)
 }
 function queryDropZone(){
@@ -44,7 +45,7 @@ function queryDropZone(){
 $(function(){
     $dropzone=$('#dropzone')
     queryDropZone()
-    console.log(maxx+" "+maxy)
+    // console.log(maxx+" "+maxy)
     function poll(){
         $.ajax({
             url:"/api/pictures",
@@ -53,15 +54,15 @@ $(function(){
                     for(var x=0;x<data.length;x++){
                         var value=data[x]
                         if(value.x==0)value.x=1
-                        if(value.y==0)value.y=1  
+                        if(value.y==0)value.y=1
                         queryDropZone()
                         if(total.indexOf(value.fileName)!=-1){
                             $('#'+value.fileName).offset({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx})
-                            console.log({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx})
+                            // console.log({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx})
                         }
                         else{
                             total.push(value.fileName)
-                            console.log({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx})
+                            // console.log({top:(value.y/100.0)*maxy,left:(value.x/100.0)*maxx})
                             $('<img/>', {
                             src: "/api/picture?fileToGet="+value.fileName
                             //style: "position:r;"
@@ -73,12 +74,12 @@ $(function(){
                                         method:"PUT",
                                         url:"/api/picture?fileName="+$(this).attr('id')+"&x="+ui.offset.left*100.0/maxx+"&y="+ui.offset.top*100.0/maxy
                                     })
-                                    console.log("&x="+ui.offset.left*100.0/maxx+"&y="+ui.offset.left*100.0/maxy)
+                                    // console.log("&x="+ui.offset.left*100.0/maxx+"&y="+ui.offset.left*100.0/maxy)
                                 }
                             }).on('resize',function(){
                                 var width=$(this).outerWidth();
                                 var height=$(this).outerHeight();
-                                console.log(width+" "+height)
+                                // console.log(width+" "+height)
                             });
                         }
                     }

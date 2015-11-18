@@ -29,9 +29,9 @@ app.controller('messagesController', function($scope, $http, $interval) {
   };
   $scope.addComment = function() {
     if ($scope.newComment.trim().length > 0) {
-      return $http.post('/api/message?user=' + $scope.username.substring(0, 1).toUpperCase() + '&content=' + $scope.newComment).then(function() {
-        $scope.newComment = '';
-        return $scope.newCommentNotValide = false;
+      $scope.newCommentNotValide = false;
+      return $http.post('/api/message?user=' + $scope.username + '&content=' + $scope.newComment).then(function() {
+        return $scope.newComment = '';
       });
     }
   };

@@ -9,7 +9,7 @@ bcrypt = require('bcrypt-nodejs');
 
 userSchema = mongoose.Schema({
   local: {
-    email: String,
+    username: String,
     password: String
   }
 });
@@ -34,13 +34,13 @@ module.exports = function(passport) {
     });
   });
   passport.use('local-register', new LocalStrategy({
-    usernameField: 'email',
+    usernameField: 'username',
     passwordField: 'password',
     passReqToCallback: true
-  }, function(req, email, password, done) {
+  }, function(req, username, password, done) {
     return process.nextTick(function() {
       return User.findOne({
-        'local.email': email
+        'local.username': username
       }, function(err, user) {
         var newUser;
         if (err) {
@@ -50,7 +50,7 @@ module.exports = function(passport) {
           return done(null, false);
         } else {
           newUser = new User;
-          newUser.local.email = email;
+          newUser.local.username = username;
           newUser.local.password = newUser.generateHash(password);
           return newUser.save(function(err) {
             if (err) {
@@ -63,12 +63,12 @@ module.exports = function(passport) {
     });
   }));
   return passport.use('local-login', new LocalStrategy({
-    usernameField: 'email',
+    usernameField: 'username',
     passwordField: 'password',
     passReqToCallback: true
-  }, function(req, email, password, done) {
+  }, function(req, username, password, done) {
     return User.findOne({
-      'local.email': email
+      'local.username': username
     }, function(err, user) {
       if (err) {
         return done(err);

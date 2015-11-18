@@ -4,7 +4,7 @@ bcrypt = require('bcrypt-nodejs')
 
 userSchema = mongoose.Schema({
     local: {
-        email: String
+        username: String
         password: String
     }
 })
@@ -28,19 +28,19 @@ module.exports = (passport) ->
 
 
     passport.use 'local-register', new LocalStrategy({
-        usernameField: 'email'
+        usernameField: 'username'
         passwordField: 'password'
         passReqToCallback: true
-    }, (req, email, password, done) ->
+    }, (req, username, password, done) ->
         process.nextTick ->
-            User.findOne { 'local.email': email }, (err, user) ->
+            User.findOne { 'local.username': username }, (err, user) ->
                 if err
                     return done(err)
                 if user
                     return done(null, false)
                 else
                     newUser = new User
-                    newUser.local.email = email
+                    newUser.local.username = username
                     newUser.local.password = newUser.generateHash(password)
                     newUser.save (err) ->
                         if err
@@ -49,11 +49,11 @@ module.exports = (passport) ->
     )
 
     passport.use 'local-login', new LocalStrategy({
-        usernameField: 'email'
+        usernameField: 'username'
         passwordField: 'password'
         passReqToCallback: true
-    }, (req, email, password, done) ->
-        User.findOne { 'local.email': email }, (err, user) ->
+    }, (req, username, password, done) ->
+        User.findOne { 'local.username': username }, (err, user) ->
             if err
                 return done(err)
             if !user

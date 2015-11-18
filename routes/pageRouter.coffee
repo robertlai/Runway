@@ -25,7 +25,7 @@ module.exports = (app, passport) ->
     )
 
     app.get '/workspace', isLoggedIn, (req, res) ->
-        res.render('workspace')
+        res.render('workspace', {username: req.user.local.username})
 
     app.get '/logout', (req, res) ->
         req.logout()
