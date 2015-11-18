@@ -13,6 +13,13 @@
     "jquery": "^2.1.4",
     "jquery-ui-bundle": "^1.11.4",
     "mongoose": "^4.1.7",
-    "morgan": "~1.6.1"
+    "morgan": "~1.6.1",
+    "passport" : "~0.1.17",
+    "passport-local" : "~0.1.6",
+    "bcrypt-nodejs" : "latest",
+    "body-parser": "~1.0.0",
+    "cookie-parser": "~1.0.0",
+    "method-override": "~1.0.0",
+    "express-session": "~1.0.0"
   }
 }

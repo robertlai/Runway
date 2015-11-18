@@ -1,12 +1,35 @@
-express = require('express')
-pageRouter = express.Router()
+
+isLoggedIn = (req, res, next) ->
+    if req.isAuthenticated()
+        next()
+    else
+        res.redirect '/login'
+
+module.exports = (app, passport) ->
 
 
-pageRouter.get '/workspace',(req, res, next)->
-    res.render('workspace', title:'Workspace', username: req.query.username)
+    app.get '/login', (req, res) ->
+        res.render('login', {title: 'Login'})
 
-pageRouter.get '*', (req, res, next) ->
-    res.render('index', title: "Login")
+    app.post '/login', passport.authenticate('local-login',
+        successRedirect: '/workspace'
+        failureRedirect: '/login'
+    )
 
+    app.get '/register', (req, res) ->
+        res.render('register', {title: 'Register'})
 
-module.exports = pageRouter
+    app.post '/register', passport.authenticate('local-register',
+        successRedirect: '/workspace'
+        failureRedirect: '/register'
+    )
+
+    app.get '/workspace', isLoggedIn, (req, res) ->
+        res.render('workspace')
+
+    app.get '/logout', (req, res) ->
+        req.logout()
+        res.redirect '/login'
+
+    app.get '*', (req, res) ->
+        res.redirect '/login'

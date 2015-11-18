@@ -1,0 +1,18 @@
+extends layout
+
+block content
+    script(type='text/javascript' src='/javascripts/authApp.js')
+    div.login-form(ng-app="authApp")
+        div(ng-controller="authController")
+            H1= title
+            form.form-auth(action="/login" method="post")
+                div.form-group
+                    label(for="exampleInputEmail1" ) Username
+                    input.form-control#exampleInputEmail1(type="text" name="email" placeholder="Username" autofocus)
+                div.form-group
+                    label(for="exampleInputPassword1" ) Password
+                    input.form-control#exampleInputPassword1(type="password" name="password" placeholder="Password")
+                div.form-group
+                    p.col-xs-7 Need an account?
+                        a(href="register")  Signup
+                    input.btn.btn-primary.col-xs-4#signin(type="submit" value="Sign In")
