@@ -15,12 +15,13 @@ module.exports = (app, passport) ->
     io = app.io
 
     io.on 'connection', (socket) ->
-        Message.find({}).sort('timestamp').exec (err, messages) ->
-            if !err
-                socket.emit('initialMessages', messages)
 
+        socket.on 'getInitialMessages', ->
+            Message.find({}).sort('timestamp').exec (err, messages) ->
+                if !err
+                    socket.emit('initialMessages', messages)
 
-        socket.on 'newMessage', (data) ->
+        socket.on 'postNewMessage', (data) ->
             newMessage = new Message {
                 timestamp: (new Date()).getTime()
                 user: data.user
@@ -30,10 +31,24 @@ module.exports = (app, passport) ->
                 if !err
                     io.emit('newMessage', message)
 
-        socket.on 'removeMessage', (timestamp) ->
+        socket.on 'postRemoveMessage', (timestamp) ->
             Message.find({timestamp: timestamp}).remove (err, removedMessage) ->
                 if !err
                     io.emit('removeMessage', timestamp)
+
+
+        socket.on 'getInitialPictures', ->
+            PictureMetadata.find({}).sort('fileName').exec (err, picturesInfo) ->
+                if !err
+                    socket.emit('initialPictures', picturesInfo)
+
+        socket.on 'updatePictureLocation', (fileName, newX, newY) ->
+            PictureMetadata.findOne {fileName: fileName}, (err, picture) ->
+                if !err
+                    picture.x = newX
+                    picture.y = newY
+                    picture.save();
+                    io.emit('updatePicture', picture);
 
 
     app.post '/api/picture', isLoggedIn, (req, res) ->
@@ -61,15 +76,14 @@ module.exports = (app, passport) ->
                             res.sendStatus(500)
                         else
                             res.sendStatus(201)
+                            pictureInfo = {
+                                fileName: fileName
+                                x: x
+                                y: y
+                            }
+                            io.emit('newPicture', pictureInfo)
             .then ->
                 fs.unlinkSync(fullFilePath)
-
-    app.get '/api/pictures', isLoggedIn, (req, res) ->
-        PictureMetadata.find({}).sort('fileName').exec (err, picturesInfo) ->
-            if err
-                res.sendStatus(500)
-            else
-                res.json(picturesInfo)
 
     app.get '/api/picture', isLoggedIn, (req, res) ->
         PictureFile.find({}).sort('fileName').exec (err, files) ->
@@ -85,15 +99,6 @@ module.exports = (app, passport) ->
                 ) for file in files
                 res.sendStatus(500)
 
-    app.put '/api/picture', isLoggedIn, (req, res) ->
-        PictureMetadata.findOne {fileName: req.query.fileName}, (err, picture) ->
-            if err
-                res.sendStatus(500)
-            else
-                picture.x = req.query.x
-                picture.y = req.query.y
-                picture.save();
-                res.sendStatus(200)
 
     app.delete '/api/picture', isLoggedIn, (req, res) ->
         fileNameToDelete = req.query.fileName

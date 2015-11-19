@@ -5,18 +5,18 @@ app = angular.module('workspaceApp', []);
 
 scrollAtBottom = true;
 
-app.controller('workspaceController', function($scope) {});
-
-app.controller('messagesController', function($scope, $http) {
-  var socket;
+app.controller('workspaceController', function($scope, $http) {
+  var $dropzone, addPicture, allPicturesInfo, dataURLtoBlob, drop, maxx, maxy, mousex, mousey, queryDropZone, reader, socket;
   socket = io();
   socket.on('initialMessages', function(messages) {
     $scope.messages = messages;
-    return $scope.$apply();
+    $scope.$apply();
+    return scrollToBottom();
   });
   socket.on('newMessage', function(message) {
     $scope.messages.push(message);
-    return $scope.$apply();
+    $scope.$apply();
+    return scrollToBottom();
   });
   socket.on('removeMessage', function(timestamp) {
     var i, j, len, message, ref;
@@ -32,6 +32,145 @@ app.controller('messagesController', function($scope, $http) {
     }
     return $scope.$apply();
   });
+  socket.on('initialPictures', function(pictureInfos) {
+    var j, len, pictureInfo;
+    for (j = 0, len = pictureInfos.length; j < len; j++) {
+      pictureInfo = pictureInfos[j];
+      addPicture(pictureInfo);
+    }
+    return $scope.$apply();
+  });
+  socket.on('updatePicture', function(pictureInfo) {
+    if (pictureInfo.x === 0) {
+      pictureInfo.x = 1;
+    }
+    if (pictureInfo.y === 0) {
+      pictureInfo.y = 1;
+    }
+    return $('#' + pictureInfo.fileName).offset({
+      top: pictureInfo.y / 100.0 * maxy,
+      left: pictureInfo.x / 100.0 * maxx
+    });
+  });
+  socket.on('newPicture', function(pictureInfo) {
+    return addPicture(pictureInfo);
+  });
+  socket.emit('getInitialMessages');
+  socket.emit('getInitialPictures');
+  reader = new FileReader;
+  $dropzone = void 0;
+  maxx = void 0;
+  maxy = void 0;
+  mousex = void 0;
+  mousey = void 0;
+  allPicturesInfo = [];
+  dataURLtoBlob = function(dataurl) {
+    var arr, bstr, mime, n, u8arr;
+    arr = dataurl.split(',');
+    mime = arr[0].match(/:(.*?);/)[1];
+    bstr = atob(arr[1]);
+    n = bstr.length;
+    u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], {
+      type: mime
+    });
+  };
+  $scope.buttonClicked = function(str) {
+    var tCtx;
+    tCtx = $('<canvas/>')[0].getContext('2d');
+    tCtx.font = '20px Arial';
+    tCtx.canvas.width = tCtx.measureText(str).width;
+    tCtx.canvas.height = 25;
+    tCtx.font = '20px Arial';
+    tCtx.fillText(str, 0, 20);
+    reader.onload = function(arrayBuffer) {
+      queryDropZone();
+      return $.ajax({
+        method: 'POST',
+        url: '/api/picture?x=1&y=1',
+        data: arrayBuffer.target.result,
+        processData: false,
+        contentType: 'application/binary'
+      });
+    };
+    return reader.readAsArrayBuffer(dataURLtoBlob(tCtx.canvas.toDataURL()));
+  };
+  queryDropZone = function() {
+    maxy = $dropzone.outerHeight();
+    return maxx = $dropzone.outerWidth();
+  };
+  addPicture = function(pictureInfo) {
+    if (pictureInfo.x === 0) {
+      pictureInfo.x = 1;
+    }
+    if (pictureInfo.y === 0) {
+      pictureInfo.y = 1;
+    }
+    queryDropZone();
+    allPicturesInfo.push(pictureInfo.fileName);
+    return $('<img/>', {
+      src: '/api/picture?fileToGet=' + pictureInfo.fileName
+    }).appendTo($dropzone).wrap('<div id=' + pictureInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset({
+      top: pictureInfo.y / 100.0 * maxy,
+      left: pictureInfo.x / 100.0 * maxx
+    }).draggable({
+      containment: 'parent',
+      cursor: 'move',
+      stop: function(event, ui) {
+        return socket.emit('updatePictureLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx, ui.offset.top * 100.0 / maxy);
+      }
+    }).on('resize', function() {
+      var height, width;
+      width = $(this).outerWidth();
+      return height = $(this).outerHeight();
+    });
+  };
+  drop = function(e, hover) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (hover) {
+      $(e.target).addClass('hover');
+      return $('#dndText').text('Drop to upload');
+    } else {
+      $(e.target).removeClass('hover');
+      return $('#dndText').text('Drag and drop files here');
+    }
+  };
+  $dropzone = $('#dropzone');
+  queryDropZone();
+  $(document).on('mousemove', function(e) {
+    mousex = e.pageX;
+    return mousey = e.pageY;
+  });
+  $dropzone.on('dragover', function(e) {
+    return drop(e, true);
+  });
+  $dropzone.on('dragleave', function(e) {
+    return drop(e, false);
+  });
+  $dropzone.on('drop', function(e) {
+    var f;
+    drop(e, false);
+    if (e.originalEvent.dataTransfer) {
+      if (e.originalEvent.dataTransfer.files.length) {
+        f = e.originalEvent.dataTransfer.files[0];
+        reader.onload = function(arrayBuffer) {
+          queryDropZone();
+          return $.ajax({
+            method: 'POST',
+            url: '/api/picture?x=' + mousex * 100.0 / maxx + '&y=' + mousey * 100.0 / maxy,
+            data: arrayBuffer.target.result,
+            processData: false,
+            contentType: 'application/binary'
+          });
+        };
+        return reader.readAsArrayBuffer(f);
+      }
+    }
+  });
   $scope.chatVisible = true;
   $scope.newMessageNotValide = false;
   $scope.messages = [];
@@ -43,12 +182,12 @@ app.controller('messagesController', function($scope, $http) {
         content: $scope.newMessage,
         user: $scope.username
       };
-      socket.emit('newMessage', message);
+      socket.emit('postNewMessage', message);
       return $scope.newMessage = '';
     }
   };
   $scope.removeMessage = function(timestamp) {
-    return socket.emit('removeMessage', timestamp);
+    return socket.emit('postRemoveMessage', timestamp);
   };
   $scope.hideChat = function() {
     $scope.chatVisible = false;
@@ -61,10 +200,9 @@ app.controller('messagesController', function($scope, $http) {
 });
 
 window.onload = function() {
-  var i, msgpanel;
+  var msgpanel;
   msgpanel = document.getElementById("msgpanel");
-  msgpanel.scrollTop = msgpanel.scrollHeight;
-  return i = setInterval(scrollToBottom, 100);
+  return msgpanel.scrollTop = msgpanel.scrollHeight;
 };
 
 updateScrollState = function() {

@@ -21,12 +21,14 @@ module.exports = function(app, passport) {
   var io;
   io = app.io;
   io.on('connection', function(socket) {
-    Message.find({}).sort('timestamp').exec(function(err, messages) {
-      if (!err) {
-        return socket.emit('initialMessages', messages);
-      }
+    socket.on('getInitialMessages', function() {
+      return Message.find({}).sort('timestamp').exec(function(err, messages) {
+        if (!err) {
+          return socket.emit('initialMessages', messages);
+        }
+      });
     });
-    socket.on('newMessage', function(data) {
+    socket.on('postNewMessage', function(data) {
       var newMessage;
       newMessage = new Message({
         timestamp: (new Date()).getTime(),
@@ -39,12 +41,31 @@ module.exports = function(app, passport) {
         }
       });
     });
-    return socket.on('removeMessage', function(timestamp) {
+    socket.on('postRemoveMessage', function(timestamp) {
       return Message.find({
         timestamp: timestamp
       }).remove(function(err, removedMessage) {
         if (!err) {
           return io.emit('removeMessage', timestamp);
+        }
+      });
+    });
+    socket.on('getInitialPictures', function() {
+      return PictureMetadata.find({}).sort('fileName').exec(function(err, picturesInfo) {
+        if (!err) {
+          return socket.emit('initialPictures', picturesInfo);
+        }
+      });
+    });
+    return socket.on('updatePictureLocation', function(fileName, newX, newY) {
+      return PictureMetadata.findOne({
+        fileName: fileName
+      }, function(err, picture) {
+        if (!err) {
+          picture.x = newX;
+          picture.y = newY;
+          picture.save();
+          return io.emit('updatePicture', picture);
         }
       });
     });
@@ -71,25 +92,23 @@ module.exports = function(app, passport) {
           return res.sendStatus(500);
         } else {
           return picture.save(function(err2, picture) {
+            var pictureInfo;
             if (err2) {
               return res.sendStatus(500);
             } else {
-              return res.sendStatus(201);
+              res.sendStatus(201);
+              pictureInfo = {
+                fileName: fileName,
+                x: x,
+                y: y
+              };
+              return io.emit('newPicture', pictureInfo);
             }
           });
         }
       }).then(function() {
         return fs.unlinkSync(fullFilePath);
       });
-    });
-  });
-  app.get('/api/pictures', isLoggedIn, function(req, res) {
-    return PictureMetadata.find({}).sort('fileName').exec(function(err, picturesInfo) {
-      if (err) {
-        return res.sendStatus(500);
-      } else {
-        return res.json(picturesInfo);
-      }
     });
   });
   app.get('/api/picture', isLoggedIn, function(req, res) {
@@ -112,20 +131,6 @@ module.exports = function(app, passport) {
           }
         }
         return res.sendStatus(500);
-      }
-    });
-  });
-  app.put('/api/picture', isLoggedIn, function(req, res) {
-    return PictureMetadata.findOne({
-      fileName: req.query.fileName
-    }, function(err, picture) {
-      if (err) {
-        return res.sendStatus(500);
-      } else {
-        picture.x = req.query.x;
-        picture.y = req.query.y;
-        picture.save();
-        return res.sendStatus(200);
       }
     });
   });
