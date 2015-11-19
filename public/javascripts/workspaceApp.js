@@ -7,64 +7,57 @@ scrollAtBottom = true;
 
 app.controller('workspaceController', function($scope) {});
 
-app.controller('messagesController', function($scope, $http, $interval) {
-  var fetchInitialMessages, fetchNewMessages, lastMessageId;
+app.controller('messagesController', function($scope, $http) {
+  var socket;
+  socket = io();
+  socket.on('initialMessages', function(messages) {
+    $scope.messages = messages;
+    return $scope.$apply();
+  });
+  socket.on('newMessage', function(message) {
+    $scope.messages.push(message);
+    return $scope.$apply();
+  });
+  socket.on('removeMessage', function(timestamp) {
+    var i, j, len, message, ref;
+    i = 0;
+    ref = $scope.messages;
+    for (j = 0, len = ref.length; j < len; j++) {
+      message = ref[j];
+      if (message.timestamp === timestamp) {
+        $scope.messages.splice(i, 1);
+        break;
+      }
+      i++;
+    }
+    return $scope.$apply();
+  });
   $scope.chatVisible = true;
-  $scope.newCommentNotValide = false;
-  lastMessageId = -1;
+  $scope.newMessageNotValide = false;
   $scope.messages = [];
-  fetchNewMessages = function() {
-    return $http.get('/api/message?lastMessageId=' + lastMessageId).success(function(message) {
-      lastMessageId = message.timestamp;
-      return $scope.messages.push(message);
-    });
+  $scope.sendMessage = function() {
+    var message;
+    if ($scope.newMessage.trim().length > 0) {
+      $scope.newMessageNotValide = false;
+      message = {
+        content: $scope.newMessage,
+        user: $scope.username
+      };
+      socket.emit('newMessage', message);
+      return $scope.newMessage = '';
+    }
+  };
+  $scope.removeMessage = function(timestamp) {
+    return socket.emit('removeMessage', timestamp);
   };
   $scope.hideChat = function() {
     $scope.chatVisible = false;
     return document.getElementById('dropzone').style.width = '100%';
   };
-  $scope.showChat = function() {
+  return $scope.showChat = function() {
     $scope.chatVisible = true;
     return document.getElementById('dropzone').style.width = '75%';
   };
-  $scope.addComment = function() {
-    if ($scope.newComment.trim().length > 0) {
-      $scope.newCommentNotValide = false;
-      return $http.post('/api/message?user=' + $scope.username + '&content=' + $scope.newComment).then(function() {
-        return $scope.newComment = '';
-      });
-    }
-  };
-  $scope.removeComment = function(timestamp) {
-    return $http["delete"]('/api/message?timestamp=' + timestamp).then(function() {
-      var i, j, len, message, ref;
-      i = 0;
-      ref = $scope.messages;
-      for (j = 0, len = ref.length; j < len; j++) {
-        message = ref[j];
-        if (message.timestamp === timestamp) {
-          $scope.messages.splice(i, 1);
-          break;
-        }
-        i++;
-      }
-    });
-  };
-  fetchInitialMessages = function() {
-    return $http.get('/api/messages').success(function(messages) {
-      var j, len, message;
-      for (j = 0, len = messages.length; j < len; j++) {
-        message = messages[j];
-        if (message.timestamp > lastMessageId) {
-          lastMessageId = message.timestamp;
-        }
-      }
-      return $scope.messages = messages;
-    });
-  };
-  return fetchInitialMessages().then(function() {
-    return $interval(fetchNewMessages, 500);
-  });
 });
 
 window.onload = function() {

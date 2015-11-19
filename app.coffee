@@ -1,6 +1,9 @@
 express = require('express')
+app = express()
+http = require('http').Server(app)
+app.io = require('socket.io')(http)
+
 logger = require('morgan')
-http = require('http')
 passport = require('passport')
 cookieParser = require('cookie-parser')
 bodyParser = require('body-parser')
@@ -12,14 +15,9 @@ DB = require('./Utilities/DB')
 require('./passport')(passport)
 
 
-apiRouter = require('./routes/apiRouter')
-pageRouter = require('./routes/pageRouter')
-
-
 port = (process.env.PORT || 3000)
 
 
-app = express()
 
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
@@ -33,6 +31,7 @@ app.use(express.static(__dirname + '/node_modules'))
 app.use(express.static(__dirname + '/node_modules/angular'))
 app.use(express.static(__dirname + '/node_modules/jquery/dist'))
 app.use(express.static(__dirname + '/node_modules/bootstrap/dist'))
+app.use(express.static(__dirname + '/node_modules/socket.io/node_modules/socket.io-client'))
 
 
 app.use(session({ secret: 'ilovescotchscotchyscotchscotch' }))
@@ -41,11 +40,10 @@ app.use(passport.session())
 app.use(flash())
 
 
-
-app.use('/api', apiRouter)
+require('./routes/apiRouter')(app, passport)
 require('./routes/pageRouter')(app, passport)
-# app.use('/', pageRouter)
+
 
 app.set('port', port)
-server = http.createServer(app)
-server.listen(port)
+
+http.listen(port)

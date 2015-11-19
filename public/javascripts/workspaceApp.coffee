@@ -4,23 +4,49 @@ scrollAtBottom = true
 
 app.controller 'workspaceController', ($scope) ->
 
-app.controller 'messagesController',  ($scope, $http, $interval) ->
+app.controller 'messagesController',  ($scope, $http) ->
+
+    socket = io();
+
+    socket.on 'initialMessages', (messages) ->
+        $scope.messages = messages
+        $scope.$apply()
+
+    socket.on 'newMessage', (message) ->
+        $scope.messages.push(message)
+        $scope.$apply()
+
+    socket.on 'removeMessage', (timestamp) ->
+        i = 0
+        (
+            if (message.timestamp == timestamp)
+                $scope.messages.splice(i, 1)
+                break
+            i++
+        ) for message in $scope.messages
+        $scope.$apply()
+
 
 
     $scope.chatVisible = true
-    $scope.newCommentNotValide = false
-
-    lastMessageId = -1
+    $scope.newMessageNotValide = false
 
     $scope.messages = []
 
 
+    $scope.sendMessage = ->
+        if $scope.newMessage.trim().length > 0
+            $scope.newMessageNotValide = false
+            message = {
+                content: $scope.newMessage
+                user: $scope.username
+            }
+            socket.emit('newMessage', message)
+            $scope.newMessage = ''
 
-    fetchNewMessages = ->
-        $http.get('/api/message?lastMessageId=' + lastMessageId)
-            .success (message) ->
-                lastMessageId = message.timestamp
-                $scope.messages.push(message)
+    $scope.removeMessage = (timestamp) ->
+        socket.emit('removeMessage', timestamp)
+
 
     $scope.hideChat = ->
         $scope.chatVisible = false
@@ -30,36 +56,7 @@ app.controller 'messagesController',  ($scope, $http, $interval) ->
         $scope.chatVisible = true
         document.getElementById('dropzone').style.width = '75%'
 
-    $scope.addComment = ->
-        if $scope.newComment.trim().length > 0
-            $scope.newCommentNotValide = false
-            $http.post('/api/message?user=' + $scope.username + '&content=' + $scope.newComment).then ->
-                $scope.newComment = ''
 
-
-    $scope.removeComment = (timestamp) ->
-        $http.delete('/api/message?timestamp=' + timestamp).then ->
-            i = 0
-            (
-                if (message.timestamp == timestamp)
-                    $scope.messages.splice(i, 1)
-                    break
-                i++
-            ) for message in $scope.messages
-            return
-
-    fetchInitialMessages = ->
-        $http.get('/api/messages')
-            .success (messages) ->
-                (
-                    if message.timestamp > lastMessageId
-                        lastMessageId = message.timestamp
-                ) for message in messages
-
-                $scope.messages = messages
-
-    fetchInitialMessages().then ->
-        $interval(fetchNewMessages, 500)
 
 window.onload = ->
     msgpanel = document.getElementById("msgpanel")
@@ -72,5 +69,3 @@ updateScrollState = ->
 scrollToBottom = ->
     if scrollAtBottom
         msgpanel.scrollTop = msgpanel.scrollHeight
-
-

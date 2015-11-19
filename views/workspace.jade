@@ -2,6 +2,7 @@ extends layout
 block scripts
     script(type='text/javascript' src='/javascripts/workspaceApp.js')
     script(type='text/javascript' src='/javascripts/workspaceDND.js')
+    script(type='text/javascript' src='/socket.io.js')
     link(rel='stylesheet' href='/stylesheets/workspace.css')
 
 block content
@@ -14,14 +15,14 @@ block content
                 div.users-bar
                     input#hide-btn(type='button' value='Hide' ng-click='hideChat()')
                 div.messages-panel#msgpanel(onscroll='updateScrollState()')
-                    div.row(ng-repeat='message in messages')
+                    div.row(ng-repeat='message in messages track by $index')
                         div.col-xs-1
                         div.col-xs-1.user {{message.user.substring(0, 1).toUpperCase()}}
-                            div.tooltip{{message.user}}
+                            div.tooltip {{message.user}}
                         div.col-xs-7.chatMessage
                             span#chat(ng-bind='message.content')
                         button.col-xs-1.btn.btn-primary(type='button' onclick='buttonClicked(this);') +
-                        button.col-xs-1.btn.btn-primary(type='button' ng-if='message.user === username' ng-click='removeComment(message.timestamp)') x
+                        button.col-xs-1.btn.btn-primary(type='button' ng-if='message.user === username' ng-click='removeMessage(message.timestamp)') x
                 div.text-bar
-                    form(ng-submit='addComment()')
-                        input#messagebox(type='text' ng-model='newComment' placeholder='  Type a message..' autofocus)
+                    form(ng-submit='sendMessage()')
+                        input#messagebox(type='text' ng-model='newMessage' placeholder='  Type a message..' autofocus)
