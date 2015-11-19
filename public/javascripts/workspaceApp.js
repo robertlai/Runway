@@ -6,7 +6,7 @@ app = angular.module('workspaceApp', []);
 scrollAtBottom = true;
 
 app.controller('workspaceController', function($scope, $http) {
-  var $dropzone, addPicture, allPicturesInfo, dataURLtoBlob, drop, maxx, maxy, mousex, mousey, reader, socket;
+  var $dropzone, addPicture, dataURLtoBlob, drop, maxx, maxy, reader, socket;
   maxx = function() {
     return $dropzone.outerWidth();
   };
@@ -45,12 +45,6 @@ app.controller('workspaceController', function($scope, $http) {
     return $scope.$apply();
   });
   socket.on('updatePicture', function(pictureInfo) {
-    if (pictureInfo.x === 0) {
-      pictureInfo.x = 1;
-    }
-    if (pictureInfo.y === 0) {
-      pictureInfo.y = 1;
-    }
     return $('#' + pictureInfo.fileName).offset({
       top: pictureInfo.y / 100.0 * maxy(),
       left: pictureInfo.x / 100.0 * maxx()
@@ -63,9 +57,6 @@ app.controller('workspaceController', function($scope, $http) {
   socket.emit('getInitialPictures');
   reader = new FileReader;
   $dropzone = $('#dropzone');
-  mousex = void 0;
-  mousey = void 0;
-  allPicturesInfo = [];
   dataURLtoBlob = function(dataurl) {
     var arr, bstr, mime, n, u8arr;
     arr = dataurl.split(',');
@@ -100,13 +91,6 @@ app.controller('workspaceController', function($scope, $http) {
     return reader.readAsArrayBuffer(dataURLtoBlob(tCtx.canvas.toDataURL()));
   };
   addPicture = function(pictureInfo) {
-    if (pictureInfo.x === 0) {
-      pictureInfo.x = 1;
-    }
-    if (pictureInfo.y === 0) {
-      pictureInfo.y = 1;
-    }
-    allPicturesInfo.push(pictureInfo.fileName);
     return $('<img/>', {
       src: '/api/picture?fileToGet=' + pictureInfo.fileName
     }).appendTo($dropzone).wrap('<div id=' + pictureInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset({
@@ -135,10 +119,6 @@ app.controller('workspaceController', function($scope, $http) {
       return $('#dndText').text('Drag and drop files here');
     }
   };
-  $(document).on('mousemove', function(e) {
-    mousex = e.pageX;
-    return mousey = e.pageY;
-  });
   $dropzone.on('dragover', function(e) {
     return drop(e, true);
   });
@@ -147,6 +127,8 @@ app.controller('workspaceController', function($scope, $http) {
   });
   $dropzone.on('drop', function(e) {
     var f;
+    console.log(e.originalEvent.offsetX);
+    console.log(e.originalEvent.offsetY);
     drop(e, false);
     if (e.originalEvent.dataTransfer) {
       if (e.originalEvent.dataTransfer.files.length) {
@@ -154,7 +136,7 @@ app.controller('workspaceController', function($scope, $http) {
         reader.onload = function(arrayBuffer) {
           return $.ajax({
             method: 'POST',
-            url: '/api/picture?x=' + mousex * 100.0 / maxx() + '&y=' + mousey * 100.0 / maxy(),
+            url: '/api/picture?x=' + e.originalEvent.offsetX * 100.0 / maxx() + '&y=' + e.originalEvent.offsetY * 100.0 / maxy(),
             data: arrayBuffer.target.result,
             processData: false,
             contentType: 'application/binary'

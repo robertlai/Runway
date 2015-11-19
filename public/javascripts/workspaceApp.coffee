@@ -33,8 +33,6 @@ app.controller 'workspaceController', ($scope, $http) ->
         $scope.$apply()
 
     socket.on 'updatePicture', (pictureInfo) ->
-        pictureInfo.x = 1 if pictureInfo.x == 0
-        pictureInfo.y = 1 if pictureInfo.y == 0
         $('#' + pictureInfo.fileName).offset ({
             top: pictureInfo.y / 100.0 * maxy()
             left: pictureInfo.x / 100.0 * maxx()
@@ -49,9 +47,6 @@ app.controller 'workspaceController', ($scope, $http) ->
     # raw js
     reader = new FileReader
     $dropzone = $('#dropzone')
-    mousex = undefined
-    mousey = undefined
-    allPicturesInfo = []
 
     dataURLtoBlob = (dataurl) ->
         arr = dataurl.split(',')
@@ -84,11 +79,6 @@ app.controller 'workspaceController', ($scope, $http) ->
         reader.readAsArrayBuffer(dataURLtoBlob(tCtx.canvas.toDataURL()))
 
     addPicture = (pictureInfo) ->
-        if pictureInfo.x == 0
-            pictureInfo.x = 1
-        if pictureInfo.y == 0
-            pictureInfo.y = 1
-        allPicturesInfo.push pictureInfo.fileName
         $('<img/>', src: '/api/picture?fileToGet=' + pictureInfo.fileName).appendTo($dropzone).wrap('<div id=' + pictureInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset(
             top: pictureInfo.y / 100.0 * maxy()
             left: pictureInfo.x / 100.0 * maxx()).draggable(
@@ -111,10 +101,6 @@ app.controller 'workspaceController', ($scope, $http) ->
             $('#dndText').text('Drag and drop files here')
 
 
-    $(document).on 'mousemove', (e) ->
-        mousex = e.pageX
-        mousey = e.pageY
-
     $dropzone.on 'dragover', (e) ->
         drop(e, true)
 
@@ -122,6 +108,8 @@ app.controller 'workspaceController', ($scope, $http) ->
         drop(e, false)
 
     $dropzone.on 'drop', (e) ->
+        console.log e.originalEvent.offsetX
+        console.log e.originalEvent.offsetY
         drop(e, false)
         if e.originalEvent.dataTransfer
             if e.originalEvent.dataTransfer.files.length
@@ -129,7 +117,7 @@ app.controller 'workspaceController', ($scope, $http) ->
                 reader.onload = (arrayBuffer) ->
                     $.ajax ({
                         method: 'POST'
-                        url: '/api/picture?x=' + mousex * 100.0 / maxx() + '&y=' + mousey * 100.0 / maxy()
+                        url: '/api/picture?x=' + e.originalEvent.offsetX * 100.0 / maxx() + '&y=' + e.originalEvent.offsetY * 100.0 / maxy()
                         data: arrayBuffer.target.result
                         processData: false
                         contentType: 'application/binary'
