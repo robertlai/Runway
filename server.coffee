@@ -34,6 +34,7 @@ app.use(express.static(__dirname + '/node_modules/bootstrap/dist'))
 app.use(express.static(__dirname + '/node_modules/socket.io/node_modules/socket.io-client'))
 
 
+
 app.use(session({ secret: 'ilovescotchscotchyscotchscotch' }))
 app.use(passport.initialize())
 app.use(passport.session())

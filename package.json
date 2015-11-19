@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./server"
+    "start": "node ./server.js"
+  },
+  "engines":{
+    "node":"0.12.7"
   },
   "dependencies": {
     "angular": "^1.4.7",
