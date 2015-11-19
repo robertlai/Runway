@@ -127,8 +127,6 @@ app.controller('workspaceController', function($scope, $http) {
   });
   $dropzone.on('drop', function(e) {
     var f;
-    console.log(e.originalEvent.offsetX);
-    console.log(e.originalEvent.offsetY);
     drop(e, false);
     if (e.originalEvent.dataTransfer) {
       if (e.originalEvent.dataTransfer.files.length) {
