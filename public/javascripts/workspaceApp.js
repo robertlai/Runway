@@ -6,7 +6,13 @@ app = angular.module('workspaceApp', []);
 scrollAtBottom = true;
 
 app.controller('workspaceController', function($scope, $http) {
-  var $dropzone, addPicture, allPicturesInfo, dataURLtoBlob, drop, maxx, maxy, mousex, mousey, queryDropZone, reader, socket;
+  var $dropzone, addPicture, allPicturesInfo, dataURLtoBlob, drop, maxx, maxy, mousex, mousey, reader, socket;
+  maxx = function() {
+    return $dropzone.outerWidth();
+  };
+  maxy = function() {
+    return $dropzone.outerHeight();
+  };
   socket = io();
   socket.on('initialMessages', function(messages) {
     $scope.messages = messages;
@@ -20,15 +26,13 @@ app.controller('workspaceController', function($scope, $http) {
   });
   socket.on('removeMessage', function(timestamp) {
     var i, j, len, message, ref;
-    i = 0;
     ref = $scope.messages;
-    for (j = 0, len = ref.length; j < len; j++) {
-      message = ref[j];
+    for (i = j = 0, len = ref.length; j < len; i = ++j) {
+      message = ref[i];
       if (message.timestamp === timestamp) {
         $scope.messages.splice(i, 1);
         break;
       }
-      i++;
     }
     return $scope.$apply();
   });
@@ -48,8 +52,8 @@ app.controller('workspaceController', function($scope, $http) {
       pictureInfo.y = 1;
     }
     return $('#' + pictureInfo.fileName).offset({
-      top: pictureInfo.y / 100.0 * maxy,
-      left: pictureInfo.x / 100.0 * maxx
+      top: pictureInfo.y / 100.0 * maxy(),
+      left: pictureInfo.x / 100.0 * maxx()
     });
   });
   socket.on('newPicture', function(pictureInfo) {
@@ -58,9 +62,7 @@ app.controller('workspaceController', function($scope, $http) {
   socket.emit('getInitialMessages');
   socket.emit('getInitialPictures');
   reader = new FileReader;
-  $dropzone = void 0;
-  maxx = void 0;
-  maxy = void 0;
+  $dropzone = $('#dropzone');
   mousex = void 0;
   mousey = void 0;
   allPicturesInfo = [];
@@ -87,7 +89,6 @@ app.controller('workspaceController', function($scope, $http) {
     tCtx.font = '20px Arial';
     tCtx.fillText(str, 0, 20);
     reader.onload = function(arrayBuffer) {
-      queryDropZone();
       return $.ajax({
         method: 'POST',
         url: '/api/picture?x=1&y=1',
@@ -98,10 +99,6 @@ app.controller('workspaceController', function($scope, $http) {
     };
     return reader.readAsArrayBuffer(dataURLtoBlob(tCtx.canvas.toDataURL()));
   };
-  queryDropZone = function() {
-    maxy = $dropzone.outerHeight();
-    return maxx = $dropzone.outerWidth();
-  };
   addPicture = function(pictureInfo) {
     if (pictureInfo.x === 0) {
       pictureInfo.x = 1;
@@ -109,18 +106,17 @@ app.controller('workspaceController', function($scope, $http) {
     if (pictureInfo.y === 0) {
       pictureInfo.y = 1;
     }
-    queryDropZone();
     allPicturesInfo.push(pictureInfo.fileName);
     return $('<img/>', {
       src: '/api/picture?fileToGet=' + pictureInfo.fileName
     }).appendTo($dropzone).wrap('<div id=' + pictureInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset({
-      top: pictureInfo.y / 100.0 * maxy,
-      left: pictureInfo.x / 100.0 * maxx
+      top: pictureInfo.y / 100.0 * maxy(),
+      left: pictureInfo.x / 100.0 * maxx()
     }).draggable({
       containment: 'parent',
       cursor: 'move',
       stop: function(event, ui) {
-        return socket.emit('updatePictureLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx, ui.offset.top * 100.0 / maxy);
+        return socket.emit('updatePictureLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy());
       }
     }).on('resize', function() {
       var height, width;
@@ -139,8 +135,6 @@ app.controller('workspaceController', function($scope, $http) {
       return $('#dndText').text('Drag and drop files here');
     }
   };
-  $dropzone = $('#dropzone');
-  queryDropZone();
   $(document).on('mousemove', function(e) {
     mousex = e.pageX;
     return mousey = e.pageY;
@@ -158,10 +152,9 @@ app.controller('workspaceController', function($scope, $http) {
       if (e.originalEvent.dataTransfer.files.length) {
         f = e.originalEvent.dataTransfer.files[0];
         reader.onload = function(arrayBuffer) {
-          queryDropZone();
           return $.ajax({
             method: 'POST',
-            url: '/api/picture?x=' + mousex * 100.0 / maxx + '&y=' + mousey * 100.0 / maxy,
+            url: '/api/picture?x=' + mousex * 100.0 / maxx() + '&y=' + mousey * 100.0 / maxy(),
             data: arrayBuffer.target.result,
             processData: false,
             contentType: 'application/binary'

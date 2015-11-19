@@ -5,6 +5,8 @@ scrollAtBottom = true
 
 app.controller 'workspaceController', ($scope, $http) ->
 
+    maxx = -> $dropzone.outerWidth()
+    maxy = -> $dropzone.outerHeight()
 
     socket = io()
 
@@ -19,13 +21,11 @@ app.controller 'workspaceController', ($scope, $http) ->
         scrollToBottom()
 
     socket.on 'removeMessage', (timestamp) ->
-        i = 0
         (
             if (message.timestamp == timestamp)
                 $scope.messages.splice(i, 1)
                 break
-            i++
-        ) for message in $scope.messages
+        ) for message, i in $scope.messages
         $scope.$apply()
 
     socket.on 'initialPictures', (pictureInfos) ->
@@ -33,13 +33,11 @@ app.controller 'workspaceController', ($scope, $http) ->
         $scope.$apply()
 
     socket.on 'updatePicture', (pictureInfo) ->
-        if pictureInfo.x == 0
-            pictureInfo.x = 1
-        if pictureInfo.y == 0
-            pictureInfo.y = 1
+        pictureInfo.x = 1 if pictureInfo.x == 0
+        pictureInfo.y = 1 if pictureInfo.y == 0
         $('#' + pictureInfo.fileName).offset ({
-            top: pictureInfo.y / 100.0 * maxy
-            left: pictureInfo.x / 100.0 * maxx
+            top: pictureInfo.y / 100.0 * maxy()
+            left: pictureInfo.x / 100.0 * maxx()
         })
 
     socket.on 'newPicture', (pictureInfo) ->
@@ -50,9 +48,7 @@ app.controller 'workspaceController', ($scope, $http) ->
 
     # raw js
     reader = new FileReader
-    $dropzone = undefined
-    maxx = undefined
-    maxy = undefined
+    $dropzone = $('#dropzone')
     mousex = undefined
     mousey = undefined
     allPicturesInfo = []
@@ -77,7 +73,6 @@ app.controller 'workspaceController', ($scope, $http) ->
         tCtx.fillText str, 0, 20
 
         reader.onload = (arrayBuffer) ->
-            queryDropZone()
             $.ajax ({
                 method: 'POST'
                 url: '/api/picture?x=1&y=1'
@@ -88,24 +83,19 @@ app.controller 'workspaceController', ($scope, $http) ->
 
         reader.readAsArrayBuffer(dataURLtoBlob(tCtx.canvas.toDataURL()))
 
-    queryDropZone = ->
-        maxy = $dropzone.outerHeight()
-        maxx = $dropzone.outerWidth()
-
     addPicture = (pictureInfo) ->
         if pictureInfo.x == 0
             pictureInfo.x = 1
         if pictureInfo.y == 0
             pictureInfo.y = 1
-        queryDropZone()
         allPicturesInfo.push pictureInfo.fileName
         $('<img/>', src: '/api/picture?fileToGet=' + pictureInfo.fileName).appendTo($dropzone).wrap('<div id=' + pictureInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset(
-            top: pictureInfo.y / 100.0 * maxy
-            left: pictureInfo.x / 100.0 * maxx).draggable(
+            top: pictureInfo.y / 100.0 * maxy()
+            left: pictureInfo.x / 100.0 * maxx()).draggable(
                 containment: 'parent'
                 cursor: 'move'
                 stop: (event, ui) ->
-                    socket.emit('updatePictureLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx, ui.offset.top * 100.0 / maxy)
+                    socket.emit('updatePictureLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy())
             ).on 'resize', ->
                 width = $(this).outerWidth()
                 height = $(this).outerHeight()
@@ -120,8 +110,6 @@ app.controller 'workspaceController', ($scope, $http) ->
             $(e.target).removeClass('hover')
             $('#dndText').text('Drag and drop files here')
 
-    $dropzone = $('#dropzone')
-    queryDropZone()
 
     $(document).on 'mousemove', (e) ->
         mousex = e.pageX
@@ -139,10 +127,9 @@ app.controller 'workspaceController', ($scope, $http) ->
             if e.originalEvent.dataTransfer.files.length
                 f = e.originalEvent.dataTransfer.files[0]
                 reader.onload = (arrayBuffer) ->
-                    queryDropZone()
                     $.ajax ({
                         method: 'POST'
-                        url: '/api/picture?x=' + mousex * 100.0 / maxx + '&y=' + mousey * 100.0 / maxy
+                        url: '/api/picture?x=' + mousex * 100.0 / maxx() + '&y=' + mousey * 100.0 / maxy()
                         data: arrayBuffer.target.result
                         processData: false
                         contentType: 'application/binary'
