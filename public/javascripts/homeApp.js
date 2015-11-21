@@ -12,10 +12,6 @@ app.controller('homeController', function($scope, $http) {
     $scope.groups = groups;
     return $scope.$apply();
   });
-  socket.on('newGroupError', function(error) {
-    $scope.error = error;
-    return $scope.$apply();
-  });
   socket.on('newGroup', function(newGroup) {
     $scope.groups.push(newGroup);
     $scope.error = null;
@@ -23,16 +19,19 @@ app.controller('homeController', function($scope, $http) {
   });
   $scope.init = function(username) {
     $scope.username = username;
-    return socket.emit('getGroupList', username);
+    return $http.get('/api/groups').then((function(groups) {
+      return $scope.groups = groups.data;
+    }), function(err) {
+      return console.log('error1');
+    });
   };
   return $scope.addGroup = function() {
     if ($scope.newGroupName.trim().length > 0) {
-      return $http.post('/api/newGroup?newGroupName=test').then((function(res) {
-        console.log('success');
-        $scope.groups.push($scope.newGroupName);
+      return $http.post('/api/newGroup?newGroupName=' + $scope.newGroupName).then((function(addedGroupName) {
+        $scope.groups.push(addedGroupName.data);
         return $scope.newGroupName = '';
       }), function(err) {
-        return console.log('error');
+        return console.log('error2');
       });
     }
   };

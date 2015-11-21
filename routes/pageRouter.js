@@ -35,7 +35,6 @@ module.exports = function(app, passport) {
     failureFlash: true
   }));
   app.get('/home', isLoggedIn, function(req, res) {
-    console.log(req.user);
     return res.render('home', {
       username: req.user.username
     });

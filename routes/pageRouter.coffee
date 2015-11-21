@@ -35,7 +35,6 @@ module.exports = (app, passport) ->
     )
 
     app.get '/home', isLoggedIn, (req, res) ->
-        console.log req.user
         res.render('home', {username: req.user.username})
 
     app.get '/workspace', isLoggedIn, (req, res) ->

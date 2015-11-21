@@ -13,10 +13,6 @@ app.controller 'homeController', ($scope, $http) ->
         $scope.groups = groups
         $scope.$apply()
 
-    socket.on 'newGroupError', (error) ->
-        $scope.error = error
-        $scope.$apply()
-
     socket.on 'newGroup', (newGroup) ->
         $scope.groups.push(newGroup)
         $scope.error = null
@@ -25,15 +21,15 @@ app.controller 'homeController', ($scope, $http) ->
 
     $scope.init = (username) ->
         $scope.username = username
-        socket.emit('getGroupList', username)
+        $http.get('/api/groups').then ((groups) ->
+            $scope.groups = groups.data
+        ), (err) ->
+            console.log 'error1'
 
     $scope.addGroup = ->
         if $scope.newGroupName.trim().length > 0
-            $http.post('/api/newGroup?newGroupName=test').then ((res) ->
-                console.log 'success'
-                $scope.groups.push($scope.newGroupName)
+            $http.post('/api/newGroup?newGroupName=' + $scope.newGroupName).then ((addedGroupName) ->
+                $scope.groups.push(addedGroupName.data)
                 $scope.newGroupName = ''
             ), (err) ->
-                console.log 'error'
-
-            # socket.emit('postNewGroup', $scope.newGroupName)
+                console.log 'error2'

@@ -58,20 +58,40 @@ module.exports = (app, passport) ->
                     socket.emit('groupList', user.groups)
 
 
-    app.post '/api/newGroup', isLoggedIn, (req, res) ->
-        name = req.query.newGroupName
-        Group.find {name: name}, (err1, groups) ->
-            if !err1
+
+    app.get '/api/groups', isLoggedIn, (req, res) ->
+        username = req.user.username
+        User.findOne {username: username}, (err, user) ->
+            if err
+                res.sendStatus(500)
+            else
+                res.json(user.groups)
+
+
+    app.post '/api/newGroup', (req, res) ->
+        username = req.user.username
+        newGroupName = req.query.newGroupName
+        Group.find {name: newGroupName}, (err1, groups) ->
+            if err1
+                res.sendStatus(500)
+            else
                 if groups.length > 0
-                    socket.emit('newGroupError', 'This group already exists')
+                    res.sendStatus(500)
                 else
                     newGroup = new Group {
-                        name: name
+                        name: newGroupName
                     }
                     newGroup.save (err2, group) ->
-                        if !err2
-                            socket.emit('newGroup', name)
-        res.sendStatus(200)
+                        if err2
+                            res.sendStatus(500)
+                        else
+                            User.findOne {username: username}, (err3, user) ->
+                                if err3
+                                    res.sendStatus(500)
+                                else
+                                    user.groups.push(newGroupName)
+                                    user.save()
+                                    res.json(newGroupName)
 
     app.post '/api/picture', isLoggedIn, (req, res) ->
         fileName = (new Date()).getTime()

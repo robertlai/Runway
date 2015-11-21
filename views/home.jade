@@ -15,8 +15,8 @@ block content
                     div.list-group#homeListGroup
                         div(ng-repeat='group in groups track by $index')
                             a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}') {{group}}
-                    form.form-auth(action="/api/newGroup" method="post")
+                    form.form-auth(ng-submit='addGroup()')
                         div.form-group
                             label.input-lg(for="newGroupName") Create a new group
-                            input#newGroupName.form-control(type="text" name="newGroupName" ng-model='newGroupName' placeholder="Enter a group name..." autofocus)
-                            input.btn.btn-primary#createGroupButton(type="submit" value="Create Group" ng-click='addGroup()')
+                            input#newGroupName.form-control(type="text" ng-model='newGroupName' placeholder="Enter a group name..." autofocus)
+                            input.btn.btn-primary#createGroupButton(type="submit" value="Create Group")

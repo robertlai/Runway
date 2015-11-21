@@ -83,29 +83,56 @@ module.exports = function(app, passport) {
       });
     });
   });
-  app.post('/api/newGroup', isLoggedIn, function(req, res) {
-    var name;
-    name = req.query.newGroupName;
-    Group.find({
-      name: name
+  app.get('/api/groups', isLoggedIn, function(req, res) {
+    var username;
+    username = req.user.username;
+    return User.findOne({
+      username: username
+    }, function(err, user) {
+      if (err) {
+        return res.sendStatus(500);
+      } else {
+        return res.json(user.groups);
+      }
+    });
+  });
+  app.post('/api/newGroup', function(req, res) {
+    var newGroupName, username;
+    username = req.user.username;
+    newGroupName = req.query.newGroupName;
+    return Group.find({
+      name: newGroupName
     }, function(err1, groups) {
       var newGroup;
-      if (!err1) {
+      if (err1) {
+        return res.sendStatus(500);
+      } else {
         if (groups.length > 0) {
-          return socket.emit('newGroupError', 'This group already exists');
+          return res.sendStatus(500);
         } else {
           newGroup = new Group({
-            name: name
+            name: newGroupName
           });
           return newGroup.save(function(err2, group) {
-            if (!err2) {
-              return socket.emit('newGroup', name);
+            if (err2) {
+              return res.sendStatus(500);
+            } else {
+              return User.findOne({
+                username: username
+              }, function(err3, user) {
+                if (err3) {
+                  return res.sendStatus(500);
+                } else {
+                  user.groups.push(newGroupName);
+                  user.save();
+                  return res.json(newGroupName);
+                }
+              });
             }
           });
         }
       }
     });
-    return res.sendStatus(200);
   });
   app.post('/api/picture', isLoggedIn, function(req, res) {
     var fileName, fullFilePath, x, y;
