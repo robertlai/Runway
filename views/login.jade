@@ -3,18 +3,17 @@ extends layout
 block content
     script(type='text/javascript' src='/javascripts/authApp.js')
     div.login-form(ng-app="authApp")
-        div(ng-controller="authController")
-            H1= title
-            if message.length > 0
-                p.alert.alert-danger=message
-            form.form-auth(action="/login" method="post")
-                div.form-group
-                    label(for="loginUsername" ) Username
-                    input.form-control#loginUsername(type="text" name="username" placeholder="Username" autofocus)
-                div.form-group
-                    label(for="loginPassword" ) Password
-                    input.form-control#loginPassword(type="password" name="password" placeholder="Password")
-                div.form-group
-                    p.col-xs-7 Need an account?
-                        a(href="register") Signup
-                    input.btn.btn-primary.col-xs-4#signin(type="submit" value="Sign In")
+        H1= title
+        if message.length > 0
+            p.alert.alert-danger=message
+        form.form-auth(action="/login" method="post")
+            div.form-group
+                label(for="loginUsername" ) Username
+                input.form-control#loginUsername(type="text" name="username" placeholder="Username" autofocus)
+            div.form-group
+                label(for="loginPassword" ) Password
+                input.form-control#loginPassword(type="password" name="password" placeholder="Password")
+            div.form-group
+                p.col-xs-7 Need an account?
+                    a(href="register") Signup
+                input.btn.btn-primary.col-xs-4#signin(type="submit" value="Sign In")

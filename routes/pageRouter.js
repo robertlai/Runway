@@ -16,7 +16,7 @@ module.exports = function(app, passport) {
       message: req.flash('loginMessage')
     });
   });
-  app.post('/login', passport.authenticate('local-login', {
+  app.post('/login', passport.authenticate('login', {
     successRedirect: '/workspace',
     failureRedirect: '/login',
     failureFlash: true
@@ -27,14 +27,14 @@ module.exports = function(app, passport) {
       message: req.flash('registerMessage')
     });
   });
-  app.post('/register', passport.authenticate('local-register', {
+  app.post('/register', passport.authenticate('register', {
     successRedirect: '/workspace',
     failureRedirect: '/register',
     failureFlash: true
   }));
   app.get('/workspace', isLoggedIn, function(req, res) {
     return res.render('workspace', {
-      username: req.user.local.username
+      username: req.user.username
     });
   });
   app.get('/logout', function(req, res) {
