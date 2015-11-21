@@ -149,12 +149,10 @@ app.controller('workspaceController', function($scope) {
     }
   });
   $scope.chatVisible = true;
-  $scope.newMessageNotValide = false;
   $scope.messages = [];
   $scope.sendMessage = function() {
     var message;
     if ($scope.newMessage.trim().length > 0) {
-      $scope.newMessageNotValide = false;
       message = {
         content: $scope.newMessage,
         user: $scope.username

@@ -5,7 +5,7 @@ block scripts
     link(rel='stylesheet' href='/stylesheets/home.css')
 
 block content
-    div(ng-app='homeApp' ng-controller='homeController' ng-init="init('#{username}')")
+    div(ng-app='homeApp' ng-controller='homeController' ng-init="username='#{username}'")
         div.container
             div.row
                 div.col-lg-4.col-lg-offset-4.col-xs-6.col-xs-offset-3#homeGroup
@@ -13,10 +13,13 @@ block content
                         h1.text-center Welcome, {{username}}!
                     label Go to...
                     div.list-group#homeListGroup
+                        div.alert.alert-danger(ng-bind='error' ng-show='error')
+                        div.alert.alert-warning(ng-show='!groups.length') You have no rooms. Create one!
                         div(ng-repeat='group in groups track by $index')
                             a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}') {{group}}
                     form.form-auth(ng-submit='addGroup()')
                         div.form-group
                             label.input-lg(for="newGroupName") Create a new group
                             input#newGroupName.form-control(type="text" ng-model='newGroupName' placeholder="Enter a group name..." autofocus)
+                            div.form-group.alert.alert-danger(ng-bind='newGroupError' ng-show='newGroupError')
                             input.btn.btn-primary#createGroupButton(type="submit" value="Create Group")

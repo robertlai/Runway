@@ -129,14 +129,12 @@ app.controller 'workspaceController', ($scope) ->
 
 
     $scope.chatVisible = true
-    $scope.newMessageNotValide = false
 
     $scope.messages = []
 
 
     $scope.sendMessage = ->
         if $scope.newMessage.trim().length > 0
-            $scope.newMessageNotValide = false
             message = {
                 content: $scope.newMessage
                 user: $scope.username

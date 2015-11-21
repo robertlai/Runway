@@ -19,17 +19,20 @@ app.controller 'homeController', ($scope, $http) ->
         $scope.$apply()
 
 
-    $scope.init = (username) ->
-        $scope.username = username
-        $http.get('/api/groups').then ((groups) ->
-            $scope.groups = groups.data
-        ), (err) ->
-            console.log 'error1'
-
     $scope.addGroup = ->
         if $scope.newGroupName.trim().length > 0
-            $http.post('/api/newGroup?newGroupName=' + $scope.newGroupName).then ((addedGroupName) ->
+            $http.post('/api/newGroup?newGroupName=' + $scope.newGroupName).then (addedGroupName) ->
                 $scope.groups.push(addedGroupName.data)
                 $scope.newGroupName = ''
-            ), (err) ->
-                console.log 'error2'
+                $scope.newGroupError = null
+            , (err) ->
+                if err.status == 409
+                    $scope.newGroupError = 'This group already exists.'
+                else
+                    $scope.newGroupError = 'Server Error.  Please contact support.'
+
+    $http.get('/api/groups').then (groups) ->
+        $scope.groups = groups.data
+        $scope.error = null
+    , (err) ->
+        $scope.error = 'Server Error.  Please contact support.'

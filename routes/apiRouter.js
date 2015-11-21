@@ -108,7 +108,7 @@ module.exports = function(app, passport) {
         return res.sendStatus(500);
       } else {
         if (groups.length > 0) {
-          return res.sendStatus(500);
+          return res.sendStatus(409);
         } else {
           newGroup = new Group({
             name: newGroupName
@@ -124,8 +124,13 @@ module.exports = function(app, passport) {
                   return res.sendStatus(500);
                 } else {
                   user.groups.push(newGroupName);
-                  user.save();
-                  return res.json(newGroupName);
+                  return user.save(function(err4, user2) {
+                    if (err4) {
+                      return res.sendStatus(500);
+                    } else {
+                      return res.json(newGroupName);
+                    }
+                  });
                 }
               });
             }

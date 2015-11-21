@@ -67,7 +67,6 @@ module.exports = (app, passport) ->
             else
                 res.json(user.groups)
 
-
     app.post '/api/newGroup', (req, res) ->
         username = req.user.username
         newGroupName = req.query.newGroupName
@@ -76,7 +75,7 @@ module.exports = (app, passport) ->
                 res.sendStatus(500)
             else
                 if groups.length > 0
-                    res.sendStatus(500)
+                    res.sendStatus(409)
                 else
                     newGroup = new Group {
                         name: newGroupName
@@ -90,8 +89,12 @@ module.exports = (app, passport) ->
                                     res.sendStatus(500)
                                 else
                                     user.groups.push(newGroupName)
-                                    user.save()
-                                    res.json(newGroupName)
+                                    user.save (err4, user2) ->
+                                        if err4
+                                            res.sendStatus(500)
+                                        else
+                                            res.json(newGroupName)
+
 
     app.post '/api/picture', isLoggedIn, (req, res) ->
         fileName = (new Date()).getTime()

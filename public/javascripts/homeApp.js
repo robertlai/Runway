@@ -17,22 +17,25 @@ app.controller('homeController', function($scope, $http) {
     $scope.error = null;
     return $scope.$apply();
   });
-  $scope.init = function(username) {
-    $scope.username = username;
-    return $http.get('/api/groups').then((function(groups) {
-      return $scope.groups = groups.data;
-    }), function(err) {
-      return console.log('error1');
-    });
-  };
-  return $scope.addGroup = function() {
+  $scope.addGroup = function() {
     if ($scope.newGroupName.trim().length > 0) {
-      return $http.post('/api/newGroup?newGroupName=' + $scope.newGroupName).then((function(addedGroupName) {
+      return $http.post('/api/newGroup?newGroupName=' + $scope.newGroupName).then(function(addedGroupName) {
         $scope.groups.push(addedGroupName.data);
-        return $scope.newGroupName = '';
-      }), function(err) {
-        return console.log('error2');
+        $scope.newGroupName = '';
+        return $scope.newGroupError = null;
+      }, function(err) {
+        if (err.status === 409) {
+          return $scope.newGroupError = 'This group already exists.';
+        } else {
+          return $scope.newGroupError = 'Server Error.  Please contact support.';
+        }
       });
     }
   };
+  return $http.get('/api/groups').then(function(groups) {
+    $scope.groups = groups.data;
+    return $scope.error = null;
+  }, function(err) {
+    return $scope.error = 'Server Error.  Please contact support.';
+  });
 });
