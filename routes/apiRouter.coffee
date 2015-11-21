@@ -3,6 +3,7 @@ Message = require('../models/Message')
 PictureMetadata = require('../models/pictureMetadata')
 PictureFile = require('../models/PictureFile')
 User = require('../models/User')
+Group = require('../models/Group')
 
 
 isLoggedIn = (req, res, next) ->
@@ -56,6 +57,21 @@ module.exports = (app, passport) ->
                 if !err
                     socket.emit('groupList', user.groups)
 
+
+    app.post '/api/newGroup', isLoggedIn, (req, res) ->
+        name = req.query.newGroupName
+        Group.find {name: name}, (err1, groups) ->
+            if !err1
+                if groups.length > 0
+                    socket.emit('newGroupError', 'This group already exists')
+                else
+                    newGroup = new Group {
+                        name: name
+                    }
+                    newGroup.save (err2, group) ->
+                        if !err2
+                            socket.emit('newGroup', name)
+        res.sendStatus(200)
 
     app.post '/api/picture', isLoggedIn, (req, res) ->
         fileName = (new Date()).getTime()

@@ -9,3 +9,8 @@ block content
         h1(ng-bind='username')
         div(ng-repeat='group in groups track by $index')
             a(type="button" ng-href='/workspace?group={{group}}') {{group}}
+        div
+            p(ng-bind='error' ng-hind='!error')
+            label(for="newGroupName" ) New Name
+            input#newGroupName(type="text" name="newGroupName" ng-model='newGroupName' placeholder="New Group Name" autofocus)
+            button(value="Sign In" ng-click='addGroup()') Create Group
