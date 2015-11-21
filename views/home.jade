@@ -8,13 +8,15 @@ block content
     div(ng-app='homeApp' ng-controller='homeController' ng-init="init('#{username}')")
         div.container
             div.row
-                div.col-xs-4.col-xs-offset-4(style="top:50%")
+                div.col-lg-4.col-lg-offset-4.col-xs-6.col-xs-offset-3#homeGroup
                     div
-                        h1(ng-bind='username')
-                    div.list-group(ng-repeat='group in groups track by $index')
-                        a.list-group-item(type="button" ng-href='/workspace?group={{group}}') {{group}}
+                        h1.text-center Welcome, {{username}}!
+                    label Go to...
+                    div.list-group#homeListGroup
+                        div(ng-repeat='group in groups track by $index')
+                            a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}') {{group}}
                     form.form-auth(action="/api/newGroup" method="post")
                         div.form-group
-                            label(for="newGroupName") Create a new group
-                            input#newGroupName.form-control(type="text" name="newGroupName" ng-model='newGroupName' placeholder="New Group Name" autofocus)
-                            input.btn.btn-primary(type="submit" value="Create Group" ng-click='addGroup()')
+                            label.input-lg(for="newGroupName") Create a new group
+                            input#newGroupName.form-control(type="text" name="newGroupName" ng-model='newGroupName' placeholder="Enter a group name..." autofocus)
+                            input.btn.btn-primary#createGroupButton(type="submit" value="Create Group" ng-click='addGroup()')
