@@ -6,11 +6,15 @@ block scripts
 
 block content
     div(ng-app='homeApp' ng-controller='homeController' ng-init="init('#{username}')")
-        h1(ng-bind='username')
-        div(ng-repeat='group in groups track by $index')
-            a(type="button" ng-href='/workspace?group={{group}}') {{group}}
-        div
-            p(ng-bind='error' ng-hind='!error')
-            label(for="newGroupName" ) New Name
-            input#newGroupName(type="text" name="newGroupName" ng-model='newGroupName' placeholder="New Group Name" autofocus)
-            button(value="Sign In" ng-click='addGroup()') Create Group
+        div.container
+            div.row
+                div.col-xs-4.col-xs-offset-4(style="top:50%")
+                    div
+                        h1(ng-bind='username')
+                    div.list-group(ng-repeat='group in groups track by $index')
+                        a.list-group-item(type="button" ng-href='/workspace?group={{group}}') {{group}}
+                    form.form-auth(action="/api/newGroup" method="post")
+                        div.form-group
+                            label(for="newGroupName") Create a new group
+                            input#newGroupName.form-control(type="text" name="newGroupName" ng-model='newGroupName' placeholder="New Group Name" autofocus)
+                            input.btn.btn-primary(type="submit" value="Create Group" ng-click='addGroup()')
