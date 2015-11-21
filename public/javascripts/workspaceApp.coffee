@@ -10,6 +10,16 @@ app.controller 'workspaceController', ($scope) ->
 
     socket = io()
 
+    $scope.init = (username, groupName) ->
+        $scope.username = username
+        $scope.groupName = groupName
+        socket.emit('groupConnect', username, groupName)
+
+
+    socket.on 'setupComplete', ->
+        socket.emit('getInitialMessages')
+        socket.emit('getInitialPictures')
+
 
     socket.on 'initialMessages', (messages) ->
         $scope.messages = messages
@@ -43,11 +53,6 @@ app.controller 'workspaceController', ($scope) ->
         addPicture(pictureInfo)
 
 
-    $scope.init = (username, groupName) ->
-        $scope.username = username
-        $scope.groupName = groupName
-        socket.emit('getInitialMessages')
-        socket.emit('getInitialPictures')
     # raw js
     reader = new FileReader
     $dropzone = $('#dropzone')
@@ -68,7 +73,6 @@ app.controller 'workspaceController', ($scope) ->
         tCtx.font = '20px Arial'
         tCtx.canvas.width = tCtx.measureText(str).width
         tCtx.canvas.height = 25
-        tCtx.font = '20px Arial'
         tCtx.fillText str, 0, 20
 
         reader.onload = (arrayBuffer) ->
@@ -119,7 +123,7 @@ app.controller 'workspaceController', ($scope) ->
                 reader.onload = (arrayBuffer) ->
                     $.ajax ({
                         method: 'POST'
-                        url: '/api/picture?x=' + e.originalEvent.offsetX * 100.0 / maxx() + '&y=' + e.originalEvent.offsetY * 100.0 / maxy()
+                        url: '/api/picture?group=' + $scope.groupName + '&x=' + e.originalEvent.offsetX * 100.0 / maxx() + '&y=' + e.originalEvent.offsetY * 100.0 / maxy()
                         data: arrayBuffer.target.result
                         processData: false
                         contentType: 'application/binary'
@@ -135,11 +139,7 @@ app.controller 'workspaceController', ($scope) ->
 
     $scope.sendMessage = ->
         if $scope.newMessage.trim().length > 0
-            message = {
-                content: $scope.newMessage
-                user: $scope.username
-            }
-            socket.emit('postNewMessage', message)
+            socket.emit('postNewMessage', $scope.newMessage)
             $scope.newMessage = ''
 
     $scope.removeMessage = (timestamp) ->

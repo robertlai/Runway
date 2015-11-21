@@ -14,6 +14,15 @@ app.controller('workspaceController', function($scope) {
     return $dropzone.outerHeight();
   };
   socket = io();
+  $scope.init = function(username, groupName) {
+    $scope.username = username;
+    $scope.groupName = groupName;
+    return socket.emit('groupConnect', username, groupName);
+  };
+  socket.on('setupComplete', function() {
+    socket.emit('getInitialMessages');
+    return socket.emit('getInitialPictures');
+  });
   socket.on('initialMessages', function(messages) {
     $scope.messages = messages;
     $scope.$apply();
@@ -53,12 +62,6 @@ app.controller('workspaceController', function($scope) {
   socket.on('newPicture', function(pictureInfo) {
     return addPicture(pictureInfo);
   });
-  $scope.init = function(username, groupName) {
-    $scope.username = username;
-    $scope.groupName = groupName;
-    socket.emit('getInitialMessages');
-    return socket.emit('getInitialPictures');
-  };
   reader = new FileReader;
   $dropzone = $('#dropzone');
   dataURLtoBlob = function(dataurl) {
@@ -81,7 +84,6 @@ app.controller('workspaceController', function($scope) {
     tCtx.font = '20px Arial';
     tCtx.canvas.width = tCtx.measureText(str).width;
     tCtx.canvas.height = 25;
-    tCtx.font = '20px Arial';
     tCtx.fillText(str, 0, 20);
     reader.onload = function(arrayBuffer) {
       return $.ajax({
@@ -138,7 +140,7 @@ app.controller('workspaceController', function($scope) {
         reader.onload = function(arrayBuffer) {
           return $.ajax({
             method: 'POST',
-            url: '/api/picture?x=' + e.originalEvent.offsetX * 100.0 / maxx() + '&y=' + e.originalEvent.offsetY * 100.0 / maxy(),
+            url: '/api/picture?group=' + $scope.groupName + '&x=' + e.originalEvent.offsetX * 100.0 / maxx() + '&y=' + e.originalEvent.offsetY * 100.0 / maxy(),
             data: arrayBuffer.target.result,
             processData: false,
             contentType: 'application/binary'
@@ -151,13 +153,8 @@ app.controller('workspaceController', function($scope) {
   $scope.chatVisible = true;
   $scope.messages = [];
   $scope.sendMessage = function() {
-    var message;
     if ($scope.newMessage.trim().length > 0) {
-      message = {
-        content: $scope.newMessage,
-        user: $scope.username
-      };
-      socket.emit('postNewMessage', message);
+      socket.emit('postNewMessage', $scope.newMessage);
       return $scope.newMessage = '';
     }
   };

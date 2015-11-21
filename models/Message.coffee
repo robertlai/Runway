@@ -3,6 +3,7 @@ mongoose = require('mongoose')
 messageSchema = new mongoose.Schema({
     timestamp: Number
     user: String
+    group: String
     content: String
 })
 

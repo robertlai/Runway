@@ -18,62 +18,69 @@ module.exports = (app, passport) ->
 
     io.on 'connection', (socket) ->
 
+        socket.on 'groupConnect', (user, group) ->
+            socket.join(group)
+            socket.username = user
+            socket.group = group
+            socket.emit('setupComplete')
+
+
         socket.on 'getInitialMessages', ->
-            Message.find({}).sort('timestamp').exec (err, messages) ->
+            Message.find({group: socket.group}).sort('timestamp').exec (err, messages) ->
+                # todo: add error responce
                 if !err
                     socket.emit('initialMessages', messages)
 
-        socket.on 'postNewMessage', (data) ->
+        socket.on 'postNewMessage', (messageContent) ->
             newMessage = new Message {
                 timestamp: (new Date()).getTime()
-                user: data.user
-                content: data.content
+                user: socket.username
+                group: socket.group
+                content: messageContent
             }
             newMessage.save (err, message) ->
+                # todo: add error responce
                 if !err
-                    io.emit('newMessage', message)
+                    io.sockets.in(socket.group).emit('newMessage', message)
 
         socket.on 'postRemoveMessage', (timestamp) ->
-            Message.find({timestamp: timestamp}).remove (err, removedMessage) ->
+            Message.find({timestamp: timestamp, group: socket.group}).remove (err, removedMessage) ->
+                # todo: add err4 responce
                 if !err
-                    io.emit('removeMessage', timestamp)
+                    io.sockets.in(socket.group).emit('removeMessage', timestamp)
 
 
         socket.on 'getInitialPictures', ->
-            PictureMetadata.find({}).sort('fileName').exec (err, picturesInfo) ->
+            PictureMetadata.find({group: socket.group}).sort('fileName').exec (err, picturesInfo) ->
+                # todo: add error responce
                 if !err
                     socket.emit('initialPictures', picturesInfo)
 
         socket.on 'updatePictureLocation', (fileName, newX, newY) ->
-            PictureMetadata.findOne {fileName: fileName}, (err, picture) ->
+            PictureMetadata.findOne {fileName: fileName, group: socket.group}, (err, picture) ->
+                # todo: add error responce
                 if !err
                     picture.x = newX
                     picture.y = newY
                     picture.save();
-                    io.emit('updatePicture', picture);
-
-        socket.on 'getGroupList', (username) ->
-            User.findOne {username: username}, (err, user) ->
-                if !err
-                    socket.emit('groupList', user.groups)
-
+                    io.sockets.in(socket.group).emit('updatePicture', picture);
 
 
     app.get '/api/groups', isLoggedIn, (req, res) ->
         username = req.user.username
-        User.findOne {username: username}, (err, user) ->
-            if err
-                res.sendStatus(500)
-            else
+        try
+            User.findOne {username: username}, (err1, user) ->
+                throw err1 if err1
                 res.json(user.groups)
+        catch err
+            res.sendStatus(500)
 
     app.post '/api/newGroup', (req, res) ->
         username = req.user.username
         newGroupName = req.query.newGroupName
-        Group.find {name: newGroupName}, (err1, groups) ->
-            if err1
-                res.sendStatus(500)
-            else
+        try
+            Group.find {name: newGroupName}, (err1, groups) ->
+                throw err1 if err1
                 if groups.length > 0
                     res.sendStatus(409)
                 else
@@ -81,78 +88,58 @@ module.exports = (app, passport) ->
                         name: newGroupName
                     }
                     newGroup.save (err2, group) ->
-                        if err2
-                            res.sendStatus(500)
-                        else
-                            User.findOne {username: username}, (err3, user) ->
-                                if err3
-                                    res.sendStatus(500)
-                                else
-                                    user.groups.push(newGroupName)
-                                    user.save (err4, user2) ->
-                                        if err4
-                                            res.sendStatus(500)
-                                        else
-                                            res.json(newGroupName)
+                        throw err2 if err2
+                        User.findOne {username: username}, (err3, user) ->
+                            throw err3 if err3
+                            user.groups.push(newGroupName)
+                            user.save (err4, user2) ->
+                                throw err4 if err4
+                                res.json(newGroupName)
+        catch err
+            res.sendStatus(500)
 
 
-    app.post '/api/picture', isLoggedIn, (req, res) ->
+    app.post '/api/picture', (req, res) ->
         fileName = (new Date()).getTime()
         x = req.query.x
         y = req.query.y
         fullFilePath = __dirname + '/' + fileName + Math.floor(Math.random() * 20000)
-
-        req.pipe(fs.createWriteStream(fullFilePath)).on 'finish', ->
-            picture = new PictureMetadata {
-                fileName: fileName
-                x: x
-                y: y
-            }
-            file = new PictureFile {
-                fileName: fileName
-                file: fs.readFileSync(fullFilePath)
-            }
-            file.save (err1, file) ->
-                if err1
-                    res.sendStatus(500)
-                else
+        try
+            req.pipe(fs.createWriteStream(fullFilePath)).on 'finish', ->
+                picture = new PictureMetadata {
+                    fileName: fileName
+                    x: x
+                    y: y
+                    # todo: dont pass this through query
+                    group: req.query.group
+                }
+                file = new PictureFile {
+                    fileName: fileName
+                    file: fs.readFileSync(fullFilePath)
+                    group: req.query.group
+                }
+                file.save (err1, file) ->
+                    throw err1 if err1
                     picture.save (err2, picture) ->
-                        if err2
-                            res.sendStatus(500)
-                        else
-                            res.sendStatus(201)
-                            pictureInfo = {
-                                fileName: fileName
-                                x: x
-                                y: y
-                            }
-                            io.emit('newPicture', pictureInfo)
-            .then ->
-                fs.unlinkSync(fullFilePath)
+                        throw err2 if err2
+                        res.sendStatus(201)
+                        pictureInfo = {
+                            fileName: fileName
+                            x: x
+                            y: y
+                        }
+                        io.sockets.in(req.query.group).emit('newPicture', pictureInfo)
+                .then ->
+                    fs.unlinkSync(fullFilePath)
+        catch err
+            res.sendStatus(500)
 
     app.get '/api/picture', isLoggedIn, (req, res) ->
-        PictureFile.find({}).sort('fileName').exec (err, files) ->
-            if err
-                res.sendStatus(500)
-            else
-                (
-                    if file.fileName.toString() == req.query.fileToGet
-                        res.set('Content-Type': 'image/jpeg')
-                        res.set('lastFile': file.fileName)
-                        res.send(file.file)
-                        return
-                ) for file in files
-                res.sendStatus(500)
-
-
-    app.delete '/api/picture', isLoggedIn, (req, res) ->
-        fileNameToDelete = req.query.fileName
-        PictureMetadata.find({fileName: fileNameToDelete}).remove (err1, removedPicture) ->
-            if err1
-                res.sendStatus(500)
-            else
-                PictureFile.find({fileName: fileNameToDelete}).remove (err2, removedFile) ->
-                    if err2
-                        res.sendStatus(500)
-                    else
-                        res.sendStatus(200)
+        try
+            # todo: not checking groups yet
+            PictureFile.findOne {fileName: req.query.fileToGet}, (err, file) ->
+                throw err if err
+                res.set('Content-Type': 'image/jpeg')
+                res.send(file.file)
+        catch err
+            res.sendStatus(500)

@@ -25,88 +25,97 @@ module.exports = function(app, passport) {
   var io;
   io = app.io;
   io.on('connection', function(socket) {
+    socket.on('groupConnect', function(user, group) {
+      socket.join(group);
+      socket.username = user;
+      socket.group = group;
+      return socket.emit('setupComplete');
+    });
     socket.on('getInitialMessages', function() {
-      return Message.find({}).sort('timestamp').exec(function(err, messages) {
+      return Message.find({
+        group: socket.group
+      }).sort('timestamp').exec(function(err, messages) {
         if (!err) {
           return socket.emit('initialMessages', messages);
         }
       });
     });
-    socket.on('postNewMessage', function(data) {
+    socket.on('postNewMessage', function(messageContent) {
       var newMessage;
       newMessage = new Message({
         timestamp: (new Date()).getTime(),
-        user: data.user,
-        content: data.content
+        user: socket.username,
+        group: socket.group,
+        content: messageContent
       });
       return newMessage.save(function(err, message) {
         if (!err) {
-          return io.emit('newMessage', message);
+          return io.sockets["in"](socket.group).emit('newMessage', message);
         }
       });
     });
     socket.on('postRemoveMessage', function(timestamp) {
       return Message.find({
-        timestamp: timestamp
+        timestamp: timestamp,
+        group: socket.group
       }).remove(function(err, removedMessage) {
         if (!err) {
-          return io.emit('removeMessage', timestamp);
+          return io.sockets["in"](socket.group).emit('removeMessage', timestamp);
         }
       });
     });
     socket.on('getInitialPictures', function() {
-      return PictureMetadata.find({}).sort('fileName').exec(function(err, picturesInfo) {
+      return PictureMetadata.find({
+        group: socket.group
+      }).sort('fileName').exec(function(err, picturesInfo) {
         if (!err) {
           return socket.emit('initialPictures', picturesInfo);
         }
       });
     });
-    socket.on('updatePictureLocation', function(fileName, newX, newY) {
+    return socket.on('updatePictureLocation', function(fileName, newX, newY) {
       return PictureMetadata.findOne({
-        fileName: fileName
+        fileName: fileName,
+        group: socket.group
       }, function(err, picture) {
         if (!err) {
           picture.x = newX;
           picture.y = newY;
           picture.save();
-          return io.emit('updatePicture', picture);
-        }
-      });
-    });
-    return socket.on('getGroupList', function(username) {
-      return User.findOne({
-        username: username
-      }, function(err, user) {
-        if (!err) {
-          return socket.emit('groupList', user.groups);
+          return io.sockets["in"](socket.group).emit('updatePicture', picture);
         }
       });
     });
   });
   app.get('/api/groups', isLoggedIn, function(req, res) {
-    var username;
+    var err, username;
     username = req.user.username;
-    return User.findOne({
-      username: username
-    }, function(err, user) {
-      if (err) {
-        return res.sendStatus(500);
-      } else {
+    try {
+      return User.findOne({
+        username: username
+      }, function(err1, user) {
+        if (err1) {
+          throw err1;
+        }
         return res.json(user.groups);
-      }
-    });
+      });
+    } catch (_error) {
+      err = _error;
+      return res.sendStatus(500);
+    }
   });
   app.post('/api/newGroup', function(req, res) {
-    var newGroupName, username;
+    var err, newGroupName, username;
     username = req.user.username;
     newGroupName = req.query.newGroupName;
-    return Group.find({
-      name: newGroupName
-    }, function(err1, groups) {
-      var newGroup;
-      if (err1) {
-        return res.sendStatus(500);
-      } else {
+    try {
+      return Group.find({
+        name: newGroupName
+      }, function(err1, groups) {
+        var newGroup;
+        if (err1) {
+          throw err1;
+        }
         if (groups.length > 0) {
           return res.sendStatus(409);
         } else {
@@ -115,113 +124,93 @@ module.exports = function(app, passport) {
           });
           return newGroup.save(function(err2, group) {
             if (err2) {
-              return res.sendStatus(500);
-            } else {
-              return User.findOne({
-                username: username
-              }, function(err3, user) {
-                if (err3) {
-                  return res.sendStatus(500);
-                } else {
-                  user.groups.push(newGroupName);
-                  return user.save(function(err4, user2) {
-                    if (err4) {
-                      return res.sendStatus(500);
-                    } else {
-                      return res.json(newGroupName);
-                    }
-                  });
-                }
-              });
+              throw err2;
             }
+            return User.findOne({
+              username: username
+            }, function(err3, user) {
+              if (err3) {
+                throw err3;
+              }
+              user.groups.push(newGroupName);
+              return user.save(function(err4, user2) {
+                if (err4) {
+                  throw err4;
+                }
+                return res.json(newGroupName);
+              });
+            });
           });
         }
-      }
-    });
+      });
+    } catch (_error) {
+      err = _error;
+      return res.sendStatus(500);
+    }
   });
-  app.post('/api/picture', isLoggedIn, function(req, res) {
-    var fileName, fullFilePath, x, y;
+  app.post('/api/picture', function(req, res) {
+    var err, fileName, fullFilePath, x, y;
     fileName = (new Date()).getTime();
     x = req.query.x;
     y = req.query.y;
     fullFilePath = __dirname + '/' + fileName + Math.floor(Math.random() * 20000);
-    return req.pipe(fs.createWriteStream(fullFilePath)).on('finish', function() {
-      var file, picture;
-      picture = new PictureMetadata({
-        fileName: fileName,
-        x: x,
-        y: y
-      });
-      file = new PictureFile({
-        fileName: fileName,
-        file: fs.readFileSync(fullFilePath)
-      });
-      return file.save(function(err1, file) {
-        if (err1) {
-          return res.sendStatus(500);
-        } else {
+    try {
+      return req.pipe(fs.createWriteStream(fullFilePath)).on('finish', function() {
+        var file, picture;
+        picture = new PictureMetadata({
+          fileName: fileName,
+          x: x,
+          y: y,
+          group: req.query.group
+        });
+        file = new PictureFile({
+          fileName: fileName,
+          file: fs.readFileSync(fullFilePath),
+          group: req.query.group
+        });
+        return file.save(function(err1, file) {
+          if (err1) {
+            throw err1;
+          }
           return picture.save(function(err2, picture) {
             var pictureInfo;
             if (err2) {
-              return res.sendStatus(500);
-            } else {
-              res.sendStatus(201);
-              pictureInfo = {
-                fileName: fileName,
-                x: x,
-                y: y
-              };
-              return io.emit('newPicture', pictureInfo);
+              throw err2;
             }
+            res.sendStatus(201);
+            pictureInfo = {
+              fileName: fileName,
+              x: x,
+              y: y
+            };
+            return io.sockets["in"](req.query.group).emit('newPicture', pictureInfo);
           });
-        }
-      }).then(function() {
-        return fs.unlinkSync(fullFilePath);
-      });
-    });
-  });
-  app.get('/api/picture', isLoggedIn, function(req, res) {
-    return PictureFile.find({}).sort('fileName').exec(function(err, files) {
-      var file, i, len;
-      if (err) {
-        return res.sendStatus(500);
-      } else {
-        for (i = 0, len = files.length; i < len; i++) {
-          file = files[i];
-          if (file.fileName.toString() === req.query.fileToGet) {
-            res.set({
-              'Content-Type': 'image/jpeg'
-            });
-            res.set({
-              'lastFile': file.fileName
-            });
-            res.send(file.file);
-            return;
-          }
-        }
-        return res.sendStatus(500);
-      }
-    });
-  });
-  return app["delete"]('/api/picture', isLoggedIn, function(req, res) {
-    var fileNameToDelete;
-    fileNameToDelete = req.query.fileName;
-    return PictureMetadata.find({
-      fileName: fileNameToDelete
-    }).remove(function(err1, removedPicture) {
-      if (err1) {
-        return res.sendStatus(500);
-      } else {
-        return PictureFile.find({
-          fileName: fileNameToDelete
-        }).remove(function(err2, removedFile) {
-          if (err2) {
-            return res.sendStatus(500);
-          } else {
-            return res.sendStatus(200);
-          }
+        }).then(function() {
+          return fs.unlinkSync(fullFilePath);
         });
-      }
-    });
+      });
+    } catch (_error) {
+      err = _error;
+      return res.sendStatus(500);
+    }
+  });
+  return app.get('/api/picture', isLoggedIn, function(req, res) {
+    var err;
+    try {
+      return PictureFile.findOne({
+        fileName: req.query.fileToGet
+      }, function(err, file) {
+        if (err) {
+          throw err;
+        }
+        res.set({
+          'Content-Type': 'image/jpeg'
+        });
+        return res.send(file.file);
+      });
+    } catch (_error) {
+      err = _error;
+      return res.sendStatus(500);
+    }
   });
 };
