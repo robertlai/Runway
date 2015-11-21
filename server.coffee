@@ -31,7 +31,6 @@ app.use(express.static(__dirname + '/node_modules'))
 app.use(express.static(__dirname + '/node_modules/angular'))
 app.use(express.static(__dirname + '/node_modules/jquery/dist'))
 app.use(express.static(__dirname + '/node_modules/bootstrap/dist'))
-app.use(express.static(__dirname + '/node_modules/socket.io/node_modules/socket.io-client'))
 
 
 
