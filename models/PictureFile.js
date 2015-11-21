@@ -4,9 +4,11 @@ var mongoose, pictureFileSchema;
 mongoose = require('mongoose');
 
 pictureFileSchema = new mongoose.Schema({
+  group: String,
   fileName: Number,
-  file: Buffer,
-  group: String
+  x: Number,
+  y: Number,
+  file: Buffer
 });
 
 module.exports = mongoose.model('pictureFile', pictureFileSchema);

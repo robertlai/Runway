@@ -1,6 +1,5 @@
 fs = require('fs')
 Message = require('../models/Message')
-PictureMetadata = require('../models/pictureMetadata')
 PictureFile = require('../models/PictureFile')
 User = require('../models/User')
 Group = require('../models/Group')
@@ -51,19 +50,25 @@ module.exports = (app, passport) ->
 
 
         socket.on 'getInitialPictures', ->
-            PictureMetadata.find({group: socket.group}).sort('fileName').exec (err, picturesInfo) ->
+            PictureFile.find({group: socket.group})
+            .select('fileName x y')
+            .sort('fileName')
+            .exec (err, picturesInfo) ->
                 # todo: add error responce
                 if !err
                     socket.emit('initialPictures', picturesInfo)
 
         socket.on 'updatePictureLocation', (fileName, newX, newY) ->
-            PictureMetadata.findOne {fileName: fileName, group: socket.group}, (err, picture) ->
+            # todo: use groups
+            PictureFile.findOne({fileName: fileName})
+            .select('fileName x y')
+            .exec (err, picture) ->
                 # todo: add error responce
                 if !err
                     picture.x = newX
                     picture.y = newY
-                    picture.save();
-                    io.sockets.in(socket.group).emit('updatePicture', picture);
+                    picture.save()
+                    io.sockets.in(socket.group).emit('updatePicture', picture)
 
 
     app.get '/api/groups', isLoggedIn, (req, res) ->
@@ -101,34 +106,29 @@ module.exports = (app, passport) ->
 
     app.post '/api/picture', (req, res) ->
         fileName = (new Date()).getTime()
+        # todo: don't pass through query
         x = req.query.x
         y = req.query.y
         fullFilePath = __dirname + '/' + fileName + Math.floor(Math.random() * 20000)
         try
             req.pipe(fs.createWriteStream(fullFilePath)).on 'finish', ->
-                picture = new PictureMetadata {
+                pictureFile = new PictureFile {
+                    # todo: don't pass through query
+                    group: req.query.group
                     fileName: fileName
                     x: x
                     y: y
-                    # todo: dont pass this through query
-                    group: req.query.group
-                }
-                file = new PictureFile {
-                    fileName: fileName
                     file: fs.readFileSync(fullFilePath)
-                    group: req.query.group
                 }
-                file.save (err1, file) ->
+                pictureFile.save (err1, file) ->
                     throw err1 if err1
-                    picture.save (err2, picture) ->
-                        throw err2 if err2
-                        res.sendStatus(201)
-                        pictureInfo = {
-                            fileName: fileName
-                            x: x
-                            y: y
-                        }
-                        io.sockets.in(req.query.group).emit('newPicture', pictureInfo)
+                    # todo: don't pass through query
+                    io.sockets.in(req.query.group).emit('newPicture', {
+                        fileName: fileName
+                        x: x
+                        y: y
+                    })
+                    res.sendStatus(201)
                 .then ->
                     fs.unlinkSync(fullFilePath)
         catch err
@@ -137,7 +137,9 @@ module.exports = (app, passport) ->
     app.get '/api/picture', isLoggedIn, (req, res) ->
         try
             # todo: not checking groups yet
-            PictureFile.findOne {fileName: req.query.fileToGet}, (err, file) ->
+            PictureFile.findOne({fileName: req.query.fileToGet})
+            .select('file')
+            .exec (err, file) ->
                 throw err if err
                 res.set('Content-Type': 'image/jpeg')
                 res.send(file.file)
