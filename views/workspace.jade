@@ -5,8 +5,8 @@ block scripts
     link(rel='stylesheet' href='/stylesheets/workspace.css')
 
 block content
-    div.fill(ng-app='workspaceApp' ng-init="username='#{username}'")
-        div.fill(ng-controller='workspaceController')
+    div.fill(ng-app='workspaceApp' ng-controller='workspaceController' ng-init="init('#{username}', '#{groupName}')")
+        div.fill()
             div.space-panel#dropzone
                 h1.noselect#dndText Drag and drop files here
             input#un-hide-btn(type='button' value='Show' ng-hide='chatVisible' ng-click='showChat()')

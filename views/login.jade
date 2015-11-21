@@ -1,8 +1,7 @@
 extends layout
 
 block content
-    script(type='text/javascript' src='/javascripts/authApp.js')
-    div.login-form(ng-app="authApp")
+    div.login-form
         H1= title
         if message.length > 0
             p.alert.alert-danger=message

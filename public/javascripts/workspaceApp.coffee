@@ -3,12 +3,13 @@ app = angular.module('workspaceApp', [])
 scrollAtBottom = true
 
 
-app.controller 'workspaceController', ($scope, $http) ->
+app.controller 'workspaceController', ($scope) ->
 
     maxx = -> $dropzone.outerWidth()
     maxy = -> $dropzone.outerHeight()
 
     socket = io()
+
 
     socket.on 'initialMessages', (messages) ->
         $scope.messages = messages
@@ -41,9 +42,12 @@ app.controller 'workspaceController', ($scope, $http) ->
     socket.on 'newPicture', (pictureInfo) ->
         addPicture(pictureInfo)
 
-    socket.emit('getInitialMessages')
-    socket.emit('getInitialPictures')
 
+    $scope.init = (username, groupName) ->
+        $scope.username = username
+        $scope.groupName = groupName
+        socket.emit('getInitialMessages')
+        socket.emit('getInitialPictures')
     # raw js
     reader = new FileReader
     $dropzone = $('#dropzone')

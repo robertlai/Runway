@@ -1,0 +1,11 @@
+extends layout
+block scripts
+    script(type='text/javascript' src='/javascripts/homeApp.js')
+    script(type='text/javascript' src='/socket.io/socket.io.js')
+    link(rel='stylesheet' href='/stylesheets/home.css')
+
+block content
+    div(ng-app='homeApp' ng-controller='homeController' ng-init="init('#{username}')")
+        h1(ng-bind='username')
+        div(ng-repeat='group in groups track by $index')
+            a(type="button" ng-href='/workspace?group={{group}}') {{group}}

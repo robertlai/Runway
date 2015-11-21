@@ -1,3 +1,5 @@
+User = require('../models/User')
+
 
 isLoggedIn = (req, res, next) ->
     if req.isAuthenticated()
@@ -15,7 +17,7 @@ module.exports = (app, passport) ->
         })
 
     app.post '/login', passport.authenticate('login',
-        successRedirect: '/workspace'
+        successRedirect: '/home'
         failureRedirect: '/login'
         failureFlash : true
     )
@@ -27,13 +29,32 @@ module.exports = (app, passport) ->
         })
 
     app.post '/register', passport.authenticate('register',
-        successRedirect: '/workspace'
+        successRedirect: '/home'
         failureRedirect: '/register'
         failureFlash : true
     )
 
+    app.get '/home', isLoggedIn, (req, res) ->
+        console.log req.user
+        res.render('home', {username: req.user.username})
+
     app.get '/workspace', isLoggedIn, (req, res) ->
-        res.render('workspace', {username: req.user.username})
+        username = req.user.username
+        groupRequested = req.query.group
+        User.findOne {username: username}, (err, user) ->
+            if err
+                res.sendStatus(500)
+            else
+                if user.groups.indexOf(groupRequested) != -1
+                    res.render('workspace', {username: username, groupName: groupRequested})
+                else
+                    res.render('error', {
+                        message:'Unauthorized'
+                        error: {
+                            status: 401
+                        }
+                    })
+
 
     app.get '/logout', (req, res) ->
         req.logout()

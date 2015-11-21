@@ -2,6 +2,7 @@ fs = require('fs')
 Message = require('../models/Message')
 PictureMetadata = require('../models/pictureMetadata')
 PictureFile = require('../models/PictureFile')
+User = require('../models/User')
 
 
 isLoggedIn = (req, res, next) ->
@@ -49,6 +50,11 @@ module.exports = (app, passport) ->
                     picture.y = newY
                     picture.save();
                     io.emit('updatePicture', picture);
+
+        socket.on 'getGroupList', (username) ->
+            User.findOne {username: username}, (err, user) ->
+                if !err
+                    socket.emit('groupList', user.groups)
 
 
     app.post '/api/picture', isLoggedIn, (req, res) ->

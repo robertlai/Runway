@@ -5,7 +5,7 @@ app = angular.module('workspaceApp', []);
 
 scrollAtBottom = true;
 
-app.controller('workspaceController', function($scope, $http) {
+app.controller('workspaceController', function($scope) {
   var $dropzone, addPicture, dataURLtoBlob, drop, maxx, maxy, reader, socket;
   maxx = function() {
     return $dropzone.outerWidth();
@@ -53,8 +53,12 @@ app.controller('workspaceController', function($scope, $http) {
   socket.on('newPicture', function(pictureInfo) {
     return addPicture(pictureInfo);
   });
-  socket.emit('getInitialMessages');
-  socket.emit('getInitialPictures');
+  $scope.init = function(username, groupName) {
+    $scope.username = username;
+    $scope.groupName = groupName;
+    socket.emit('getInitialMessages');
+    return socket.emit('getInitialPictures');
+  };
   reader = new FileReader;
   $dropzone = $('#dropzone');
   dataURLtoBlob = function(dataurl) {
