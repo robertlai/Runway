@@ -45,7 +45,7 @@ module.exports = function(app, passport) {
     groupRequested = req.query.group;
     return User.findOne({
       username: username
-    }, function(err, user) {
+    }).select('groups').exec(function(err, user) {
       if (err) {
         return res.sendStatus(500);
       } else {

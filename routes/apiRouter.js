@@ -53,10 +53,10 @@ module.exports = function(app, passport) {
       });
     });
     socket.on('postRemoveMessage', function(timestamp) {
-      return Message.find({
+      return Message.remove({
         timestamp: timestamp,
         group: socket.group
-      }).remove(function(err, removedMessage) {
+      }, function(err) {
         if (!err) {
           return io.sockets["in"](socket.group).emit('removeMessage', timestamp);
         }
@@ -162,14 +162,16 @@ module.exports = function(app, passport) {
           file: fs.readFileSync(fullFilePath)
         });
         return pictureFile.save(function(err1, file) {
+          var newPicture;
           if (err1) {
             throw err1;
           }
-          io.sockets["in"](req.query.group).emit('newPicture', {
+          newPicture = {
             fileName: fileName,
             x: x,
             y: y
-          });
+          };
+          io.sockets["in"](req.query.group).emit('newPicture', newPicture);
           return res.sendStatus(201);
         }).then(function() {
           return fs.unlinkSync(fullFilePath);

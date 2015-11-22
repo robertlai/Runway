@@ -32,11 +32,8 @@ app.controller 'workspaceController', ($scope) ->
         scrollToBottom()
 
     socket.on 'removeMessage', (timestamp) ->
-        (
-            if (message.timestamp == timestamp)
-                $scope.messages.splice(i, 1)
-                break
-        ) for message, i in $scope.messages
+        $scope.messages = $scope.messages.filter (message) ->
+            message.timestamp != timestamp
         $scope.$apply()
 
     socket.on 'initialPictures', (pictureInfos) ->
@@ -73,12 +70,13 @@ app.controller 'workspaceController', ($scope) ->
         tCtx.font = '20px Arial'
         tCtx.canvas.width = tCtx.measureText(str).width
         tCtx.canvas.height = 25
+        tCtx.font = '20px Arial'
         tCtx.fillText str, 0, 20
 
         reader.onload = (arrayBuffer) ->
             $.ajax ({
                 method: 'POST'
-                url: '/api/picture?x=1&y=1'
+                url: '/api/picture?group=' + $scope.groupName + '&x=1&y=1'
                 data: arrayBuffer.target.result
                 processData: false
                 contentType: 'application/binary'

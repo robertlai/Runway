@@ -43,8 +43,8 @@ module.exports = (app, passport) ->
                     io.sockets.in(socket.group).emit('newMessage', message)
 
         socket.on 'postRemoveMessage', (timestamp) ->
-            Message.find({timestamp: timestamp, group: socket.group}).remove (err, removedMessage) ->
-                # todo: add err4 responce
+            Message.remove {timestamp: timestamp, group: socket.group}, (err) ->
+                # todo: add err responce
                 if !err
                     io.sockets.in(socket.group).emit('removeMessage', timestamp)
 
@@ -123,11 +123,12 @@ module.exports = (app, passport) ->
                 pictureFile.save (err1, file) ->
                     throw err1 if err1
                     # todo: don't pass through query
-                    io.sockets.in(req.query.group).emit('newPicture', {
+                    newPicture = {
                         fileName: fileName
                         x: x
                         y: y
-                    })
+                    }
+                    io.sockets.in(req.query.group).emit('newPicture', newPicture)
                     res.sendStatus(201)
                 .then ->
                     fs.unlinkSync(fullFilePath)

@@ -34,21 +34,15 @@ app.controller('workspaceController', function($scope) {
     return scrollToBottom();
   });
   socket.on('removeMessage', function(timestamp) {
-    var i, j, len, message, ref;
-    ref = $scope.messages;
-    for (i = j = 0, len = ref.length; j < len; i = ++j) {
-      message = ref[i];
-      if (message.timestamp === timestamp) {
-        $scope.messages.splice(i, 1);
-        break;
-      }
-    }
+    $scope.messages = $scope.messages.filter(function(message) {
+      return message.timestamp !== timestamp;
+    });
     return $scope.$apply();
   });
   socket.on('initialPictures', function(pictureInfos) {
-    var j, len, pictureInfo;
-    for (j = 0, len = pictureInfos.length; j < len; j++) {
-      pictureInfo = pictureInfos[j];
+    var i, len, pictureInfo;
+    for (i = 0, len = pictureInfos.length; i < len; i++) {
+      pictureInfo = pictureInfos[i];
       addPicture(pictureInfo);
     }
     return $scope.$apply();
@@ -84,11 +78,12 @@ app.controller('workspaceController', function($scope) {
     tCtx.font = '20px Arial';
     tCtx.canvas.width = tCtx.measureText(str).width;
     tCtx.canvas.height = 25;
+    tCtx.font = '20px Arial';
     tCtx.fillText(str, 0, 20);
     reader.onload = function(arrayBuffer) {
       return $.ajax({
         method: 'POST',
-        url: '/api/picture?x=1&y=1',
+        url: '/api/picture?group=' + $scope.groupName + '&x=1&y=1',
         data: arrayBuffer.target.result,
         processData: false,
         contentType: 'application/binary'

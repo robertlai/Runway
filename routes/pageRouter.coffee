@@ -40,7 +40,9 @@ module.exports = (app, passport) ->
     app.get '/workspace', isLoggedIn, (req, res) ->
         username = req.user.username
         groupRequested = req.query.group
-        User.findOne {username: username}, (err, user) ->
+        User.findOne({username: username})
+        .select('groups')
+        .exec (err, user) ->
             if err
                 res.sendStatus(500)
             else
