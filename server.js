@@ -47,6 +47,8 @@ app.use(express["static"](__dirname + '/node_modules/jquery/dist'));
 
 app.use(express["static"](__dirname + '/node_modules/bootstrap/dist'));
 
+app.use(express["static"](__dirname + '/node_modules/dropzone/dist'));
+
 app.use(session({
   secret: 'ilovescotchscotchyscotchscotch'
 }));

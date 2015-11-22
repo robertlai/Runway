@@ -6,13 +6,32 @@ app = angular.module('workspaceApp', []);
 scrollAtBottom = true;
 
 app.controller('workspaceController', function($scope) {
-  var $dropzone, addPicture, dataURLtoBlob, drop, maxx, maxy, reader, socket;
+  var $dropzone, addPicture, dataURLtoBlob, drop, maxx, maxy, mouseX, mouseY, myDropzone, reader, socket;
+  $dropzone = $('#dropzone');
+  mouseX = void 0;
+  mouseY = void 0;
   maxx = function() {
     return $dropzone.outerWidth();
   };
   maxy = function() {
     return $dropzone.outerHeight();
   };
+  myDropzone = new Dropzone("#dropzone", {
+    url: '/api/fileUpload',
+    method: "post",
+    uploadMultiple: false,
+    maxFilesize: 9,
+    clickable: false,
+    createImageThumbnails: false,
+    autoProcessQueue: true,
+    accept: function(file, done) {
+      this.options.url = '/api/fileUpload?group=' + $scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy();
+      return done();
+    }
+  });
+  myDropzone.on('complete', function(file) {
+    return myDropzone.removeFile(file);
+  });
   socket = io();
   $scope.init = function(username, groupName) {
     $scope.username = username;
@@ -57,7 +76,6 @@ app.controller('workspaceController', function($scope) {
     return addPicture(pictureInfo);
   });
   reader = new FileReader;
-  $dropzone = $('#dropzone');
   dataURLtoBlob = function(dataurl) {
     var arr, bstr, mime, n, u8arr;
     arr = dataurl.split(',');
@@ -110,8 +128,6 @@ app.controller('workspaceController', function($scope) {
     });
   };
   drop = function(e, hover) {
-    e.preventDefault();
-    e.stopPropagation();
     if (hover) {
       $(e.target).addClass('hover');
       return $('#dndText').text('Drop to upload');
@@ -121,29 +137,12 @@ app.controller('workspaceController', function($scope) {
     }
   };
   $dropzone.on('dragover', function(e) {
+    mouseX = e.originalEvent.offsetX;
+    mouseY = e.originalEvent.offsetY;
     return drop(e, true);
   });
   $dropzone.on('dragleave', function(e) {
     return drop(e, false);
-  });
-  $dropzone.on('drop', function(e) {
-    var f;
-    drop(e, false);
-    if (e.originalEvent.dataTransfer) {
-      if (e.originalEvent.dataTransfer.files.length) {
-        f = e.originalEvent.dataTransfer.files[0];
-        reader.onload = function(arrayBuffer) {
-          return $.ajax({
-            method: 'POST',
-            url: '/api/picture?group=' + $scope.groupName + '&x=' + e.originalEvent.offsetX * 100.0 / maxx() + '&y=' + e.originalEvent.offsetY * 100.0 / maxy(),
-            data: arrayBuffer.target.result,
-            processData: false,
-            contentType: 'application/binary'
-          });
-        };
-        return reader.readAsArrayBuffer(f);
-      }
-    }
   });
   $scope.chatVisible = true;
   $scope.messages = [];

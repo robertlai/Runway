@@ -1,4 +1,7 @@
 fs = require('fs')
+multer  = require('multer')
+upload = multer({ dest: 'uploads/' })
+
 Message = require('../models/Message')
 PictureFile = require('../models/PictureFile')
 User = require('../models/User')
@@ -80,7 +83,7 @@ module.exports = (app, passport) ->
         catch err
             res.sendStatus(500)
 
-    app.post '/api/newGroup', (req, res) ->
+    app.post '/api/newGroup', isLoggedIn, (req, res) ->
         username = req.user.username
         newGroupName = req.query.newGroupName
         try
@@ -104,7 +107,7 @@ module.exports = (app, passport) ->
             res.sendStatus(500)
 
 
-    app.post '/api/picture', (req, res) ->
+    app.post '/api/picture', isLoggedIn, (req, res) ->
         fileName = (new Date()).getTime()
         # todo: don't pass through query
         x = req.query.x
@@ -113,7 +116,6 @@ module.exports = (app, passport) ->
         try
             req.pipe(fs.createWriteStream(fullFilePath)).on 'finish', ->
                 pictureFile = new PictureFile {
-                    # todo: don't pass through query
                     group: req.query.group
                     fileName: fileName
                     x: x
@@ -122,7 +124,6 @@ module.exports = (app, passport) ->
                 }
                 pictureFile.save (err1, file) ->
                     throw err1 if err1
-                    # todo: don't pass through query
                     newPicture = {
                         fileName: fileName
                         x: x
@@ -134,6 +135,31 @@ module.exports = (app, passport) ->
                     fs.unlinkSync(fullFilePath)
         catch err
             res.sendStatus(500)
+
+    app.post '/api/fileUpload', isLoggedIn, upload.single('file'), (req, res) ->
+        fileName = (new Date()).getTime()
+        group = req.query.group
+        x = req.query.x
+        y = req.query.y
+        fullFilePath = req.file.path
+        pictureFile = new PictureFile {
+            # todo: don't pass through query
+            fileName: fileName
+            group: group
+            x: x
+            y: y
+            file: fs.readFileSync(fullFilePath)
+        }
+        pictureFile.save (err1, file) ->
+            if !err1
+                newPicture = {
+                    fileName: fileName
+                    x: x
+                    y: y
+                }
+                io.sockets.in(group).emit('newPicture', newPicture)
+            res.redirect 'back'
+            fs.unlinkSync(fullFilePath)
 
     app.get '/api/picture', isLoggedIn, (req, res) ->
         try

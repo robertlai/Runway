@@ -5,8 +5,28 @@ scrollAtBottom = true
 
 app.controller 'workspaceController', ($scope) ->
 
+    $dropzone = $('#dropzone')
+
+    mouseX = undefined
+    mouseY = undefined
     maxx = -> $dropzone.outerWidth()
     maxy = -> $dropzone.outerHeight()
+
+    myDropzone = new Dropzone "#dropzone", {
+        url: '/api/fileUpload'
+        method: "post"
+        uploadMultiple: false
+        maxFilesize: 9
+        clickable: false
+        createImageThumbnails: false
+        autoProcessQueue: true
+        accept: (file, done) ->
+            this.options.url = '/api/fileUpload?group=' + $scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy()
+            done()
+    }
+
+    myDropzone.on 'complete', (file) ->
+        myDropzone.removeFile(file)
 
     socket = io()
 
@@ -49,10 +69,7 @@ app.controller 'workspaceController', ($scope) ->
     socket.on 'newPicture', (pictureInfo) ->
         addPicture(pictureInfo)
 
-
-    # raw js
     reader = new FileReader
-    $dropzone = $('#dropzone')
 
     dataURLtoBlob = (dataurl) ->
         arr = dataurl.split(',')
@@ -66,6 +83,7 @@ app.controller 'workspaceController', ($scope) ->
 
 
     $scope.buttonClicked = (str) ->
+        # todo: do this differently
         tCtx = $('<canvas/>')[0].getContext('2d')
         tCtx.font = '20px Arial'
         tCtx.canvas.width = tCtx.measureText(str).width
@@ -97,8 +115,6 @@ app.controller 'workspaceController', ($scope) ->
                 height = $(this).outerHeight()
 
     drop = (e, hover) ->
-        e.preventDefault()
-        e.stopPropagation()
         if hover
             $(e.target).addClass('hover')
             $('#dndText').text('Drop to upload')
@@ -108,26 +124,12 @@ app.controller 'workspaceController', ($scope) ->
 
 
     $dropzone.on 'dragover', (e) ->
+        mouseX = e.originalEvent.offsetX
+        mouseY = e.originalEvent.offsetY
         drop(e, true)
 
     $dropzone.on 'dragleave', (e) ->
         drop(e, false)
-
-    $dropzone.on 'drop', (e) ->
-        drop(e, false)
-        if e.originalEvent.dataTransfer
-            if e.originalEvent.dataTransfer.files.length
-                f = e.originalEvent.dataTransfer.files[0]
-                reader.onload = (arrayBuffer) ->
-                    $.ajax ({
-                        method: 'POST'
-                        url: '/api/picture?group=' + $scope.groupName + '&x=' + e.originalEvent.offsetX * 100.0 / maxx() + '&y=' + e.originalEvent.offsetY * 100.0 / maxy()
-                        data: arrayBuffer.target.result
-                        processData: false
-                        contentType: 'application/binary'
-                    })
-
-                reader.readAsArrayBuffer(f)
 
 
     $scope.chatVisible = true
