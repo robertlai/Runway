@@ -2,7 +2,6 @@ fs = require('fs')
 multer  = require('multer')
 upload = multer({ dest: 'uploads/' })
 
-Message = require('../models/Message')
 PictureFile = require('../models/PictureFile')
 User = require('../models/User')
 Group = require('../models/Group')
@@ -28,26 +27,29 @@ module.exports = (app, passport) ->
 
 
         socket.on 'getInitialMessages', ->
-            Message.find({group: socket.group}).sort('timestamp').exec (err, messages) ->
-                # todo: add error responce
+            Group.findOne({name: socket.group})
+            .select('messages')
+            .sort('timestamp')
+            .exec (err, data) ->
                 if !err
-                    socket.emit('initialMessages', messages)
+                    socket.emit('initialMessages', data.messages)
 
         socket.on 'postNewMessage', (messageContent) ->
-            newMessage = new Message {
+            newMessage = {
                 timestamp: (new Date()).getTime()
                 user: socket.username
-                group: socket.group
                 content: messageContent
             }
-            newMessage.save (err, message) ->
-                # todo: add error responce
+            Group.update { name: socket.group },
+            { $push: 'messages': newMessage },
+            (err) ->
                 if !err
-                    io.sockets.in(socket.group).emit('newMessage', message)
+                    io.sockets.in(socket.group).emit('newMessage', newMessage)
 
         socket.on 'postRemoveMessage', (timestamp) ->
-            Message.remove {timestamp: timestamp, group: socket.group}, (err) ->
-                # todo: add err responce
+            Group.update {name: socket.group},
+            { $pull: 'messages': {timestamp: timestamp}},
+            (err) ->
                 if !err
                     io.sockets.in(socket.group).emit('removeMessage', timestamp)
 
@@ -57,7 +59,6 @@ module.exports = (app, passport) ->
             .select('fileName x y')
             .sort('fileName')
             .exec (err, picturesInfo) ->
-                # todo: add error responce
                 if !err
                     socket.emit('initialPictures', picturesInfo)
 
@@ -66,7 +67,6 @@ module.exports = (app, passport) ->
             PictureFile.findOne({fileName: fileName})
             .select('fileName x y')
             .exec (err, picture) ->
-                # todo: add error responce
                 if !err
                     picture.x = newX
                     picture.y = newY
@@ -138,12 +138,12 @@ module.exports = (app, passport) ->
 
     app.post '/api/fileUpload', isLoggedIn, upload.single('file'), (req, res) ->
         fileName = (new Date()).getTime()
+        # todo: don't pass through query
         group = req.query.group
         x = req.query.x
         y = req.query.y
         fullFilePath = req.file.path
         pictureFile = new PictureFile {
-            # todo: don't pass through query
             fileName: fileName
             group: group
             x: x
