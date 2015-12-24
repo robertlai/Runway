@@ -25,7 +25,7 @@ DB = require('./Utilities/DB');
 
 require('./passport')(passport);
 
-port = process.env.PORT || 3000;
+port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000;
 
 app.set('views', __dirname + '/views');
 
