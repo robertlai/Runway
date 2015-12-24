@@ -15,7 +15,7 @@ DB = require('./Utilities/DB')
 require('./passport')(passport)
 
 
-port = (process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000)
+port = (process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 8080)
 ip = (process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1')
 
 
