@@ -49,4 +49,4 @@ require('./routes/pageRouter')(app, passport)
 app.set('port', port)
 app.set('ip', ip)
 
-http.listen(port)
+http.listen(port, ip)
