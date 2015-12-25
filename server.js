@@ -27,7 +27,7 @@ require('./passport')(passport);
 
 port = process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000;
 
-ip = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+ip = process.env.OPENSHIFT_NODEJS_IP;
 
 app.set('views', __dirname + '/views');
 
@@ -67,4 +67,9 @@ require('./routes/pageRouter')(app, passport);
 
 app.set('port', port);
 
-http.listen(port);
+if (ip) {
+  app.set('ip', ip);
+  http.listen(port, ip);
+} else {
+  http.listen(port);
+}
