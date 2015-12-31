@@ -30,7 +30,7 @@ module.exports = function(app, passport) {
     });
   });
   app.post('/register', passport.authenticate('register', {
-    successRedirect: '/home',
+    successRedirect: '/login',
     failureRedirect: '/register',
     failureFlash: true
   }));
