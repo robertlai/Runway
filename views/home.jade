@@ -14,7 +14,7 @@ block content
                     label Go to...
                     div.list-group#homeListGroup
                         div.alert.alert-danger(ng-bind='error' ng-show='error')
-                        div.alert.alert-warning(ng-show='!groups.length') You have no rooms. Create one!
+                        div.alert.alert-warning(ng-show='groups.length === 0') You have no rooms. Create one!
                         div(ng-repeat='group in groups track by $index')
                             a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}') {{group}}
                     form.form-auth(ng-submit='addGroup()')
