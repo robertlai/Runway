@@ -8,23 +8,33 @@ isLoggedIn = function(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   } else {
+    req.session.returnTo = req.originalUrl;
     return res.redirect('/login');
   }
 };
 
 module.exports = function(app, passport) {
   app.get('/login', function(req, res) {
+    req.logout();
     return res.render('login', {
       title: 'Login',
       message: req.flash('loginMessage')
     });
   });
   app.post('/login', passport.authenticate('login', {
-    successRedirect: '/home',
     failureRedirect: '/login',
     failureFlash: true
-  }));
+  }), function(req, res, next) {
+    var pathToReturnTo;
+    pathToReturnTo = '/home';
+    if (req.session.returnTo) {
+      pathToReturnTo = req.session.returnTo;
+    }
+    delete req.session.returnTo;
+    return res.redirect(pathToReturnTo);
+  });
   app.get('/register', function(req, res) {
+    req.logout();
     return res.render('login', {
       title: 'Register',
       message: req.flash('registerMessage')

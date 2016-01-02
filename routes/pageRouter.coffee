@@ -5,24 +5,31 @@ isLoggedIn = (req, res, next) ->
     if req.isAuthenticated()
         next()
     else
+        req.session.returnTo = req.originalUrl
         res.redirect '/login'
 
 module.exports = (app, passport) ->
 
 
     app.get '/login', (req, res) ->
+        req.logout()
         res.render('login', {
             title: 'Login'
             message: req.flash('loginMessage')
         })
 
     app.post '/login', passport.authenticate('login',
-        successRedirect: '/home'
         failureRedirect: '/login'
         failureFlash : true
-    )
+    ), (req, res, next) ->
+        pathToReturnTo = '/home'
+        if req.session.returnTo
+            pathToReturnTo = req.session.returnTo
+        delete req.session.returnTo
+        res.redirect pathToReturnTo
 
     app.get '/register', (req, res) ->
+        req.logout()
         res.render('login', {
             title: 'Register'
             message: req.flash('registerMessage')
