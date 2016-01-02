@@ -63,13 +63,7 @@ module.exports = (app, passport) ->
                         groupName: groupRequested
                     })
                 else
-                    res.render('error', {
-                        title: 'Error'
-                        message:'Unauthorized.  You do not have access to this group.'
-                        error: {
-                            status: 401
-                        }
-                    })
+                    res.redirect '/home'
 
     app.get '*', isLoggedIn, (req, res) ->
         res.redirect '/home'

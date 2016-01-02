@@ -68,13 +68,7 @@ module.exports = function(app, passport) {
             groupName: groupRequested
           });
         } else {
-          return res.render('error', {
-            title: 'Error',
-            message: 'Unauthorized.  You do not have access to this group.',
-            error: {
-              status: 401
-            }
-          });
+          return res.redirect('/home');
         }
       }
     });

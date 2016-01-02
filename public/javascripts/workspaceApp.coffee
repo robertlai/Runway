@@ -70,10 +70,9 @@ app.controller 'workspaceController', ($scope) ->
         else if itemInfo.type == 'image/jpeg'
             innerContent = $('<img/>', src: '/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + $scope.groupName)
         else
-            console.log 'aw shit: ' + itemInfo.type
+            # unsuported constnet
 
         if innerContent
-            console.log 'yo, adding this shit'
             innerContent.appendTo($dropzone).wrap('<div id=' + itemInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset(
                 top: itemInfo.y / 100.0 * maxy()
                 left: itemInfo.x / 100.0 * maxx()).draggable(
