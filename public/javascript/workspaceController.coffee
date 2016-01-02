@@ -1,5 +1,6 @@
-angular.module('runwayApp').controller 'workspaceController', ($scope) ->
+scrollAtBottom = true
 
+angular.module('runwayApp').controller 'workspaceController', ($scope) ->
 
     $dropzone = $('#dropzone')
 
@@ -65,6 +66,9 @@ angular.module('runwayApp').controller 'workspaceController', ($scope) ->
 
     socket.on 'newPicture', (pictureInfo) ->
         addPicture(pictureInfo)
+
+    $scope.$on '$destroy', ->
+        socket.removeListener();
 
     reader = new FileReader
 
@@ -135,7 +139,7 @@ angular.module('runwayApp').controller 'workspaceController', ($scope) ->
 
 
     $scope.sendMessage = ->
-        if $scope.newMessage.trim().length > 0
+        if $scope.newMessage and $scope.newMessage.trim().length > 0
             socket.emit('postNewMessage', $scope.newMessage)
             $scope.newMessage = ''
 
@@ -152,9 +156,9 @@ angular.module('runwayApp').controller 'workspaceController', ($scope) ->
         document.getElementById('dropzone').style.width = '75%'
 
 
-    updateScrollState = ->
-        scrollAtBottom = msgpanel.scrollTop == (msgpanel.scrollHeight - msgpanel.offsetHeight)
+updateScrollState = ->
+    scrollAtBottom = msgpanel.scrollTop == (msgpanel.scrollHeight - msgpanel.offsetHeight)
 
-    scrollToBottom = ->
-        if scrollAtBottom
-            msgpanel.scrollTop = msgpanel.scrollHeight
+scrollToBottom = ->
+    if scrollAtBottom
+        msgpanel.scrollTop = msgpanel.scrollHeight

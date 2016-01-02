@@ -37,7 +37,7 @@ module.exports = function(app, passport) {
       return Group.findOne({
         name: socket.group
       }).select('messages').sort('timestamp').exec(function(err, data) {
-        if (!err) {
+        if (data && !err) {
           return socket.emit('initialMessages', data.messages);
         }
       });

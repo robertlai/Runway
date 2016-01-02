@@ -60,7 +60,7 @@ module.exports = function(app, passport) {
           });
         } else {
           return res.render('error', {
-            message: 'Unauthorized',
+            message: 'Unauthorized.  You do not have access to this group.',
             error: {
               status: 401
             }

@@ -14,6 +14,8 @@ angular.module('runwayApp').controller 'homeController', ($scope, $http) ->
         $scope.error = null
         $scope.$apply()
 
+    $scope.$on '$destroy', ->
+        socket.removeListener();
 
     $scope.addGroup = ->
         if $scope.newGroupName.trim().length > 0
@@ -32,3 +34,4 @@ angular.module('runwayApp').controller 'homeController', ($scope, $http) ->
         $scope.error = null
     , (err) ->
         $scope.error = 'Server Error.  Please contact support.'
+

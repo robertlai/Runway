@@ -1,16 +1,16 @@
-#homeGroup{
+#homeGroup {
     margin-top: 20%;
     background-color: rgba(128, 128, 128, 0.9);
     border-radius: 10px;
 }
 
-#createGroupButton{
+#createGroupButton {
     float:right;
     margin-top: 5px;
     margin-bottom: 15px;
 }
 
-#homeListGroup{
+#homeListGroup {
     height: auto;
     max-height: 450px;
     overflow-x: hidden;

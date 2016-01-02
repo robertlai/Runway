@@ -13,6 +13,9 @@ angular.module('runwayApp').controller('homeController', function($scope, $http)
     $scope.error = null;
     return $scope.$apply();
   });
+  $scope.$on('$destroy', function() {
+    return socket.removeListener();
+  });
   $scope.addGroup = function() {
     if ($scope.newGroupName.trim().length > 0) {
       return $http.post('/api/newGroup?newGroupName=' + $scope.newGroupName).then(function(addedGroupName) {

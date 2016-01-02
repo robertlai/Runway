@@ -53,7 +53,7 @@ module.exports = (app, passport) ->
                     res.render('workspace', {username: username, groupName: groupRequested})
                 else
                     res.render('error', {
-                        message:'Unauthorized'
+                        message:'Unauthorized.  You do not have access to this group.'
                         error: {
                             status: 401
                         }

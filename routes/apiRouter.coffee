@@ -31,7 +31,7 @@ module.exports = (app, passport) ->
             .select('messages')
             .sort('timestamp')
             .exec (err, data) ->
-                if !err
+                if data and !err
                     socket.emit('initialMessages', data.messages)
 
         socket.on 'postNewMessage', (messageContent) ->
@@ -63,7 +63,6 @@ module.exports = (app, passport) ->
                     socket.emit('initialPictures', picturesInfo)
 
         socket.on 'updatePictureLocation', (fileName, newX, newY) ->
-            # todo: use groups
             PictureFile.findOne({fileName: fileName})
             .select('fileName x y')
             .exec (err, picture) ->
