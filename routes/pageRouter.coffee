@@ -9,7 +9,6 @@ isLoggedIn = (req, res, next) ->
 
 module.exports = (app, passport) ->
 
-
     app.get '/login', (req, res) ->
         res.render('login', {
             title: 'Login'
@@ -60,10 +59,10 @@ module.exports = (app, passport) ->
                         }
                     })
 
-
-    app.get '/logout', (req, res) ->
-        req.logout()
-        res.redirect '/login'
-
     app.get '*', isLoggedIn, (req, res) ->
         res.redirect '/'
+
+# todo: implement logout function
+    # app.get '/logout', (req, res) ->
+    #     req.logout()
+    #     res.redirect '/login'

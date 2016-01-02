@@ -69,10 +69,6 @@ module.exports = function(app, passport) {
       }
     });
   });
-  app.get('/logout', function(req, res) {
-    req.logout();
-    return res.redirect('/login');
-  });
   return app.get('*', isLoggedIn, function(req, res) {
     return res.redirect('/');
   });

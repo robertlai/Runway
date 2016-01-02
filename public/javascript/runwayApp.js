@@ -16,7 +16,6 @@ runwayApp.config(function($routeProvider) {
     },
     controller: 'workspaceController'
   }).otherwise({
-    templateUrl: 'home',
-    controller: 'homeController'
+    redirectTo: '/'
   });
 });

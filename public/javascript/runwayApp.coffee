@@ -13,5 +13,4 @@ runwayApp.config ($routeProvider) ->
             'workspace?group=' + params.group
         controller: 'workspaceController'
     .otherwise
-        templateUrl: 'home'
-        controller: 'homeController'
+        redirectTo: '/'
