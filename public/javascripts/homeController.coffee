@@ -1,10 +1,6 @@
-app = angular.module('homeApp', [])
-
-
-app.controller 'homeController', ($scope, $http) ->
+angular.module('runwayApp').controller 'homeController', ($scope, $http) ->
 
     socket = io()
-
 
     $scope.newGroupName = ''
     $scope.error = null

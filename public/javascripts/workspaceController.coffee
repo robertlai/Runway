@@ -1,9 +1,5 @@
-app = angular.module('workspaceApp', [])
+angular.module('runwayApp').controller 'workspaceController', ($scope) ->
 
-scrollAtBottom = true
-
-
-app.controller 'workspaceController', ($scope) ->
 
     $dropzone = $('#dropzone')
 
@@ -29,6 +25,7 @@ app.controller 'workspaceController', ($scope) ->
         myDropzone.removeFile(file)
 
     socket = io()
+
 
     $scope.init = (username, groupName) ->
         $scope.username = username
@@ -155,14 +152,9 @@ app.controller 'workspaceController', ($scope) ->
         document.getElementById('dropzone').style.width = '75%'
 
 
+    updateScrollState = ->
+        scrollAtBottom = msgpanel.scrollTop == (msgpanel.scrollHeight - msgpanel.offsetHeight)
 
-window.onload = ->
-    msgpanel = document.getElementById("msgpanel")
-    msgpanel.scrollTop = msgpanel.scrollHeight
-
-updateScrollState = ->
-    scrollAtBottom = msgpanel.scrollTop == (msgpanel.scrollHeight - msgpanel.offsetHeight)
-
-scrollToBottom = ->
-    if scrollAtBottom
-        msgpanel.scrollTop = msgpanel.scrollHeight
+    scrollToBottom = ->
+        if scrollAtBottom
+            msgpanel.scrollTop = msgpanel.scrollHeight

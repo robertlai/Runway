@@ -1,0 +1,11 @@
+extends layout
+block scripts
+    script(type='text/javascript' src='/javascripts/index.js')
+    script(type='text/javascript' src='/javascripts/workspaceController.js')
+    script(type='text/javascript' src='/javascripts/homeController.js')
+    script(type='text/javascript' src='/socket.io/socket.io.js')
+    script(type='text/javascript' src='/dropzone.js')
+
+block content
+    div(ng-app='runwayApp' ng-controller='homeController' ng-init="username='#{username}'").fill
+        div(ng-view).fill

@@ -8,14 +8,14 @@
 }
 
 #dndText {
-    position:absolute;
+    position: absolute;
     width: 100%;
     top: 50%;
     margin-top: -28px;
     line-height: 55px;
     font-size: 55px;
     color: #e6e6e6;
-    cursor:default;
+    cursor: default;
 }
 
 .noselect {
@@ -40,12 +40,12 @@
     top: 0;
     right: 0;
     border: none;
-    background-color:#ffdd99;
+    background-color: #ffdd99;
     color: #888;
-    font-size:14px;
-    font-weight:bold;
+    font-size: 14px;
+    font-weight: bold;
     height: 48px;
-    line-height:16px;
+    line-height: 16px;
     padding: 16px;
 }
 
@@ -61,10 +61,10 @@
 }
 
 .right-panel{
-  position:absolute;
-  height:100%;
-  width:25%;
-  left:75%;
+  position: absolute;
+  height: 100%;
+  width: 25%;
+  left: 75%;
 }
 
 .users-bar {
@@ -110,13 +110,13 @@
     bottom: 0px;
     height: 48px;
     width: 100%;
-    background-color:#ffffff;
+    background-color: #ffffff;
 }
 
 .fill {
     overflow: visible;
-    height:100%;
-    width:100%;
+    height: 100%;
+    width: 100%;
 }
 
 #hide-btn {
@@ -124,13 +124,13 @@
     background-color: transparent;
     color: #888;
     font-size: 14px;
-    font-weight:bold;
+    font-weight: bold;
     height: 48px;
-    line-height:16px;
+    line-height: 16px;
     padding: 16px;
 }
 
-#hide-btn:hover, #un-hide-btn:hover {
+#hide-btn: hover, #un-hide-btn: hover {
     background-color: #5d176a;
 }
 
@@ -179,7 +179,7 @@
           box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.28);
 }
 
-.user .tooltip:before {
+.user .tooltip: before {
   bottom: -20px;
   content: " ";
   display: block;
@@ -189,7 +189,7 @@
   width: 100%;
 }
 
-.user .tooltip:after {
+.user .tooltip: after {
   border-left: solid transparent 10px;
   border-right: solid transparent 10px;
   border-top: solid #1496bb 10px;
@@ -202,7 +202,7 @@
   width: 0;
 }
 
-.user:hover .tooltip {
+.user: hover .tooltip {
   opacity: 1;
   pointer-events: auto;
   -webkit-transform: translateY(0px);

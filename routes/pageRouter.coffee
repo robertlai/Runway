@@ -17,7 +17,7 @@ module.exports = (app, passport) ->
         })
 
     app.post '/login', passport.authenticate('login',
-        successRedirect: '/home'
+        successRedirect: '/'
         failureRedirect: '/login'
         failureFlash : true
     )
@@ -34,8 +34,12 @@ module.exports = (app, passport) ->
         failureFlash : true
     )
 
+    app.get '/', isLoggedIn, (req, res) ->
+        res.render('index', {username: req.user.username})
+
     app.get '/home', isLoggedIn, (req, res) ->
-        res.render('home', {username: req.user.username})
+        res.render('home')
+
 
     app.get '/workspace', isLoggedIn, (req, res) ->
         username = req.user.username
@@ -46,7 +50,7 @@ module.exports = (app, passport) ->
             if err
                 res.sendStatus(500)
             else
-                if user.groups.indexOf(groupRequested) != -1
+                if groupRequested in user.groups
                     res.render('workspace', {username: username, groupName: groupRequested})
                 else
                     res.render('error', {
@@ -61,5 +65,5 @@ module.exports = (app, passport) ->
         req.logout()
         res.redirect '/login'
 
-    app.get '*', (req, res) ->
-        res.redirect '/login'
+    app.get '*', isLoggedIn, (req, res) ->
+        res.redirect '/'
