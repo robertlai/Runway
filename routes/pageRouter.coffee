@@ -23,7 +23,7 @@ module.exports = (app, passport) ->
     )
 
     app.get '/register', (req, res) ->
-        res.render('register', {
+        res.render('login', {
             title: 'Register'
             message: req.flash('registerMessage')
         })

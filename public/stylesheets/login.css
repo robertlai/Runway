@@ -1,0 +1,10 @@
+.login-form {
+    position: absolute;
+    bottom: 60px;
+    left: 35%;
+    right: 35%;
+}
+
+#signInButton {
+    float: right;
+}

@@ -25,7 +25,7 @@ module.exports = function(app, passport) {
     failureFlash: true
   }));
   app.get('/register', function(req, res) {
-    return res.render('register', {
+    return res.render('login', {
       title: 'Register',
       message: req.flash('registerMessage')
     });
