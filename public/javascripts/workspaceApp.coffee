@@ -12,16 +12,17 @@ app.controller 'workspaceController', ($scope) ->
     maxx = -> $dropzone.outerWidth()
     maxy = -> $dropzone.outerHeight()
 
-    myDropzone = new Dropzone "#dropzone", {
+    myDropzone = new Dropzone '#dropzone', {
         url: '/api/fileUpload'
-        method: "post"
+        method: 'post'
         uploadMultiple: false
         maxFilesize: 9
         clickable: false
         createImageThumbnails: false
         autoProcessQueue: true
         accept: (file, done) ->
-            this.options.url = '/api/fileUpload?group=' + $scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy()
+            this.options.url = '/api/fileUpload?group=' + $scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy() + '&type=image/jpeg'
+            hoverTextOff()
             done()
     }
 
@@ -38,7 +39,7 @@ app.controller 'workspaceController', ($scope) ->
 
     socket.on 'setupComplete', ->
         socket.emit('getInitialMessages')
-        socket.emit('getInitialPictures')
+        socket.emit('getInitialItems')
 
 
     socket.on 'initialMessages', (messages) ->
@@ -56,72 +57,57 @@ app.controller 'workspaceController', ($scope) ->
             message.timestamp != timestamp
         $scope.$apply()
 
-    socket.on 'initialPictures', (pictureInfos) ->
-        addPicture(pictureInfo) for pictureInfo in pictureInfos
-        $scope.$apply()
-
-    socket.on 'updatePicture', (pictureInfo) ->
-        $('#' + pictureInfo.fileName).offset ({
-            top: pictureInfo.y / 100.0 * maxy()
-            left: pictureInfo.x / 100.0 * maxx()
+    socket.on 'updateItem', (itemInfo) ->
+        $('#' + itemInfo.fileName).offset ({
+            top: itemInfo.y / 100.0 * maxy()
+            left: itemInfo.x / 100.0 * maxx()
         })
 
-    socket.on 'newPicture', (pictureInfo) ->
-        addPicture(pictureInfo)
+    socket.on 'newItem', (itemInfo) ->
+        innerContent = undefined
+        if itemInfo.type == 'text'
+            innerContent = $('<p/>', class: 'noselect').text(itemInfo.text)
+        else if itemInfo.type == 'image/jpeg'
+            innerContent = $('<img/>', src: '/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + $scope.groupName)
+        else
+            console.log 'aw shit: ' + itemInfo.type
 
-    reader = new FileReader
+        if innerContent
+            console.log 'yo, adding this shit'
+            innerContent.appendTo($dropzone).wrap('<div id=' + itemInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset(
+                top: itemInfo.y / 100.0 * maxy()
+                left: itemInfo.x / 100.0 * maxx()).draggable(
+                    containment: 'parent'
+                    cursor: 'move'
+                    stop: (event, ui) ->
+                        socket.emit('updateItemLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy())
+                ).on 'resize', ->
+                    width = $(this).outerWidth()
+                    height = $(this).outerHeight()
 
-    dataURLtoBlob = (dataurl) ->
-        arr = dataurl.split(',')
-        mime = arr[0].match(/:(.*?);/)[1]
-        bstr = atob(arr[1])
-        n = bstr.length
-        u8arr = new Uint8Array(n)
-        while n--
-            u8arr[n] = bstr.charCodeAt(n)
-        return new Blob([ u8arr ], type: mime)
-
-
-    $scope.buttonClicked = (str) ->
-        # todo: do this differently
-        tCtx = $('<canvas/>')[0].getContext('2d')
-        tCtx.font = '20px Arial'
-        tCtx.canvas.width = tCtx.measureText(str).width
-        tCtx.canvas.height = 25
-        tCtx.font = '20px Arial'
-        tCtx.fillText str, 0, 20
-
-        reader.onload = (arrayBuffer) ->
-            $.ajax ({
-                method: 'POST'
-                url: '/api/picture?group=' + $scope.groupName + '&x=1&y=1'
-                data: arrayBuffer.target.result
-                processData: false
-                contentType: 'application/binary'
-            })
-
-        reader.readAsArrayBuffer(dataURLtoBlob(tCtx.canvas.toDataURL()))
-
-    addPicture = (pictureInfo) ->
-        $('<img/>', src: '/api/picture?fileToGet=' + pictureInfo.fileName + '&groupName=' + $scope.groupName).appendTo($dropzone).wrap('<div id=' + pictureInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset(
-            top: pictureInfo.y / 100.0 * maxy()
-            left: pictureInfo.x / 100.0 * maxx()).draggable(
-                containment: 'parent'
-                cursor: 'move'
-                stop: (event, ui) ->
-                    socket.emit('updatePictureLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy())
-            ).on 'resize', ->
-                width = $(this).outerWidth()
-                height = $(this).outerHeight()
+    $scope.buttonClicked = (string) ->
+        data = {'text': string}
+        $.ajax ({
+            method: 'POST'
+            url: '/api/text?group=' + $scope.groupName
+            data: JSON.stringify(data)
+            processData: false
+            contentType: 'application/json; charset=utf-8'
+        })
 
     drop = (e, hover) ->
         if hover
-            $(e.target).addClass('hover')
-            $('#dndText').text('Drop to upload')
+            hoverTextOn()
         else
-            $(e.target).removeClass('hover')
-            $('#dndText').text('Drag and drop files here')
+            hoverTextOff()
 
+    hoverTextOn = (e) ->
+        $('#dropzone').addClass('hover')
+        $('#dndText').text('Drop to upload')
+
+    hoverTextOff = (e) ->
+        $('#dropzone').removeClass('hover')
+        $('#dndText').text('Drag and drop files here')
 
     $dropzone.on 'dragover', (e) ->
         mouseX = e.originalEvent.offsetX
@@ -157,7 +143,7 @@ app.controller 'workspaceController', ($scope) ->
 
 
 window.onload = ->
-    msgpanel = document.getElementById("msgpanel")
+    msgpanel = document.getElementById('msgpanel')
     msgpanel.scrollTop = msgpanel.scrollHeight
 
 updateScrollState = ->

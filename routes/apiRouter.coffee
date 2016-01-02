@@ -2,7 +2,7 @@ fs = require('fs')
 multer  = require('multer')
 upload = multer({ dest: 'uploads/' })
 
-PictureFile = require('../models/PictureFile')
+Item = require('../models/Item')
 User = require('../models/User')
 Group = require('../models/Group')
 
@@ -54,23 +54,23 @@ module.exports = (app, passport) ->
                     io.sockets.in(socket.group).emit('removeMessage', timestamp)
 
 
-        socket.on 'getInitialPictures', ->
-            PictureFile.find({group: socket.group})
-            .select('fileName x y')
+        socket.on 'getInitialItems', ->
+            Item.find({group: socket.group})
+            .select('fileName type x y text')
             .sort('fileName')
-            .exec (err, picturesInfo) ->
+            .exec (err, itemsInfo) ->
                 if !err
-                    socket.emit('initialPictures', picturesInfo)
+                    socket.emit('newItem', itemInfo) for itemInfo in itemsInfo
 
-        socket.on 'updatePictureLocation', (fileName, newX, newY) ->
-            PictureFile.findOne({fileName: fileName})
+        socket.on 'updateItemLocation', (fileName, newX, newY) ->
+            Item.findOne({fileName: fileName})
             .select('fileName x y')
-            .exec (err, picture) ->
+            .exec (err, item) ->
                 if !err
-                    picture.x = newX
-                    picture.y = newY
-                    picture.save()
-                    io.sockets.in(socket.group).emit('updatePicture', picture)
+                    item.x = newX
+                    item.y = newY
+                    item.save()
+                    io.sockets.in(socket.group).emit('updateItem', item)
 
 
     app.get '/api/groups', isLoggedIn, (req, res) ->
@@ -105,66 +105,71 @@ module.exports = (app, passport) ->
         catch err
             res.sendStatus(500)
 
-
-    app.post '/api/picture', isLoggedIn, (req, res) ->
+    app.post '/api/text', isLoggedIn, (req, res) ->
         fileName = (new Date()).getTime()
-        x = req.query.x
-        y = req.query.y
-        fullFilePath = __dirname + '/' + fileName + Math.floor(Math.random() * 20000)
+        group = req.query.group
+        type = 'text'
+        x = 1
+        y = 1
+        text = req.body.text
         try
-            req.pipe(fs.createWriteStream(fullFilePath)).on 'finish', ->
-                pictureFile = new PictureFile {
-                    group: req.query.group
+            item = new Item {
+                group: group
+                fileName: fileName
+                type: type
+                x: x
+                y: y
+                text: text
+            }
+            item.save (err1, file) ->
+                throw err1 if err1
+                newItem = {
                     fileName: fileName
+                    type: type
                     x: x
                     y: y
-                    file: fs.readFileSync(fullFilePath)
+                    text: text
                 }
-                pictureFile.save (err1, file) ->
-                    throw err1 if err1
-                    newPicture = {
-                        fileName: fileName
-                        x: x
-                        y: y
-                    }
-                    io.sockets.in(req.query.group).emit('newPicture', newPicture)
-                    res.sendStatus(201)
-                .then ->
-                    fs.unlinkSync(fullFilePath)
+                io.sockets.in(group).emit('newItem', newItem)
+                res.sendStatus(201)
         catch err
             res.sendStatus(500)
 
     app.post '/api/fileUpload', isLoggedIn, upload.single('file'), (req, res) ->
         fileName = (new Date()).getTime()
         group = req.query.group
+        type = req.query.type
         x = req.query.x
         y = req.query.y
         fullFilePath = req.file.path
-        pictureFile = new PictureFile {
+        item = new Item {
             fileName: fileName
             group: group
+            type: type
             x: x
             y: y
             file: fs.readFileSync(fullFilePath)
         }
-        pictureFile.save (err1, file) ->
+        item.save (err1) ->
             if !err1
-                newPicture = {
+                newItem = {
                     fileName: fileName
+                    type: type
                     x: x
                     y: y
                 }
-                io.sockets.in(group).emit('newPicture', newPicture)
+                io.sockets.in(group).emit('newItem', newItem)
             res.redirect 'back'
             fs.unlinkSync(fullFilePath)
 
     app.get '/api/picture', isLoggedIn, (req, res) ->
         try
-            PictureFile.findOne({fileName: req.query.fileToGet, group: req.query.groupName})
-            .select('file')
+            Item.findOne({fileName: req.query.fileToGet, group: req.query.groupName})
+            .select('file type')
             .exec (err, file) ->
                 throw err if (not file or err)
-                res.set('Content-Type': 'image/jpeg')
-                res.send(file.file)
+                res.set('Content-Type': file.type)
+                b = file.file
+                res.send(b)
         catch err
             res.sendStatus(500)

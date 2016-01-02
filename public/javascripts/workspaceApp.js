@@ -6,7 +6,7 @@ app = angular.module('workspaceApp', []);
 scrollAtBottom = true;
 
 app.controller('workspaceController', function($scope) {
-  var $dropzone, addPicture, dataURLtoBlob, drop, maxx, maxy, mouseX, mouseY, myDropzone, reader, socket;
+  var $dropzone, drop, hoverTextOff, hoverTextOn, maxx, maxy, mouseX, mouseY, myDropzone, socket;
   $dropzone = $('#dropzone');
   mouseX = void 0;
   mouseY = void 0;
@@ -16,16 +16,17 @@ app.controller('workspaceController', function($scope) {
   maxy = function() {
     return $dropzone.outerHeight();
   };
-  myDropzone = new Dropzone("#dropzone", {
+  myDropzone = new Dropzone('#dropzone', {
     url: '/api/fileUpload',
-    method: "post",
+    method: 'post',
     uploadMultiple: false,
     maxFilesize: 9,
     clickable: false,
     createImageThumbnails: false,
     autoProcessQueue: true,
     accept: function(file, done) {
-      this.options.url = '/api/fileUpload?group=' + $scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy();
+      this.options.url = '/api/fileUpload?group=' + $scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy() + '&type=image/jpeg';
+      hoverTextOff();
       return done();
     }
   });
@@ -40,7 +41,7 @@ app.controller('workspaceController', function($scope) {
   };
   socket.on('setupComplete', function() {
     socket.emit('getInitialMessages');
-    return socket.emit('getInitialPictures');
+    return socket.emit('getInitialItems');
   });
   socket.on('initialMessages', function(messages) {
     $scope.messages = messages;
@@ -58,83 +59,71 @@ app.controller('workspaceController', function($scope) {
     });
     return $scope.$apply();
   });
-  socket.on('initialPictures', function(pictureInfos) {
-    var i, len, pictureInfo;
-    for (i = 0, len = pictureInfos.length; i < len; i++) {
-      pictureInfo = pictureInfos[i];
-      addPicture(pictureInfo);
-    }
-    return $scope.$apply();
-  });
-  socket.on('updatePicture', function(pictureInfo) {
-    return $('#' + pictureInfo.fileName).offset({
-      top: pictureInfo.y / 100.0 * maxy(),
-      left: pictureInfo.x / 100.0 * maxx()
+  socket.on('updateItem', function(itemInfo) {
+    return $('#' + itemInfo.fileName).offset({
+      top: itemInfo.y / 100.0 * maxy(),
+      left: itemInfo.x / 100.0 * maxx()
     });
   });
-  socket.on('newPicture', function(pictureInfo) {
-    return addPicture(pictureInfo);
-  });
-  reader = new FileReader;
-  dataURLtoBlob = function(dataurl) {
-    var arr, bstr, mime, n, u8arr;
-    arr = dataurl.split(',');
-    mime = arr[0].match(/:(.*?);/)[1];
-    bstr = atob(arr[1]);
-    n = bstr.length;
-    u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new Blob([u8arr], {
-      type: mime
-    });
-  };
-  $scope.buttonClicked = function(str) {
-    var tCtx;
-    tCtx = $('<canvas/>')[0].getContext('2d');
-    tCtx.font = '20px Arial';
-    tCtx.canvas.width = tCtx.measureText(str).width;
-    tCtx.canvas.height = 25;
-    tCtx.font = '20px Arial';
-    tCtx.fillText(str, 0, 20);
-    reader.onload = function(arrayBuffer) {
-      return $.ajax({
-        method: 'POST',
-        url: '/api/picture?group=' + $scope.groupName + '&x=1&y=1',
-        data: arrayBuffer.target.result,
-        processData: false,
-        contentType: 'application/binary'
+  socket.on('newItem', function(itemInfo) {
+    var innerContent;
+    innerContent = void 0;
+    if (itemInfo.type === 'text') {
+      innerContent = $('<p/>', {
+        "class": 'noselect'
+      }).text(itemInfo.text);
+    } else if (itemInfo.type === 'image/jpeg') {
+      innerContent = $('<img/>', {
+        src: '/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + $scope.groupName
       });
+    } else {
+      console.log('aw shit: ' + itemInfo.type);
+    }
+    if (innerContent) {
+      console.log('yo, adding this shit');
+      return innerContent.appendTo($dropzone).wrap('<div id=' + itemInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset({
+        top: itemInfo.y / 100.0 * maxy(),
+        left: itemInfo.x / 100.0 * maxx()
+      }).draggable({
+        containment: 'parent',
+        cursor: 'move',
+        stop: function(event, ui) {
+          return socket.emit('updateItemLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy());
+        }
+      }).on('resize', function() {
+        var height, width;
+        width = $(this).outerWidth();
+        return height = $(this).outerHeight();
+      });
+    }
+  });
+  $scope.buttonClicked = function(string) {
+    var data;
+    data = {
+      'text': string
     };
-    return reader.readAsArrayBuffer(dataURLtoBlob(tCtx.canvas.toDataURL()));
-  };
-  addPicture = function(pictureInfo) {
-    return $('<img/>', {
-      src: '/api/picture?fileToGet=' + pictureInfo.fileName + '&groupName=' + $scope.groupName
-    }).appendTo($dropzone).wrap('<div id=' + pictureInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset({
-      top: pictureInfo.y / 100.0 * maxy(),
-      left: pictureInfo.x / 100.0 * maxx()
-    }).draggable({
-      containment: 'parent',
-      cursor: 'move',
-      stop: function(event, ui) {
-        return socket.emit('updatePictureLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy());
-      }
-    }).on('resize', function() {
-      var height, width;
-      width = $(this).outerWidth();
-      return height = $(this).outerHeight();
+    return $.ajax({
+      method: 'POST',
+      url: '/api/text?group=' + $scope.groupName,
+      data: JSON.stringify(data),
+      processData: false,
+      contentType: 'application/json; charset=utf-8'
     });
   };
   drop = function(e, hover) {
     if (hover) {
-      $(e.target).addClass('hover');
-      return $('#dndText').text('Drop to upload');
+      return hoverTextOn();
     } else {
-      $(e.target).removeClass('hover');
-      return $('#dndText').text('Drag and drop files here');
+      return hoverTextOff();
     }
+  };
+  hoverTextOn = function(e) {
+    $('#dropzone').addClass('hover');
+    return $('#dndText').text('Drop to upload');
+  };
+  hoverTextOff = function(e) {
+    $('#dropzone').removeClass('hover');
+    return $('#dndText').text('Drag and drop files here');
   };
   $dropzone.on('dragover', function(e) {
     mouseX = e.originalEvent.offsetX;
@@ -167,7 +156,7 @@ app.controller('workspaceController', function($scope) {
 
 window.onload = function() {
   var msgpanel;
-  msgpanel = document.getElementById("msgpanel");
+  msgpanel = document.getElementById('msgpanel');
   return msgpanel.scrollTop = msgpanel.scrollHeight;
 };
 
