@@ -112,7 +112,7 @@ angular.module('runwayApp').controller('workspaceController', function($scope) {
   };
   addPicture = function(pictureInfo) {
     return $('<img/>', {
-      src: '/api/picture?fileToGet=' + pictureInfo.fileName
+      src: '/api/picture?fileToGet=' + pictureInfo.fileName + '&groupName=' + $scope.groupName
     }).appendTo($dropzone).wrap('<div id=' + pictureInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset({
       top: pictureInfo.y / 100.0 * maxy(),
       left: pictureInfo.x / 100.0 * maxx()

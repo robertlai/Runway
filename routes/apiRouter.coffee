@@ -108,7 +108,6 @@ module.exports = (app, passport) ->
 
     app.post '/api/picture', isLoggedIn, (req, res) ->
         fileName = (new Date()).getTime()
-        # todo: don't pass through query
         x = req.query.x
         y = req.query.y
         fullFilePath = __dirname + '/' + fileName + Math.floor(Math.random() * 20000)
@@ -137,7 +136,6 @@ module.exports = (app, passport) ->
 
     app.post '/api/fileUpload', isLoggedIn, upload.single('file'), (req, res) ->
         fileName = (new Date()).getTime()
-        # todo: don't pass through query
         group = req.query.group
         x = req.query.x
         y = req.query.y
@@ -162,11 +160,10 @@ module.exports = (app, passport) ->
 
     app.get '/api/picture', isLoggedIn, (req, res) ->
         try
-            # todo: not checking groups yet
-            PictureFile.findOne({fileName: req.query.fileToGet})
+            PictureFile.findOne({fileName: req.query.fileToGet, group: req.query.groupName})
             .select('file')
             .exec (err, file) ->
-                throw err if err
+                throw err if (not file or err)
                 res.set('Content-Type': 'image/jpeg')
                 res.send(file.file)
         catch err

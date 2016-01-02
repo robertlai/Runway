@@ -228,9 +228,10 @@ module.exports = function(app, passport) {
     var err;
     try {
       return PictureFile.findOne({
-        fileName: req.query.fileToGet
+        fileName: req.query.fileToGet,
+        group: req.query.groupName
       }).select('file').exec(function(err, file) {
-        if (err) {
+        if (!file || err) {
           throw err;
         }
         res.set({

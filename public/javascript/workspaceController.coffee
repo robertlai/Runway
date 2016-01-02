@@ -104,7 +104,7 @@ angular.module('runwayApp').controller 'workspaceController', ($scope) ->
         reader.readAsArrayBuffer(dataURLtoBlob(tCtx.canvas.toDataURL()))
 
     addPicture = (pictureInfo) ->
-        $('<img/>', src: '/api/picture?fileToGet=' + pictureInfo.fileName).appendTo($dropzone).wrap('<div id=' + pictureInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset(
+        $('<img/>', src: '/api/picture?fileToGet=' + pictureInfo.fileName + '&groupName=' + $scope.groupName).appendTo($dropzone).wrap('<div id=' + pictureInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset(
             top: pictureInfo.y / 100.0 * maxy()
             left: pictureInfo.x / 100.0 * maxx()).draggable(
                 containment: 'parent'
