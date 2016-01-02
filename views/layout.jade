@@ -1,0 +1,15 @@
+doctype html
+html
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        link(rel="stylesheet",href="/css/bootstrap.min.css")
+
+        script(type='text/javascript', src='angular.min.js')
+        script(type='text/javascript', src='jquery.min.js')
+        script(type='text/javascript' src="/js/bootstrap.min.js")
+        script(type='text/javascript' src='/jquery-ui-bundle/jquery-ui.js')
+
+        block scripts
+    body.bodyStyleHack
+        block content

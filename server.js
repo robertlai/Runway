@@ -45,8 +45,6 @@ app.use(express["static"](__dirname + '/node_modules'));
 
 app.use(express["static"](__dirname + '/node_modules/angular'));
 
-app.use(express["static"](__dirname + '/node_modules/angular-route'));
-
 app.use(express["static"](__dirname + '/node_modules/jquery/dist'));
 
 app.use(express["static"](__dirname + '/node_modules/bootstrap/dist'));

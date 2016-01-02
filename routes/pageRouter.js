@@ -20,7 +20,7 @@ module.exports = function(app, passport) {
     });
   });
   app.post('/login', passport.authenticate('login', {
-    successRedirect: '/',
+    successRedirect: '/home',
     failureRedirect: '/login',
     failureFlash: true
   }));
@@ -35,13 +35,11 @@ module.exports = function(app, passport) {
     failureRedirect: '/register',
     failureFlash: true
   }));
-  app.get('/', isLoggedIn, function(req, res) {
-    return res.render('index', {
+  app.get('/home', isLoggedIn, function(req, res) {
+    return res.render('home', {
+      title: 'Home',
       username: req.user.username
     });
-  });
-  app.get('/home', isLoggedIn, function(req, res) {
-    return res.render('home');
   });
   app.get('/workspace', isLoggedIn, function(req, res) {
     var groupRequested, username;
@@ -55,11 +53,13 @@ module.exports = function(app, passport) {
       } else {
         if (indexOf.call(user.groups, groupRequested) >= 0) {
           return res.render('workspace', {
+            title: 'Workspace: ' + groupRequested,
             username: username,
             groupName: groupRequested
           });
         } else {
           return res.render('error', {
+            title: 'Error',
             message: 'Unauthorized.  You do not have access to this group.',
             error: {
               status: 401
@@ -70,6 +70,6 @@ module.exports = function(app, passport) {
     });
   });
   return app.get('*', isLoggedIn, function(req, res) {
-    return res.redirect('/');
+    return res.redirect('/home');
   });
 };

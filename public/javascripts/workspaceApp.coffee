@@ -1,6 +1,9 @@
+app = angular.module('workspaceApp', [])
+
 scrollAtBottom = true
 
-angular.module('runwayApp').controller 'workspaceController', ($scope) ->
+
+app.controller 'workspaceController', ($scope) ->
 
     $dropzone = $('#dropzone')
 
@@ -26,7 +29,6 @@ angular.module('runwayApp').controller 'workspaceController', ($scope) ->
         myDropzone.removeFile(file)
 
     socket = io()
-
 
     $scope.init = (username, groupName) ->
         $scope.username = username
@@ -66,9 +68,6 @@ angular.module('runwayApp').controller 'workspaceController', ($scope) ->
 
     socket.on 'newPicture', (pictureInfo) ->
         addPicture(pictureInfo)
-
-    $scope.$on '$destroy', ->
-        socket.removeListener();
 
     reader = new FileReader
 
@@ -155,6 +154,11 @@ angular.module('runwayApp').controller 'workspaceController', ($scope) ->
         $scope.chatVisible = true
         document.getElementById('dropzone').style.width = '75%'
 
+
+
+window.onload = ->
+    msgpanel = document.getElementById("msgpanel")
+    msgpanel.scrollTop = msgpanel.scrollHeight
 
 updateScrollState = ->
     scrollAtBottom = msgpanel.scrollTop == (msgpanel.scrollHeight - msgpanel.offsetHeight)

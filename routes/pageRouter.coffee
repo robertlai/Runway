@@ -9,6 +9,7 @@ isLoggedIn = (req, res, next) ->
 
 module.exports = (app, passport) ->
 
+
     app.get '/login', (req, res) ->
         res.render('login', {
             title: 'Login'
@@ -16,7 +17,7 @@ module.exports = (app, passport) ->
         })
 
     app.post '/login', passport.authenticate('login',
-        successRedirect: '/'
+        successRedirect: '/home'
         failureRedirect: '/login'
         failureFlash : true
     )
@@ -33,12 +34,11 @@ module.exports = (app, passport) ->
         failureFlash : true
     )
 
-    app.get '/', isLoggedIn, (req, res) ->
-        res.render('index', {username: req.user.username})
-
     app.get '/home', isLoggedIn, (req, res) ->
-        res.render('home')
-
+        res.render('home', {
+            title: 'Home'
+            username: req.user.username
+        })
 
     app.get '/workspace', isLoggedIn, (req, res) ->
         username = req.user.username
@@ -50,9 +50,14 @@ module.exports = (app, passport) ->
                 res.sendStatus(500)
             else
                 if groupRequested in user.groups
-                    res.render('workspace', {username: username, groupName: groupRequested})
+                    res.render('workspace', {
+                        title: 'Workspace: ' + groupRequested
+                        username: username
+                        groupName: groupRequested
+                    })
                 else
                     res.render('error', {
+                        title: 'Error'
                         message:'Unauthorized.  You do not have access to this group.'
                         error: {
                             status: 401
@@ -60,7 +65,7 @@ module.exports = (app, passport) ->
                     })
 
     app.get '*', isLoggedIn, (req, res) ->
-        res.redirect '/'
+        res.redirect '/home'
 
 # todo: implement logout function
     # app.get '/logout', (req, res) ->

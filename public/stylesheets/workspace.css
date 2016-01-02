@@ -27,7 +27,7 @@
     user-select: none;
 }
 
-#dropzone.hover {
+#dropzone.hover{
     border-color: red;
 }
 
@@ -60,11 +60,11 @@
     overflow: visible;
 }
 
-.right-panel {
-    position: absolute;
-    height: 100%;
-    width: 25%;
-    left: 75%;
+.right-panel{
+  position: absolute;
+  height: 100%;
+  width: 25%;
+  left: 75%;
 }
 
 .users-bar {

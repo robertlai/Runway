@@ -1,7 +1,12 @@
-link(rel='stylesheet' href='/stylesheets/workspace.css')
+extends layout
+block scripts
+    script(type='text/javascript' src='/javascripts/workspaceApp.js')
+    script(type='text/javascript' src='/socket.io/socket.io.js')
+    script(type='text/javascript' src='/dropzone.js')
+    link(rel='stylesheet' href='/stylesheets/workspace.css')
 
-div.fill(ng-init="init('#{username}', '#{groupName}')")
-    div.fill()
+block content
+    div.fill(ng-app='workspaceApp' ng-controller='workspaceController' ng-init="init('#{username}', '#{groupName}')")
         div.space-panel#dropzone
             h1.noselect#dndText Drag and drop files here
         input#un-hide-btn(type='button' value='Show' ng-hide='chatVisible' ng-click='showChat()')
@@ -19,4 +24,4 @@ div.fill(ng-init="init('#{username}', '#{groupName}')")
                     button.col-xs-1.btn.btn-primary(type='button' ng-if='message.user === username' ng-click='removeMessage(message.timestamp)') x
             div.text-bar
                 form(ng-submit='sendMessage()')
-                    input#messagebox(type='text' ng-model='newMessage' placeholder='  Type a message...' autofocus)
+                    input#messagebox(type='text' ng-model='newMessage' placeholder='Type a message...' autofocus)
