@@ -60,7 +60,11 @@ app.use(express["static"](__dirname + '/node_modules/jquery-ui-touch-punch'));
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
 app.use(session({
-  secret: 'ilovescotchscotchyscotchscotch'
+  secret: 'ilovescotchscotchyscotchscotch',
+  cookie: {
+    maxAge: 30 * 60 * 1000
+  },
+  rolling: true
 }));
 
 app.use(passport.initialize());
