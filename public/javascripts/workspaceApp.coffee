@@ -83,10 +83,6 @@ app.controller 'workspaceController', ($scope) ->
                     stop: (event, ui) ->
                         socket.emit('updateItemLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy())
                 )
-                # this seems to be unused (keeping just in case)
-                # .on 'resize', ->
-                #     width = $(this).outerWidth()
-                #     height = $(this).outerHeight()
 
     $scope.addMessageToWorkspace = (string) ->
         data = {'text': string}
