@@ -1,26 +1,21 @@
-app = angular.module('homeApp', [])
+homeApp = angular.module('homeApp', [ 'ngRoute' ])
 
 
-app.controller 'homeController', ($scope, $http) ->
+homeApp.config ($routeProvider) ->
+    $routeProvider.when '/groups',
+        templateUrl: '/groups'
+        controller: 'groupsController'
+    # $routeProvider.when '/test',
+    #     templateUrl: '/test'
+    #     controller: 'groupsController'
+    .otherwise
+        redirectTo: '/groups'
 
-    socket = io()
 
-
-    $scope.newGroupName = ''
-    $scope.error = null
-
-    socket.on 'groupList', (groups) ->
-        $scope.groups = groups
-        $scope.$apply()
-
-    socket.on 'newGroup', (newGroup) ->
-        $scope.groups.push(newGroup)
-        $scope.error = null
-        $scope.$apply()
-
+homeApp.controller 'groupsController', ($scope, $http) ->
 
     $scope.addGroup = ->
-        if $scope.newGroupName.trim().length > 0
+        if $scope.newGroupName and $scope.newGroupName.trim().length > 0
             $http.post('/api/newGroup?newGroupName=' + $scope.newGroupName).then (addedGroupName) ->
                 $scope.groups.push(addedGroupName.data)
                 $scope.newGroupName = ''

@@ -1,9 +1,9 @@
-app = angular.module('workspaceApp', [])
+workspaceApp = angular.module('workspaceApp', [])
 
 scrollAtBottom = true
 
 
-app.controller 'workspaceController', ($scope) ->
+workspaceApp.controller 'workspaceController', ($scope) ->
 
     $dropzone = $('#dropzone')
 

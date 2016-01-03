@@ -2,24 +2,9 @@ extends layout
 block scripts
     script(type='text/javascript' src='/javascripts/homeApp.js')
     script(type='text/javascript' src='/socket.io/socket.io.js')
+    script(type='text/javascript' src='/angular-route.js')
     link(rel='stylesheet' href='/stylesheets/home.css')
 
 block content
-    div(ng-app='homeApp' ng-controller='homeController' ng-init="username='#{username}'")
-        div.container
-            div.row
-                div.col-lg-4.col-lg-offset-4.col-xs-6.col-xs-offset-3#homeGroup
-                    div
-                        h1.text-center Welcome, {{username}}!
-                    label Go to...
-                    div.list-group#homeListGroup
-                        div.alert.alert-danger(ng-bind='error' ng-show='error')
-                        div.alert.alert-warning(ng-show='groups.length === 0') You have no rooms. Create one!
-                        div(ng-repeat='group in groups track by $index')
-                            a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}') {{group}}
-                    form.form-auth(ng-submit='addGroup()')
-                        div.form-group
-                            label.input-lg(for="newGroupName") Create a new group
-                            input#newGroupName.form-control(type="text" ng-model='newGroupName' placeholder="Enter a group name..." autofocus)
-                            div.form-group.alert.alert-danger(ng-bind='newGroupError' ng-show='newGroupError')
-                            input.btn.btn-primary#createGroupButton(type="submit" value="Create Group")
+    div(ng-app='homeApp' ng-controller='groupsController' ng-init="username='#{username}'")
+        div(ng-view)

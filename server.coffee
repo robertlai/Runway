@@ -33,6 +33,7 @@ app.use(express.static(__dirname + '/node_modules/angular'))
 app.use(express.static(__dirname + '/node_modules/jquery/dist'))
 app.use(express.static(__dirname + '/node_modules/bootstrap/dist'))
 app.use(express.static(__dirname + '/node_modules/dropzone/dist'))
+app.use(express.static(__dirname + '/node_modules/angular-route'))
 
 app.use(favicon(__dirname + '/public/images/favicon.ico'))
 

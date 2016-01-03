@@ -6,7 +6,7 @@ isLoggedIn = (req, res, next) ->
         next()
     else
         req.session.returnTo = req.originalUrl
-        res.redirect '/login'
+        res.redirect('/login')
 
 module.exports = (app, passport) ->
 
@@ -25,7 +25,7 @@ module.exports = (app, passport) ->
         pathToReturnTo = '/home'
         if req.session.returnTo
             pathToReturnTo = req.session.returnTo
-        delete req.session.returnTo
+            delete req.session.returnTo
         res.redirect pathToReturnTo
 
     app.get '/register', (req, res) ->
@@ -41,11 +41,17 @@ module.exports = (app, passport) ->
         failureFlash : true
     )
 
-    app.get '/home', isLoggedIn, (req, res) ->
+    app.get '/', isLoggedIn, (req, res) ->
         res.render('home', {
             title: 'Home'
             username: req.user.username
         })
+
+    app.get '/groups', isLoggedIn, (req, res) ->
+        res.render('groups')
+
+    app.get '/test', isLoggedIn, (req, res) ->
+        res.render('test')
 
     app.get '/workspace', isLoggedIn, (req, res) ->
         username = req.user.username
@@ -63,10 +69,10 @@ module.exports = (app, passport) ->
                         groupName: groupRequested
                     })
                 else
-                    res.redirect '/home'
+                    res.redirect('/')
 
     app.get '*', isLoggedIn, (req, res) ->
-        res.redirect '/home'
+        res.redirect('/')
 
 # todo: implement logout function
     # app.get '/logout', (req, res) ->

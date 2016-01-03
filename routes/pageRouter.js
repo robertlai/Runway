@@ -29,8 +29,8 @@ module.exports = function(app, passport) {
     pathToReturnTo = '/home';
     if (req.session.returnTo) {
       pathToReturnTo = req.session.returnTo;
+      delete req.session.returnTo;
     }
-    delete req.session.returnTo;
     return res.redirect(pathToReturnTo);
   });
   app.get('/register', function(req, res) {
@@ -45,11 +45,17 @@ module.exports = function(app, passport) {
     failureRedirect: '/register',
     failureFlash: true
   }));
-  app.get('/home', isLoggedIn, function(req, res) {
+  app.get('/', isLoggedIn, function(req, res) {
     return res.render('home', {
       title: 'Home',
       username: req.user.username
     });
+  });
+  app.get('/groups', isLoggedIn, function(req, res) {
+    return res.render('groups');
+  });
+  app.get('/test', isLoggedIn, function(req, res) {
+    return res.render('test');
   });
   app.get('/workspace', isLoggedIn, function(req, res) {
     var groupRequested, username;
@@ -68,12 +74,12 @@ module.exports = function(app, passport) {
             groupName: groupRequested
           });
         } else {
-          return res.redirect('/home');
+          return res.redirect('/');
         }
       }
     });
   });
   return app.get('*', isLoggedIn, function(req, res) {
-    return res.redirect('/home');
+    return res.redirect('/');
   });
 };
