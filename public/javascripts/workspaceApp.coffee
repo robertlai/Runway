@@ -20,8 +20,9 @@ app.controller 'workspaceController', ($scope) ->
         clickable: false
         createImageThumbnails: false
         autoProcessQueue: true
+        acceptedFiles: 'image/*, application/pdf'
         accept: (file, done) ->
-            this.options.url = '/api/fileUpload?group=' + $scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy() + '&type=image/jpeg'
+            this.options.url = '/api/fileUpload?group=' + $scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy()
             hoverTextOff()
             done()
     }
@@ -67,24 +68,27 @@ app.controller 'workspaceController', ($scope) ->
         innerContent = undefined
         if itemInfo.type == 'text'
             innerContent = $('<p/>', class: 'noselect').text(itemInfo.text)
-        else if itemInfo.type == 'image/jpeg'
+        else if itemInfo.type.substring(0, 5) == 'image'
             innerContent = $('<img/>', src: '/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + $scope.groupName)
+        else if itemInfo.type == 'application/pdf'
+            innerContent = $("<object class='pdfwrapper' data='/api/picture?fileToGet=" + itemInfo.fileName + '&groupName=' + $scope.groupName + "'/>")
         else
-            # unsuported constnet
+            # unsupported content
 
         if innerContent
-            innerContent.appendTo($dropzone).wrap('<div id=' + itemInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset(
+            innerContent.appendTo($dropzone).wrap("<div class=dragWrapper id=" + itemInfo.fileName + '/>').parent().offset(
                 top: itemInfo.y / 100.0 * maxy()
                 left: itemInfo.x / 100.0 * maxx()).draggable(
                     containment: 'parent'
-                    cursor: 'move'
                     stop: (event, ui) ->
                         socket.emit('updateItemLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy())
-                ).on 'resize', ->
-                    width = $(this).outerWidth()
-                    height = $(this).outerHeight()
+                )
+                # this seems to be unused (keeping just in case)
+                # .on 'resize', ->
+                #     width = $(this).outerWidth()
+                #     height = $(this).outerHeight()
 
-    $scope.buttonClicked = (string) ->
+    $scope.addMessageToWorkspace = (string) ->
         data = {'text': string}
         $.ajax ({
             method: 'POST'
@@ -94,27 +98,21 @@ app.controller 'workspaceController', ($scope) ->
             contentType: 'application/json; charset=utf-8'
         })
 
-    drop = (e, hover) ->
-        if hover
-            hoverTextOn()
-        else
-            hoverTextOff()
-
-    hoverTextOn = (e) ->
+    hoverTextOn = ->
         $('#dropzone').addClass('hover')
         $('#dndText').text('Drop to upload')
 
-    hoverTextOff = (e) ->
+    hoverTextOff = ->
         $('#dropzone').removeClass('hover')
         $('#dndText').text('Drag and drop files here')
 
     $dropzone.on 'dragover', (e) ->
         mouseX = e.originalEvent.offsetX
         mouseY = e.originalEvent.offsetY
-        drop(e, true)
+        hoverTextOn()
 
     $dropzone.on 'dragleave', (e) ->
-        drop(e, false)
+        hoverTextOff()
 
 
     $scope.chatVisible = true

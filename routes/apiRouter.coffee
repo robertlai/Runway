@@ -138,7 +138,7 @@ module.exports = (app, passport) ->
     app.post '/api/fileUpload', isLoggedIn, upload.single('file'), (req, res) ->
         fileName = (new Date()).getTime()
         group = req.query.group
-        type = req.query.type
+        type = req.file.mimetype
         x = req.query.x
         y = req.query.y
         fullFilePath = req.file.path

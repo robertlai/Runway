@@ -20,7 +20,7 @@ block content
                         div.tooltip {{message.user}}
                     div.col-xs-7.chatMessage
                         span#chat(ng-bind='message.content')
-                    button.col-xs-1.btn.btn-primary(type='button' ng-click='buttonClicked(message.content)') +
+                    button.col-xs-1.btn.btn-primary(type='button' ng-click='addMessageToWorkspace(message.content)') +
                     button.col-xs-1.btn.btn-primary(type='button' ng-if='message.user === username' ng-click='removeMessage(message.timestamp)') x
             div.text-bar
                 form(ng-submit='sendMessage()')

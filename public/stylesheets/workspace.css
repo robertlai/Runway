@@ -216,3 +216,15 @@
 .dz-preview {
     display: none;
 }
+
+.pdfwrapper {
+    border-top: 15px solid black;
+}
+
+.pdfwrapper:hover, .dragWrapper:hover {
+    cursor: move;
+}
+
+.dragWrapper {
+    position: absolute;
+}

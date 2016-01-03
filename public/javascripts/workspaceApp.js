@@ -6,7 +6,7 @@ app = angular.module('workspaceApp', []);
 scrollAtBottom = true;
 
 app.controller('workspaceController', function($scope) {
-  var $dropzone, drop, hoverTextOff, hoverTextOn, maxx, maxy, mouseX, mouseY, myDropzone, socket;
+  var $dropzone, hoverTextOff, hoverTextOn, maxx, maxy, mouseX, mouseY, myDropzone, socket;
   $dropzone = $('#dropzone');
   mouseX = void 0;
   mouseY = void 0;
@@ -24,8 +24,9 @@ app.controller('workspaceController', function($scope) {
     clickable: false,
     createImageThumbnails: false,
     autoProcessQueue: true,
+    acceptedFiles: 'image/*, application/pdf',
     accept: function(file, done) {
-      this.options.url = '/api/fileUpload?group=' + $scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy() + '&type=image/jpeg';
+      this.options.url = '/api/fileUpload?group=' + $scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy();
       hoverTextOff();
       return done();
     }
@@ -72,31 +73,28 @@ app.controller('workspaceController', function($scope) {
       innerContent = $('<p/>', {
         "class": 'noselect'
       }).text(itemInfo.text);
-    } else if (itemInfo.type === 'image/jpeg') {
+    } else if (itemInfo.type.substring(0, 5) === 'image') {
       innerContent = $('<img/>', {
         src: '/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + $scope.groupName
       });
+    } else if (itemInfo.type === 'application/pdf') {
+      innerContent = $("<object class='pdfwrapper' data='/api/picture?fileToGet=" + itemInfo.fileName + '&groupName=' + $scope.groupName + "'/>");
     } else {
 
     }
     if (innerContent) {
-      return innerContent.appendTo($dropzone).wrap('<div id=' + itemInfo.fileName + ' style=\'position:absolute;\'></div>').parent().offset({
+      return innerContent.appendTo($dropzone).wrap("<div class=dragWrapper id=" + itemInfo.fileName + '/>').parent().offset({
         top: itemInfo.y / 100.0 * maxy(),
         left: itemInfo.x / 100.0 * maxx()
       }).draggable({
         containment: 'parent',
-        cursor: 'move',
         stop: function(event, ui) {
           return socket.emit('updateItemLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy());
         }
-      }).on('resize', function() {
-        var height, width;
-        width = $(this).outerWidth();
-        return height = $(this).outerHeight();
       });
     }
   });
-  $scope.buttonClicked = function(string) {
+  $scope.addMessageToWorkspace = function(string) {
     var data;
     data = {
       'text': string
@@ -109,28 +107,21 @@ app.controller('workspaceController', function($scope) {
       contentType: 'application/json; charset=utf-8'
     });
   };
-  drop = function(e, hover) {
-    if (hover) {
-      return hoverTextOn();
-    } else {
-      return hoverTextOff();
-    }
-  };
-  hoverTextOn = function(e) {
+  hoverTextOn = function() {
     $('#dropzone').addClass('hover');
     return $('#dndText').text('Drop to upload');
   };
-  hoverTextOff = function(e) {
+  hoverTextOff = function() {
     $('#dropzone').removeClass('hover');
     return $('#dndText').text('Drag and drop files here');
   };
   $dropzone.on('dragover', function(e) {
     mouseX = e.originalEvent.offsetX;
     mouseY = e.originalEvent.offsetY;
-    return drop(e, true);
+    return hoverTextOn();
   });
   $dropzone.on('dragleave', function(e) {
-    return drop(e, false);
+    return hoverTextOff();
   });
   $scope.chatVisible = true;
   $scope.messages = [];

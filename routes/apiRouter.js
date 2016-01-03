@@ -206,7 +206,7 @@ module.exports = function(app, passport) {
     var fileName, fullFilePath, group, item, type, x, y;
     fileName = (new Date()).getTime();
     group = req.query.group;
-    type = req.query.type;
+    type = req.file.mimetype;
     x = req.query.x;
     y = req.query.y;
     fullFilePath = req.file.path;
