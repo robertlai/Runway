@@ -19,6 +19,7 @@
     "jade": "~1.11.0",
     "jquery": "^2.1.4",
     "jquery-ui-bundle": "^1.11.4",
+    "jquery-ui-touch-punch": "^0.2.3",
     "method-override": "~1.0.0",
     "mongoose": "^4.1.7",
     "morgan": "~1.6.1",
