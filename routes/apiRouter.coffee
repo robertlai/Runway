@@ -66,7 +66,7 @@ module.exports = (app, passport) ->
             Item.findOne({fileName: fileName})
             .select('fileName x y')
             .exec (err, item) ->
-                if !err
+                if item and not err
                     item.x = newX
                     item.y = newY
                     item.save()

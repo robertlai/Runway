@@ -11,22 +11,24 @@ html
 
     body
         - var pageType = title.toLowerCase();
-        div.login-form
-            H1=title
-            if message.length > 0
-                p.alert.alert-danger=message
-            form.form-auth(action="/#{pageType}" method="post")
-                div.form-group
-                    label(for="#{pageType}Username" ) Username
-                    input.form-control(type="text" name="username" placeholder="Username" autofocus)
-                div.form-group
-                    label(for="#{pageType}Password" ) Password
-                    input.form-control(type="password" name="password" placeholder="Password")
-                div.form-group
-                    if pageType === 'register'
-                        p.col-xs-7 Already have an account?
-                            a(href="login") Login
-                    else
-                        p.col-xs-7 Need an account?
-                            a(href="register") Signup
-                    input.btn.btn-primary.col-xs-4#signInButton(type="submit" value=title)
+        div.outer
+            div.middle
+                div.inner
+                    H1=title
+                    if message.length > 0
+                        p.alert.alert-danger=message
+                    form(action="/#{pageType}" method="post")
+                        div.form-group
+                            label(for="#{pageType}Username" ) Username
+                            input.form-control(type="text" name="username" placeholder="Username" autofocus)
+                        div.form-group
+                            label(for="#{pageType}Password" ) Password
+                            input.form-control(type="password" name="password" placeholder="Password")
+                        div.form-group
+                            if pageType === 'register'
+                                p.col-xs-7 Already have an account?
+                                    a(href="login") Login
+                            else
+                                p.col-xs-7 Need an account?
+                                    a(href="register") Signup
+                            input.btn.btn-primary.col-xs-4#signInButton(type="submit" value=title)

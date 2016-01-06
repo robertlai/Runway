@@ -1,7 +1,4 @@
-workspaceApp = angular.module('workspaceApp', [])
-
-scrollAtBottom = true
-
+workspaceApp = angular.module('workspaceApp', ['ngAnimate', 'ui.bootstrap'])
 
 workspaceApp.controller 'workspaceController', ($scope) ->
 
@@ -44,14 +41,19 @@ workspaceApp.controller 'workspaceController', ($scope) ->
 
 
     socket.on 'initialMessages', (messages) ->
-        $scope.messages = messages
-        $scope.$apply()
-        scrollToBottom()
+        addMessageContent ->
+            $scope.messages = messages
 
     socket.on 'newMessage', (message) ->
-        $scope.messages.push(message)
+        addMessageContent ->
+            $scope.messages.push(message)
+
+    addMessageContent = (addFunction, all) ->
+        chatBody = document.getElementById('chatBody')
+        scrollAtBottom = all || Math.abs(chatBody.scrollTop - chatBody.scrollHeight + chatBody.offsetHeight) < 50
+        addFunction()
         $scope.$apply()
-        scrollToBottom()
+        chatBody.scrollTop = chatBody.scrollHeight if scrollAtBottom
 
     socket.on 'removeMessage', (timestamp) ->
         $scope.messages = $scope.messages.filter (message) ->
@@ -71,18 +73,19 @@ workspaceApp.controller 'workspaceController', ($scope) ->
         else if itemInfo.type.substring(0, 5) == 'image'
             innerContent = $('<img/>', src: '/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + $scope.groupName)
         else if itemInfo.type == 'application/pdf'
-            innerContent = $("<object class='pdfwrapper' data='/api/picture?fileToGet=" + itemInfo.fileName + '&groupName=' + $scope.groupName + "'/>")
-        else
-            # unsupported content
+            innerContent = $("<div style='padding-top:25px; background-color:black;'><object data='/api/picture?fileToGet=" + itemInfo.fileName + '&groupName=' + $scope.groupName + "'/></div>")
 
         if innerContent
-            innerContent.appendTo($dropzone).wrap("<div class=dragWrapper id=" + itemInfo.fileName + '/>').parent().offset(
+            innerContent.css('position', 'absolute')
+            .attr('id', itemInfo.fileName)
+            .appendTo($dropzone).draggable(
+                containment: 'parent'
+                stop: (event, ui) ->
+                    socket.emit('updateItemLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy())
+            ).offset(
                 top: itemInfo.y / 100.0 * maxy()
-                left: itemInfo.x / 100.0 * maxx()).draggable(
-                    containment: 'parent'
-                    stop: (event, ui) ->
-                        socket.emit('updateItemLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy())
-                )
+                left: itemInfo.x / 100.0 * maxx()
+            );
 
     $scope.addMessageToWorkspace = (string) ->
         data = {'text': string}
@@ -110,11 +113,9 @@ workspaceApp.controller 'workspaceController', ($scope) ->
     $dropzone.on 'dragleave', (e) ->
         hoverTextOff()
 
-
     $scope.chatVisible = true
 
     $scope.messages = []
-
 
     $scope.sendMessage = ->
         if $scope.newMessage and $scope.newMessage.trim().length > 0
@@ -127,21 +128,6 @@ workspaceApp.controller 'workspaceController', ($scope) ->
 
     $scope.hideChat = ->
         $scope.chatVisible = false
-        document.getElementById('dropzone').style.width = '100%'
 
     $scope.showChat = ->
         $scope.chatVisible = true
-        document.getElementById('dropzone').style.width = '75%'
-
-
-
-window.onload = ->
-    msgpanel = document.getElementById('msgpanel')
-    msgpanel.scrollTop = msgpanel.scrollHeight
-
-updateScrollState = ->
-    scrollAtBottom = msgpanel.scrollTop == (msgpanel.scrollHeight - msgpanel.offsetHeight)
-
-scrollToBottom = ->
-    if scrollAtBottom
-        msgpanel.scrollTop = msgpanel.scrollHeight

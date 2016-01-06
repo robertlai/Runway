@@ -95,7 +95,7 @@ module.exports = function(app, passport) {
       return Item.findOne({
         fileName: fileName
       }).select('fileName x y').exec(function(err, item) {
-        if (!err) {
+        if (item && !err) {
           item.x = newX;
           item.y = newY;
           item.save();

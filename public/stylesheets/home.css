@@ -1,17 +1,52 @@
-#homeGroup {
-    margin-top: 20%;
-    background-color: rgba(128, 128, 128, 0.9);
-    border-radius: 10px;
+html, body, #container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
-#createGroupButton {
-    float:right;
-    margin-top:5px;
-    margin-bottom:15px;
+#container {
+    display: flex;
 }
 
-#homeListGroup {
-    height: auto;
-    max-height: 450px;
+.sidebar {
+    flex-grow: 0;
+    width: 25%;
+}
+
+.virticalBar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    height: 100%;
+}
+
+.virticalPadding {
+    height: 10%;
+    flex-shrink: 0;
+}
+
+.box {
+    background-color: #808080;
+    opacity: 0.9;
+    padding: 10px 10px;
+}
+
+.header {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.footer {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.middle {
     overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.flowForm {
+    display: flex;
 }

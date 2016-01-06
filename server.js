@@ -57,6 +57,10 @@ app.use(express["static"](__dirname + '/node_modules/angular-route'));
 
 app.use(express["static"](__dirname + '/node_modules/jquery-ui-touch-punch'));
 
+app.use(express["static"](__dirname + '/node_modules/angular-animate'));
+
+app.use(express["static"](__dirname + '/node_modules/angular-ui-bootstrap'));
+
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
 app.use(session({

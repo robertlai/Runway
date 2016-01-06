@@ -6,5 +6,4 @@ block scripts
     link(rel='stylesheet' href='/stylesheets/home.css')
 
 block content
-    div(ng-app='homeApp' ng-controller='groupsController' ng-init="username='#{username}'")
-        div(ng-view)
+    div#container(ng-app='homeApp' ng-controller='groupsController' ng-init="username='#{username}'" ng-view)

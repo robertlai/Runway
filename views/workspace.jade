@@ -4,25 +4,24 @@ block scripts
     script(type='text/javascript' src='/jquery.ui.touch-punch.min.js')
     script(type='text/javascript' src='/socket.io/socket.io.js')
     script(type='text/javascript' src='/dropzone.js')
+    script(type='text/javascript' src="/angular-animate.min.js")
+    script(type='text/javascript' src="/ui-bootstrap-tpls.min.js")
     link(rel='stylesheet' href='/stylesheets/workspace.css')
 
 block content
-    div.fill(ng-app='workspaceApp' ng-controller='workspaceController' ng-init="init('#{username}', '#{groupName}')")
-        div.space-panel#dropzone
+    div#container(ng-app='workspaceApp' ng-controller='workspaceController' ng-init="init('#{username}', '#{groupName}')")
+        div#dropzone
             h1.noselect#dndText Drag and drop files here
-        input#un-hide-btn(type='button' value='Show' ng-hide='chatVisible' ng-click='showChat()')
-        div.chat-panel(ng-show='chatVisible')
-            div.users-bar
-                input#hide-btn(type='button' value='Hide' ng-click='hideChat()')
-            div.messages-panel#msgpanel(onscroll='updateScrollState()')
-                div.row(ng-repeat='message in messages track by $index')
-                    div.col-xs-1
-                    div.col-xs-1.user {{message.user.substring(0, 1).toUpperCase()}}
-                        div.tooltip {{message.user}}
-                    div.col-xs-7.chatMessage
-                        p#chat(ng-bind='message.content')
-                    button.col-xs-1.btn.btn-primary(type='button' ng-click='addMessageToWorkspace(message.content)') +
-                    button.col-xs-1.btn.btn-primary(type='button' ng-if='message.user === username' ng-click='removeMessage(message.timestamp)') x
-            div.text-bar
+        input#showButton(type='button' value='Show' ng-hide='chatVisible' ng-click='showChat()')
+        div#chatPanel(ng-show='chatVisible')
+            div#chatHeader
+                input#hideButton(type='button' value='Hide' ng-click='hideChat()')
+            div#chatBody
+                div.messageRow(ng-repeat='message in messages track by $index')
+                    div.userBubble.noselect(uib-tooltip='{{message.user}}' tooltip-placement="right" tooltip-trigger="mouseenter") {{message.user.substring(0, 1).toUpperCase()}}
+                    div.chatMessage.noselect(ng-bind='message.content')
+                    button.btn.btn-primary(type='button' ng-click='addMessageToWorkspace(message.content)') +
+                    button.btn.btn-primary(type='button' ng-if='message.user === username' ng-click='removeMessage(message.timestamp)') x
+            div#chatFooter
                 form(ng-submit='sendMessage()')
-                    input#messagebox(type='text' ng-model='newMessage' placeholder='Type a message...' autofocus)
+                    input#messageInputBox(type='text' ng-model='newMessage' placeholder='Type a message...' autofocus)

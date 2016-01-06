@@ -6,9 +6,3 @@ body {
     -o-background-size: cover;
     background-size: cover;
 }
-
-.bodyStyleHack {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
