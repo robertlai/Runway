@@ -1,0 +1,49 @@
+#container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.sidePadding {
+    flex-grow: 0;
+    width: 25%;
+}
+
+.centerColumn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    height: 100%;
+}
+
+.virticalPadding {
+    flex-shrink: 0;
+    height: 10%;
+}
+
+.contentBox {
+    background-color: #808080;
+    opacity: 0.9;
+    padding: 10px 10px;
+}
+
+.contentBoxHeader {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.contentBoxMiddle {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.contentBoxFooter {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.flowForm {
+    display: flex;
+}

@@ -1,20 +1,21 @@
-div.sidebar
-div.virticalBar
+link(rel='stylesheet' href='/stylesheets/groups.css')
+div.sidePadding
+div.centerColumn
     div.virticalPadding
-    div.header.box
+    div.contentBox.contentBox
         h1.text-center Welcome, {{username}}!
         label Go to...
-    div.middle.box
+    div.contentBox.contentBoxMiddle
         div.alert.alert-danger(ng-bind='error' ng-show='error')
         div.alert.alert-warning(ng-show='groups.length === 0') You have no rooms. Create one!
         div(ng-repeat='group in groups | orderBy: name track by $index')
             a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}') {{group}}
-    div.footer
-        div.box
+    div
+        div.contentBox.contentBoxFooter
             label.input-lg(for="newGroupName") Create a new group
             div.alert.alert-danger(ng-bind='newGroupError' ng-show='newGroupError')
             form.flowForm(ng-submit='addGroup()')
                 input.form-control#newGroupName(type="text" ng-model='newGroupName' placeholder="Enter a group name..." autofocus)
                 input.btn.btn-primary#createGroupButton(type="submit" value="Create Group")
     div.virticalPadding
-div.sidebar
+div.sidePadding
