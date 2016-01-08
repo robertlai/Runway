@@ -2,8 +2,9 @@ extends layout
 block scripts
     script(type='text/javascript' src='/javascripts/homeApp.js')
     script(type='text/javascript' src='/socket.io/socket.io.js')
-    script(type='text/javascript' src='/angular-route.js')
+    script(type='text/javascript' src='/angular-ui-router.min.js')
     link(rel='stylesheet' href='/stylesheets/home.css')
 
 block content
-    div#container(ng-app='homeApp' ng-controller='groupsController' ng-init="username='#{username}'" ng-view)
+    div#container(ng-app='homeApp' ng-controller='groupsController' ng-init="username='#{username}'")
+        div(ui-view)

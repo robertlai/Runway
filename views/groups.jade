@@ -6,10 +6,18 @@ div.centerColumn
         h1.text-center Welcome, {{username}}!
         label Go to...
     div.contentBox.contentBoxMiddle
-        div.alert.alert-danger(ng-bind='error' ng-show='error')
-        div.alert.alert-warning(ng-show='groups.length === 0') You have no rooms. Create one!
-        div(ng-repeat='group in groups | orderBy: name track by $index')
-            a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}') {{group}}
+        div.groupList.groupListLeft
+            h2.text-center Owned Groups
+            div.alert.alert-danger(ng-bind='error' ng-show='error')
+            div.alert.alert-warning(ng-show='groups.length === 0') You have no rooms. Create one!
+            div(ng-repeat="group in ['test1', 'test2', 'test3','test1', 'test2', 'test3','test1', 'test2', 'test3'] | orderBy: name track by $index")
+                a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}' target="_self") {{group}}
+        div.groupList
+            h2.text-center Joined Groups
+            div.alert.alert-danger(ng-bind='error' ng-show='error')
+            div.alert.alert-warning(ng-show='groups.length === 0') You have no rooms. Create one!
+            div(ng-repeat='group in groups | orderBy: name track by $index')
+                a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}' target="_self") {{group}}
     div
         div.contentBox.contentBoxFooter
             label.input-lg(for="newGroupName") Create a new group

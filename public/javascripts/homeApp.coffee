@@ -1,16 +1,13 @@
-homeApp = angular.module('homeApp', [ 'ngRoute' ])
+homeApp = angular.module('homeApp', ['ui.router'])
 
 
-homeApp.config ($routeProvider) ->
-    $routeProvider.when '/groups',
+homeApp.config ($stateProvider, $urlRouterProvider, $locationProvider) ->
+    $locationProvider.html5Mode({ enabled: true, requireBase: false });
+    $urlRouterProvider.otherwise('/home')
+    $stateProvider.state 'home',
+        url: '/home'
         templateUrl: '/groups'
         controller: 'groupsController'
-    # $routeProvider.when '/test',
-    #     templateUrl: '/test'
-    #     controller: 'groupsController'
-    .otherwise
-        redirectTo: '/groups'
-
 
 homeApp.controller 'groupsController', ($scope, $http) ->
 

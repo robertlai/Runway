@@ -1,4 +1,4 @@
-workspaceApp = angular.module('workspaceApp', ['ngAnimate', 'ui.bootstrap'])
+workspaceApp = angular.module('workspaceApp', [])
 
 workspaceApp.controller 'workspaceController', ($scope) ->
 

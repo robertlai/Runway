@@ -35,9 +35,21 @@
 }
 
 .contentBoxMiddle {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.groupList {
+    width: 100%;
     overflow-x: hidden;
     overflow-y: auto;
 }
+
+.groupListLeft {
+    direction:rtl;
+}
+
 
 .contentBoxFooter {
     border-bottom-left-radius: 10px;
