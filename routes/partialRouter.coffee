@@ -11,5 +11,4 @@ module.exports = (isLoggedIn) ->
     partialRouter.get '/manage', isLoggedIn, (req, res) ->
         res.render('partials/manage')
 
-
     return partialRouter
