@@ -1,7 +1,7 @@
 express = require('express')
 app = express()
 http = require('http').Server(app)
-app.io = require('socket.io')(http)
+io = require('socket.io')(http)
 
 logger = require('morgan')
 passport = require('passport')
@@ -14,7 +14,6 @@ favicon = require('serve-favicon')
 DB = require('./Utilities/DB')
 
 require('./passport')(passport)
-
 
 port = (process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000)
 ip = process.env.OPENSHIFT_NODEJS_IP
@@ -45,10 +44,9 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(flash())
 
-
-require('./routes/apiRouter')(app, passport)
-require('./routes/pageRouter')(app, passport)
-
+router = require('./routes/router')(passport)
+app.use(router)
+require('./routes/socketRouter')(io)
 
 app.set('port', port)
 if ip
