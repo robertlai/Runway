@@ -1,11 +1,51 @@
 html, body {
-    width: 100%;
     height: 100%;
     overflow: hidden;
 }
 
-[ui-view] {
+a img {
+    margin-top: -12px;
+    margin-left: -5px;
+    max-height: 45px;
+    pointer-events: none;
+    cursor: default;
+}
+
+#container {
+    overflow: hidden;
     display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: 80%;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #808080;
+    opacity: 0.9;
+    padding: 10px 10px;
+    display: flex;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.groupList {
     width: 100%;
     height: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.groupListLeft {
+    direction:rtl;
+}
+
+.holder {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.flowForm {
+    display: flex;
 }

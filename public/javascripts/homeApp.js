@@ -5,13 +5,16 @@ homeApp = angular.module('homeApp', ['ui.router']);
 
 homeApp.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
   $locationProvider.html5Mode({
-    enabled: true,
-    requireBase: false
+    enabled: true
   });
-  $urlRouterProvider.otherwise('/home');
-  return $stateProvider.state('home', {
-    url: '/home',
-    templateUrl: '/groups',
+  $urlRouterProvider.otherwise('/groups');
+  return $stateProvider.state('groups', {
+    url: '/groups',
+    templateUrl: '/partials/groups',
+    controller: 'groupsController'
+  }).state('manage', {
+    url: '/manage',
+    templateUrl: '/partials/manage',
     controller: 'groupsController'
   });
 });

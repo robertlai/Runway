@@ -22,7 +22,7 @@ module.exports = (app, passport) ->
         failureRedirect: '/login'
         failureFlash : true
     ), (req, res, next) ->
-        pathToReturnTo = '/home'
+        pathToReturnTo = '/'
         if req.session.returnTo
             pathToReturnTo = req.session.returnTo
             delete req.session.returnTo
@@ -41,17 +41,17 @@ module.exports = (app, passport) ->
         failureFlash : true
     )
 
-    app.get '/', isLoggedIn, (req, res) ->
+    app.get '/home*', isLoggedIn, (req, res) ->
         res.render('home', {
             title: 'Home'
             username: req.user.username
         })
 
-    app.get '/groups', isLoggedIn, (req, res) ->
+    app.get '/partials/groups', isLoggedIn, (req, res) ->
         res.render('groups')
 
-    app.get '/test', isLoggedIn, (req, res) ->
-        res.render('test')
+    app.get '/partials/manage', isLoggedIn, (req, res) ->
+        res.render('manage')
 
     app.get '/workspace', isLoggedIn, (req, res) ->
         username = req.user.username
@@ -69,12 +69,11 @@ module.exports = (app, passport) ->
                         groupName: groupRequested
                     })
                 else
-                    res.redirect('/')
+                    res.redirect('/home')
+
+    app.get '/logout', (req, res) ->
+        req.logout()
+        res.redirect '/login'
 
     app.get '*', isLoggedIn, (req, res) ->
-        res.redirect('/')
-
-# todo: implement logout function
-    # app.get '/logout', (req, res) ->
-    #     req.logout()
-    #     res.redirect '/login'
+        res.redirect('/home')

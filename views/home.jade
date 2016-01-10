@@ -1,10 +1,42 @@
-extends layout
-block scripts
-    script(type='text/javascript' src='/javascripts/homeApp.js')
-    script(type='text/javascript' src='/socket.io/socket.io.js')
-    script(type='text/javascript' src='/angular-ui-router.min.js')
+doctype html
+head
+    title= title
+    link(rel='stylesheet' href='/stylesheets/style.css')
+    link(rel="stylesheet" href="/css/bootstrap.min.css")
     link(rel='stylesheet' href='/stylesheets/home.css')
+    link(rel='stylesheet' href='/stylesheets/groups.css')
 
-block content
-    div#container(ng-app='homeApp' ng-controller='groupsController' ng-init="username='#{username}'")
-        div(ui-view)
+    script(type='text/javascript' src='/angular.min.js')
+    script(type='text/javascript' src='/jquery.min.js')
+    script(type='text/javascript' src="/js/bootstrap.min.js")
+    script(type='text/javascript' src='/javascripts/homeApp.js')
+    script(type='text/javascript' src='/angular-ui-router.min.js')
+    base(href='/home/')
+
+body(ng-app='homeApp' ng-controller='groupsController' ng-init="username='#{username}'")
+    nav.navbar.navbar-default
+        div.container-fluid
+            div.navbar-header
+                button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1', aria-expanded='false')
+                    span.sr-only
+                    span.icon-bar
+                    span.icon-bar
+                    span.icon-bar
+                a.navbar-brand(ui-sref='groups')
+                    img(src="/images/title.png")
+                span.navbar-brand="Welcome, " + username + "!"
+            #bs-example-navbar-collapse-1.collapse.navbar-collapse
+                ul.nav.navbar-nav
+                    li(ui-sref-active='active')
+                        a(ui-sref='groups') Home
+                    li(ui-sref-active='active')
+                        a(ui-sref='manage') Manage
+                ul.nav.navbar-nav.navbar-right
+                    li.dropdown
+                        a.dropdown-toggle(data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')=username
+                            span.caret
+                        ul.dropdown-menu
+                            //- li.divider(role='separator')
+                            li
+                                a(href='/logout'  target="_self") Logout
+    div#container(ui-view)

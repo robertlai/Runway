@@ -1,29 +1,14 @@
-link(rel='stylesheet' href='/stylesheets/groups.css')
-div.sidePadding
-div.centerColumn
-    div.virticalPadding
-    div.contentBox.contentBoxHeader
-        h1.text-center Welcome, {{username}}!
-        label Go to...
-    div.contentBox.contentBoxMiddle
-        div.groupList.groupListLeft
-            h2.text-center Owned Groups
-            div.alert.alert-danger(ng-bind='error' ng-show='error')
-            div.alert.alert-warning(ng-show='groups.length === 0') You have no rooms. Create one!
-            div(ng-repeat="group in ['test1', 'test2', 'test3','test1', 'test2', 'test3','test1', 'test2', 'test3'] | orderBy: name track by $index")
-                a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}' target="_self") {{group}}
-        div.groupList
-            h2.text-center Joined Groups
-            div.alert.alert-danger(ng-bind='error' ng-show='error')
-            div.alert.alert-warning(ng-show='groups.length === 0') You have no rooms. Create one!
-            div(ng-repeat='group in groups | orderBy: name track by $index')
-                a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}' target="_self") {{group}}
-    div
-        div.contentBox.contentBoxFooter
-            label.input-lg(for="newGroupName") Create a new group
-            div.alert.alert-danger(ng-bind='newGroupError' ng-show='newGroupError')
-            form.flowForm(ng-submit='addGroup()')
-                input.form-control#newGroupName(type="text" ng-model='newGroupName' placeholder="Enter a group name..." autofocus)
-                input.btn.btn-primary#createGroupButton(type="submit" value="Create Group")
-    div.virticalPadding
-div.sidePadding
+div.groupList.groupListLeft
+    h3.text-center Owned Groups
+    div.holder
+        div.alert.alert-danger(ng-bind='error' ng-show='error')
+        div.alert.alert-warning(ng-show='groups.length === 0') You have no rooms. Create one!
+        div(ng-repeat="group in ['test1', 'test2', 'test3','test1', 'test2', 'test3','test1', 'test2', 'test3'] | orderBy: name track by $index")
+            a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}' target="_self") {{group}}
+div.groupList
+    h3.text-center Joined Groups
+    div.holder
+        div.alert.alert-danger(ng-bind='error' ng-show='error')
+        div.alert.alert-warning(ng-show='groups.length === 0') You have no rooms. Create one!
+        div(ng-repeat='group in groups | orderBy: name track by $index')
+            a.list-group-item.text-center(type="button" ng-href='/workspace?group={{group}}' target="_self") {{group}}

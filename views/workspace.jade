@@ -1,15 +1,23 @@
-extends layout
-block scripts
-    script(type='text/javascript' src='/javascripts/workspaceApp.js')
+doctype html
+head
+    title= title
+    link(rel='stylesheet' href='/stylesheets/style.css')
+    link(rel="stylesheet" href="/css/bootstrap.min.css")
+    link(rel='stylesheet' href='/stylesheets/workspace.css')
+    link(rel="stylesheet" href="/jquery-ui-bundle/jquery-ui.min.css")
+
+    script(type='text/javascript' src='/angular.min.js')
+    script(type='text/javascript' src='/jquery.min.js')
     script(type='text/javascript' src='/jquery.ui.touch-punch.min.js')
+    script(type='text/javascript' src='/jquery-ui-bundle/jquery-ui.min.js')
+    script(type='text/javascript' src="/js/bootstrap.min.js")
+    script(type='text/javascript' src='/javascripts/workspaceApp.js')
     script(type='text/javascript' src='/socket.io/socket.io.js')
     script(type='text/javascript' src='/dropzone.js')
-    script(type='text/javascript' src="/angular-animate.min.js")
     script(type='text/javascript' src="/ui-bootstrap-tpls.min.js")
-    link(rel='stylesheet' href='/stylesheets/workspace.css')
 
-block content
-    div#container(ng-app='workspaceApp' ng-controller='workspaceController' ng-init="init('#{username}', '#{groupName}')")
+body(ng-app='workspaceApp')
+    div#container(ng-controller='workspaceController' ng-init="init('#{username}', '#{groupName}')")
         div#dropzone
             h1.noselect#dndText Drag and drop files here
         input#showButton(type='button' value='Show' ng-hide='chatVisible' ng-click='showChat()')
