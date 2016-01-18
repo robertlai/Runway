@@ -36,6 +36,7 @@ app.use(express.static(__dirname + '/node_modules/jquery-ui-touch-punch'))
 app.use(express.static(__dirname + '/node_modules/angular-animate'))
 app.use(express.static(__dirname + '/node_modules/angular-ui-bootstrap'))
 app.use(express.static(__dirname + '/node_modules/angular-ui-router/release'))
+app.use(express.static(__dirname + '/node_modules/angular-ui-router-title/src'))
 
 app.use(favicon(__dirname + '/public/images/favicon.ico'))
 
@@ -44,7 +45,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(flash())
 
-router = require('./routes/router')(passport)
+router = require('./routes/router')(passport, io)
 app.use(router)
 require('./routes/socketRouter')(io)
 

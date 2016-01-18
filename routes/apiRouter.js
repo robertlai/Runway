@@ -25,24 +25,30 @@ isLoggedIn = function(req, res, next) {
   }
 };
 
-module.exports = function(passport) {
+module.exports = function(passport, io) {
   var apiRouter;
   apiRouter = express.Router();
-  apiRouter.get('/groups', isLoggedIn, function(req, res) {
+  apiRouter.get('/groups/:groupType', isLoggedIn, function(req, res) {
     var err, username;
-    username = req.user.username;
-    try {
-      return User.findOne({
-        username: username
-      }, function(err1, user) {
-        if (err1) {
-          throw err1;
-        }
-        return res.json(user.groups);
-      });
-    } catch (_error) {
-      err = _error;
-      return res.sendStatus(500);
+    if (req.params.groupType === 'owned') {
+      username = req.user.username;
+      try {
+        return User.findOne({
+          username: username
+        }, function(err1, user) {
+          if (err1) {
+            throw err1;
+          }
+          return res.json(user.groups);
+        });
+      } catch (_error) {
+        err = _error;
+        return res.sendStatus(500);
+      }
+    } else if (req.params.groupType === 'joined') {
+      return res.json(['joined group 1', 'joined group 2', 'joined group 3', 'joined group 4', 'joined group 5', 'joined group 6', 'joined group 7']);
+    } else {
+      return res.sendStatus(404);
     }
   });
   apiRouter.post('/newGroup', isLoggedIn, function(req, res) {

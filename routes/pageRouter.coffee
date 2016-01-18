@@ -13,8 +13,8 @@ isLoggedIn = (req, res, next) ->
 module.exports = (passport) ->
 
     pageRouter = express.Router()
-    partialRouter = require('./partialRouter')(isLoggedIn)
-    pageRouter.use('/partials', partialRouter)
+    partialRouter = require('./partialRouter')()
+    pageRouter.use('/partials', isLoggedIn, partialRouter)
 
     pageRouter.get '/login', (req, res) ->
         req.logout()
@@ -27,7 +27,7 @@ module.exports = (passport) ->
         failureRedirect: '/login'
         failureFlash : true
     ), (req, res, next) ->
-        pathToReturnTo = '/'
+        pathToReturnTo = '/home'
         if req.session.returnTo
             pathToReturnTo = req.session.returnTo
             delete req.session.returnTo

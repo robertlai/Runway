@@ -1,0 +1,11 @@
+group-type-tabs
+div.scrollBox.paddedRow
+    div.alert.alert-danger(ng-bind='error' ng-show='error')
+    div(ng-repeat='group in groups | orderBy: name track by $index')
+        a.list-group-item.text-center(type='button' ui-sref="^.edit.{{groupType}}({groupName: group})" ng-bind='group')
+div(ng-show='groupType === "owned"')
+    div.title Create a new group
+    div.alert.alert-danger(ng-bind='newGroupError' ng-show='newGroupError')
+    form.flowForm(ng-submit='addGroup()')
+        input.form-control#newGroupName(type='text' ng-model='newGroupName' placeholder='Enter a group name...' autofocus)
+        button.btn.btn-primary#createGroupButton(type='submit') Create Group

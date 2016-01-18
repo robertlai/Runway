@@ -3,10 +3,10 @@ var express;
 
 express = require('express');
 
-module.exports = function(passport) {
+module.exports = function(passport, io) {
   var apiRouter, pageRouter, router;
   router = express.Router();
-  apiRouter = require('./apiRouter')(passport);
+  apiRouter = require('./apiRouter')(passport, io);
   pageRouter = require('./pageRouter')(passport);
   router.use('/api', apiRouter);
   router.use(pageRouter);

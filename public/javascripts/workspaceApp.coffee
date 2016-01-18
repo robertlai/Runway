@@ -68,12 +68,12 @@ workspaceApp.controller 'workspaceController', ($scope) ->
 
     socket.on 'newItem', (itemInfo) ->
         innerContent = undefined
-        if itemInfo.type == 'text'
+        if itemInfo.type is 'text'
             innerContent = $('<p/>', class: 'noselect').text(itemInfo.text)
-        else if itemInfo.type.substring(0, 5) == 'image'
+        else if itemInfo.type.substring(0, 5) is 'image'
             innerContent = $('<img/>', src: '/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + $scope.groupName)
-        else if itemInfo.type == 'application/pdf'
-            innerContent = $("<div style='padding-top:25px; background-color:black;'><object data='/api/picture?fileToGet=" + itemInfo.fileName + '&groupName=' + $scope.groupName + "'/></div>")
+        else if itemInfo.type is 'application/pdf'
+            innerContent = $('<div style="padding-top:25px; background-color:black;"><object data="/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + $scope.groupName + "'/></div>")
 
         if innerContent
             innerContent.css('position', 'absolute')

@@ -1,14 +1,18 @@
 express = require('express')
+fs = require('fs')
 
 
-module.exports = (isLoggedIn) ->
+module.exports = ->
+
 
     partialRouter = express.Router()
+    validPartials = (fileName.slice(0, -5) for fileName in fs.readdirSync('./views/partials'))
 
-    partialRouter.get '/groups', isLoggedIn, (req, res) ->
-        res.render('partials/groups')
-
-    partialRouter.get '/manage', isLoggedIn, (req, res) ->
-        res.render('partials/manage')
+    partialRouter.get '/:partialName', (req, res) ->
+        name = req.params.partialName
+        if name in validPartials
+            res.render('partials/' + name)
+        else
+            res.sendStatus(404)
 
     return partialRouter

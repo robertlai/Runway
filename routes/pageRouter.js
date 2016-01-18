@@ -18,8 +18,8 @@ isLoggedIn = function(req, res, next) {
 module.exports = function(passport) {
   var pageRouter, partialRouter;
   pageRouter = express.Router();
-  partialRouter = require('./partialRouter')(isLoggedIn);
-  pageRouter.use('/partials', partialRouter);
+  partialRouter = require('./partialRouter')();
+  pageRouter.use('/partials', isLoggedIn, partialRouter);
   pageRouter.get('/login', function(req, res) {
     req.logout();
     return res.render('login', {
@@ -32,7 +32,7 @@ module.exports = function(passport) {
     failureFlash: true
   }), function(req, res, next) {
     var pathToReturnTo;
-    pathToReturnTo = '/';
+    pathToReturnTo = '/home';
     if (req.session.returnTo) {
       pathToReturnTo = req.session.returnTo;
       delete req.session.returnTo;

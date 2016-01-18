@@ -10,6 +10,7 @@
     "angular-animate": "^1.4.8",
     "angular-ui-bootstrap": "^0.14.3",
     "angular-ui-router": "^0.2.15",
+    "angular-ui-router-title": "0.0.4",
     "bcrypt-nodejs": "latest",
     "body-parser": "~1.0.0",
     "bootstrap": "^3.3.5",

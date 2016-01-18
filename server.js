@@ -61,6 +61,8 @@ app.use(express["static"](__dirname + '/node_modules/angular-ui-bootstrap'));
 
 app.use(express["static"](__dirname + '/node_modules/angular-ui-router/release'));
 
+app.use(express["static"](__dirname + '/node_modules/angular-ui-router-title/src'));
+
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
 app.use(session({
@@ -77,7 +79,7 @@ app.use(passport.session());
 
 app.use(flash());
 
-router = require('./routes/router')(passport);
+router = require('./routes/router')(passport, io);
 
 app.use(router);
 

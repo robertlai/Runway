@@ -15,18 +15,24 @@ isLoggedIn = (req, res, next) ->
     else
         res.sendStatus(500)
 
-module.exports = (passport) ->
+module.exports = (passport, io) ->
 
     apiRouter = express.Router()
 
-    apiRouter.get '/groups', isLoggedIn, (req, res) ->
-        username = req.user.username
-        try
-            User.findOne {username: username}, (err1, user) ->
-                throw err1 if err1
-                res.json(user.groups)
-        catch err
-            res.sendStatus(500)
+    apiRouter.get '/groups/:groupType', isLoggedIn, (req, res) ->
+        # todo: use the req.params.groupType to get the correct group types for return
+        if req.params.groupType is 'owned'
+            username = req.user.username
+            try
+                User.findOne {username: username}, (err1, user) ->
+                    throw err1 if err1
+                    res.json(user.groups)
+            catch err
+                res.sendStatus(500)
+        else if req.params.groupType is 'joined'
+            res.json(['joined group 1', 'joined group 2', 'joined group 3', 'joined group 4', 'joined group 5', 'joined group 6', 'joined group 7'])
+        else
+            res.sendStatus(404)
 
     apiRouter.post '/newGroup', isLoggedIn, (req, res) ->
         username = req.user.username

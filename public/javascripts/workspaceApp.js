@@ -86,7 +86,7 @@ workspaceApp.controller('workspaceController', function($scope) {
         src: '/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + $scope.groupName
       });
     } else if (itemInfo.type === 'application/pdf') {
-      innerContent = $("<div style='padding-top:25px; background-color:black;'><object data='/api/picture?fileToGet=" + itemInfo.fileName + '&groupName=' + $scope.groupName + "'/></div>");
+      innerContent = $('<div style="padding-top:25px; background-color:black;"><object data="/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + $scope.groupName + "'/></div>");
     }
     if (innerContent) {
       return innerContent.css('position', 'absolute').attr('id', itemInfo.fileName).appendTo($dropzone).draggable({
