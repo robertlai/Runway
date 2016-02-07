@@ -19,7 +19,7 @@ homeApp = angular.module('homeApp', ['ui.router', 'ui.router.title'])
         controller: 'manageController'
     )
         .state('manage.list',
-            url: '/list/:groupType'
+            url: '/:groupType'
             templateUrl: '/partials/manage-list'
             controller: 'manageListController'
             resolve: $title: -> 'Manage'
@@ -34,11 +34,13 @@ homeApp = angular.module('homeApp', ['ui.router', 'ui.router.title'])
                 url: '/owned/:groupName'
                 templateUrl: '/partials/manage-edit-owned'
                 controller: 'editOwnedController'
+                parent: 'manage.edit'
             )
             .state('manage.edit.joined',
                 url: '/joined/:groupName'
                 templateUrl: '/partials/manage-edit-joined'
                 controller: 'editJoinedController'
+                parent: 'manage.edit'
             )
 ]
 
@@ -91,10 +93,10 @@ homeApp = angular.module('homeApp', ['ui.router', 'ui.router.title'])
                             scope.newGroupError = 'Server Error.  Please contact support.'
 ]
 
-.controller 'editOwnedController', ['$scope', '$state', '$stateParams', '$http', (scope, state, stateParams, http) ->
-    console.log 'editOwnedController here'
+.controller 'editOwnedController', ['$rootScope', '$scope', '$state', '$stateParams', '$http', (rootScope, scope, state, stateParams, http) ->
+    rootScope.editHeader = 'Edit Owned Group: ' + stateParams.groupName
 ]
 
-.controller 'editJoinedController', ['$scope', '$state', '$stateParams', '$http', (scope, state, stateParams, http) ->
-    console.log 'editJoinedController here'
+.controller 'editJoinedController', ['$rootScope', '$scope', '$state', '$stateParams', '$http', (rootScope, scope, state, stateParams, http) ->
+    rootScope.editHeader = 'Edit Joined Group: ' + stateParams.groupName
 ]
