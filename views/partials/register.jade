@@ -1,0 +1,12 @@
+div.col-md-4
+  h1 Register
+    div.alert.alert-danger(ng-show='error')
+    form.form(ng-submit='register()')
+      div.form-group
+        label Username
+        input.form-control(type='text', name='username', ng-model='registerForm.username', required='')
+      div.form-group
+        label Password
+        input.form-control(type='password', name='password', ng-model='registerForm.password', required='')
+      div
+        button.btn.btn-default(type='submit', ng-disabled='disabled') Register

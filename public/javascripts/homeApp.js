@@ -6,7 +6,7 @@ homeApp = angular.module('homeApp', ['ui.router', 'ui.router.title']).config([
     locationProvider.html5Mode({
       enabled: true
     });
-    urlRouterProvider.otherwise('/groups/owned');
+    urlRouterProvider.otherwise('/');
     return stateProvider.state('groups', {
       url: '/groups/:groupType',
       params: {

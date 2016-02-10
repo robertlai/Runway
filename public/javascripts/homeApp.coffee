@@ -3,7 +3,7 @@ homeApp = angular.module('homeApp', ['ui.router', 'ui.router.title'])
 
 .config ['$stateProvider', '$urlRouterProvider', '$locationProvider', (stateProvider, urlRouterProvider, locationProvider) ->
     locationProvider.html5Mode({ enabled: true })
-    urlRouterProvider.otherwise('/groups/owned')
+    urlRouterProvider.otherwise('/')
 
     stateProvider
     .state('groups',
@@ -42,7 +42,7 @@ homeApp = angular.module('homeApp', ['ui.router', 'ui.router.title'])
                 controller: 'editJoinedController'
                 parent: 'manage.edit'
             )
-]
+    ]
 
 .directive 'groupTypeTabs', ->
     restrist: 'E'

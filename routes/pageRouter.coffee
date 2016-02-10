@@ -3,79 +3,93 @@ express = require('express')
 User = require('../models/User')
 
 
-isLoggedIn = (req, res, next) ->
-    if req.isAuthenticated()
-        next()
-    else
-        req.session.returnTo = req.originalUrl
-        res.redirect('/login')
+# isLoggedIn = (req, res, next) ->
+#     if req.isAuthenticated()
+#         next()
+#     else
+#         req.session.returnTo = req.originalUrl
+#         res.redirect('/login')
 
 module.exports = (passport) ->
 
     pageRouter = express.Router()
     partialRouter = require('./partialRouter')()
-    pageRouter.use('/partials', isLoggedIn, partialRouter)
+    pageRouter.use('/partials', partialRouter)
 
-    pageRouter.get '/login', (req, res) ->
-        req.logout()
-        res.render('login', {
-            title: 'Login'
-            message: req.flash('loginMessage')
-        })
-
-    pageRouter.post '/login', passport.authenticate('login',
-        failureRedirect: '/login'
-        failureFlash : true
-    ), (req, res, next) ->
-        pathToReturnTo = '/home'
-        if req.session.returnTo
-            pathToReturnTo = req.session.returnTo
-            delete req.session.returnTo
-        res.redirect pathToReturnTo
-
-    pageRouter.get '/register', (req, res) ->
-        req.logout()
-        res.render('login', {
-            title: 'Register'
-            message: req.flash('registerMessage')
-        })
-
-    pageRouter.post '/register', passport.authenticate('register',
-        successRedirect: '/login'
-        failureRedirect: '/register'
-        failureFlash : true
-    )
-
-    pageRouter.get '/home*', isLoggedIn, (req, res) ->
-        res.render('home', {
-            title: 'Home'
-            username: req.user.username
-        })
-
-    pageRouter.get '/workspace', isLoggedIn, (req, res) ->
-        username = req.user.username
-        groupRequested = req.query.group
-        User.findOne({username: username})
-        .select('groups')
-        .exec (err, user) ->
-            if err
-                res.sendStatus(500)
+    # auth
+    pageRouter.post '/login', (req, res, next) ->
+        passport.authenticate('login', (err, user, message) ->
+            if err?
+                res.sendStatus(500).json({err: err})
+            else if !user
+                res.sendStatus(401).json({err: message})
             else
-                if groupRequested in user.groups
-                    res.render('workspace', {
-                        title: 'Workspace: ' + groupRequested
-                        username: username
-                        groupName: groupRequested
-                    })
-                else
-                    res.redirect('/home')
+                req.logIn user, (err) ->
+                    if err?
+                        res.sendStatus(500).json({err: err})
+                    else
+                        res.sendStatus(200).json({status: 'Login successful!'})
+        )(req, res, next)
+
+    pageRouter.post '/register', (req, res, next) ->
+        passport.authenticate('register', (err, user, message) ->
+            if err?
+                res.sendStatus(500).json({err: err})
+            else if !user
+                res.sendStatus(409).json({err: message})
+            else
+                res.sendStatus(200).json({status: 'Registration successful!'})
+        )(res, res, next)
 
     pageRouter.get '/logout', (req, res) ->
         req.logout()
-        res.redirect '/login'
+        res.sendStatus(200).json({status: 'Bye!'})
+    # end auth
 
-    pageRouter.get '*', isLoggedIn, (req, res) ->
-        res.redirect('/home')
+    # pageRouter.get '/login', (req, res) ->
+    #     req.logout()
+    #     res.render('login', {
+    #         title: 'Login'
+    #         message: req.flash('loginMessage')
+    #     })
+
+
+    # pageRouter.get '/register', (req, res) ->
+    #     req.logout()
+    #     res.render('login', {
+    #         title: 'Register'
+    #         message: req.flash('registerMessage')
+    #     })
+
+    pageRouter.get '/', (req, res) ->
+        res.render('index')
+
+    # pageRouter.get '/*', (req, res) ->
+    #     res.render('home', {
+    #         title: 'Home'
+    #         # username: req.user.username
+    #     })
+
+    # pageRouter.get '/workspace', isLoggedIn, (req, res) ->
+    #     username = req.user.username
+    #     groupRequested = req.query.group
+    #     User.findOne({username: username})
+    #     .select('groups')
+    #     .exec (err, user) ->
+    #         if err
+    #             res.sendStatus(500)
+    #         else
+    #             if groupRequested in user.groups
+    #                 res.render('workspace', {
+    #                     title: 'Workspace: ' + groupRequested
+    #                     username: username
+    #                     groupName: groupRequested
+    #                 })
+    #             else
+    #                 res.redirect('/home')
+
+    # pageRouter.get '*', isLoggedIn, (req, res) ->
+    #     res.redirect('/home')
 
 
     return pageRouter
