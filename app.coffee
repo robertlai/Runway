@@ -26,13 +26,12 @@ require('./passport')(passport)
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
 
-
-
 app.use coffeeMiddleware {
     src: __dirname + '/public',
     compress: false
     debug: false
     bare: false
+    encodeSrc: false
 }
 
 app.use(logger('dev'))
