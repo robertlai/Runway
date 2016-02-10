@@ -1,6 +1,6 @@
 express = require('express')
 
-# User = require('../models/User')
+# User = require('../Models/User')
 
 
 # isLoggedIn = (req, res, next) ->

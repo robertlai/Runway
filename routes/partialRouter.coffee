@@ -6,7 +6,7 @@ module.exports = ->
 
 
     partialRouter = express.Router()
-    validPartials = (fileName.slice(0, -5) for fileName in fs.readdirSync('./views/partials'))
+    validPartials = (fileName.slice(0, -5) for fileName in fs.readdirSync('./Views/partials'))
 
     partialRouter.get '/:partialName', (req, res) ->
         name = req.params.partialName

@@ -1,5 +1,5 @@
 LocalStrategy = require('passport-local').Strategy
-User = require('./models/User')
+User = require('./Models/User')
 
 
 module.exports = (passport) ->

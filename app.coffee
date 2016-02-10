@@ -23,11 +23,11 @@ mongoose.connect(
 
 require('./passport')(passport)
 
-app.set('views', __dirname + '/views')
+app.set('views', __dirname + '/Views')
 app.set('view engine', 'jade')
 
 app.use coffeeMiddleware {
-    src: __dirname + '/public',
+    src: __dirname + '/Public',
     compress: false
     debug: false
     bare: false
@@ -38,7 +38,7 @@ app.use(logger('dev'))
 app.use(cookieParser())
 app.use(bodyParser())
 
-app.use(express.static(__dirname + '/public'))
+app.use(express.static(__dirname + '/Public'))
 app.use(express.static(__dirname + '/node_modules'))
 app.use(express.static(__dirname + '/node_modules/angular'))
 app.use(express.static(__dirname + '/node_modules/jquery/dist'))
@@ -49,16 +49,16 @@ app.use(express.static(__dirname + '/node_modules/angular-ui-bootstrap'))
 app.use(express.static(__dirname + '/node_modules/angular-ui-router/release'))
 app.use(express.static(__dirname + '/node_modules/angular-ui-router-title/src'))
 
-app.use(favicon(__dirname + '/public/Images/favicon.ico'))
+app.use(favicon(__dirname + '/Public/Images/favicon.ico'))
 
 app.use(session({ secret: 'ilovescotchscotchyscotchscotch', cookie: { maxAge: 30 * 60 * 1000 }, rolling: true }))
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(flash())
 
-router = require('./routes/router')(passport, io)
+router = require('./Routes/router')(passport, io)
 app.use(router)
-require('./routes/socketRouter')(io)
+require('./Routes/socketRouter')(io)
 
 port = (process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000)
 ip = process.env.OPENSHIFT_NODEJS_IP

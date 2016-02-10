@@ -2,11 +2,11 @@ express = require('express')
 
 fs = require('fs')
 multer  = require('multer')
-upload = multer({ dest: 'uploads/' })
+upload = multer({ dest: 'Uploads/' })
 
-Item = require('../models/Item')
-User = require('../models/User')
-Group = require('../models/Group')
+Item = require('../Models/Item')
+User = require('../Models/User')
+Group = require('../Models/Group')
 
 
 isLoggedIn = (req, res, next) ->

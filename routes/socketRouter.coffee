@@ -1,5 +1,5 @@
-Group = require('../models/Group')
-Item = require('../models/Item')
+Group = require('../Models/Group')
+Item = require('../Models/Item')
 
 module.exports = (io) ->
 
