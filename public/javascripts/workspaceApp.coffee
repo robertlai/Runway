@@ -57,7 +57,7 @@ workspaceApp.controller 'workspaceController', ($scope) ->
 
     socket.on 'removeMessage', (timestamp) ->
         $scope.messages = $scope.messages.filter (message) ->
-            message.timestamp != timestamp
+            message.timestamp isnt timestamp
         $scope.$apply()
 
     socket.on 'updateItem', (itemInfo) ->
@@ -73,7 +73,8 @@ workspaceApp.controller 'workspaceController', ($scope) ->
         else if itemInfo.type.substring(0, 5) is 'image'
             innerContent = $('<img/>', src: '/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + $scope.groupName)
         else if itemInfo.type is 'application/pdf'
-            innerContent = $('<div style="padding-top:25px; background-color:black;"><object data="/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + $scope.groupName + "'/></div>")
+            innerContent = $('<div style="padding-top:25px; background-color:black;"><object data="/api/picture?fileToGet=' +
+                itemInfo.fileName + '&groupName=' + $scope.groupName + "'/></div>")
 
         if innerContent
             innerContent.css('position', 'absolute')
@@ -85,7 +86,7 @@ workspaceApp.controller 'workspaceController', ($scope) ->
             ).offset(
                 top: itemInfo.y / 100.0 * maxy()
                 left: itemInfo.x / 100.0 * maxx()
-            );
+            )
 
     $scope.addMessageToWorkspace = (string) ->
         data = {'text': string}

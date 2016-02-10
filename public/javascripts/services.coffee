@@ -14,7 +14,7 @@ angular.module('myApp').factory 'AuthService', [
                 username: username
                 password: password
             .success (data, status) ->
-                if status == 200 and data.status
+                if status is 200 and data.status
                     user = true
                     deferred.resolve()
                 else
@@ -46,7 +46,7 @@ angular.module('myApp').factory 'AuthService', [
                 username: username
                 password: password
             .success (data, status) ->
-                if status == 200 and data.status
+                if status is 200 and data.status
                     deferred.resolve()
                 else
                     deferred.reject()
@@ -64,4 +64,3 @@ angular.module('myApp').factory 'AuthService', [
             register: register
         }
 ]
-

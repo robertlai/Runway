@@ -30,7 +30,15 @@ module.exports = (passport, io) ->
             catch err
                 res.sendStatus(500)
         else if req.params.groupType is 'joined'
-            res.json(['joined group 1', 'joined group 2', 'joined group 3', 'joined group 4', 'joined group 5', 'joined group 6', 'joined group 7'])
+            res.json([
+                    'joined group 1'
+                    'joined group 2'
+                    'joined group 3'
+                    'joined group 4'
+                    'joined group 5'
+                    'joined group 6'
+                    'joined group 7'
+                ])
         else
             res.sendStatus(404)
 

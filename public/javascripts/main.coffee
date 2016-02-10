@@ -32,7 +32,7 @@ myApp.config ($routeProvider) ->
 
 
 myApp.run ($rootScope, $location, $route, AuthService) ->
-  $rootScope.$on '$routeChangeStart', (event, next, current) ->
-    if next.authenticated and AuthService.isLoggedIn() == false
-      $location.path '/login'
-      $route.reload()
+    $rootScope.$on '$routeChangeStart', (event, next, current) ->
+        if next.authenticated and AuthService.isLoggedIn() is false
+            $location.path '/login'
+            $route.reload()

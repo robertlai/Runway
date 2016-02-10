@@ -42,7 +42,7 @@ app.use(express.static(__dirname + '/node_modules/angular-ui-router-title/src'))
 
 app.use(favicon(__dirname + '/public/Images/favicon.ico'))
 
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch', cookie:{ maxAge: 30*60*1000 }, rolling: true }))
+app.use(session({ secret: 'ilovescotchscotchyscotchscotch', cookie: { maxAge: 30 * 60 * 1000 }, rolling: true }))
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(flash())
