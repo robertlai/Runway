@@ -11,7 +11,6 @@ passport = require('passport')
 cookieParser = require('cookie-parser')
 bodyParser = require('body-parser')
 session = require('express-session')
-flash = require('connect-flash')
 favicon = require('serve-favicon')
 
 mongoose.connect(

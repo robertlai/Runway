@@ -43,7 +43,7 @@ pageRouter.post '/register', (req, res, next) ->
             res.sendStatus(409).json({error: message})
         else
             res.sendStatus(200).json({status: 'Registration successful!'})
-    )(res, res, next)
+    )(req, res, next)
 
 pageRouter.get '/logout', (req, res) ->
     req.logout()
