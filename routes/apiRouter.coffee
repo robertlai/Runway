@@ -8,6 +8,8 @@ Item = require('../Models/Item')
 User = require('../Models/User')
 Group = require('../Models/Group')
 
+passport = require('passport')
+
 
 isLoggedIn = (req, res, next) ->
     if req.isAuthenticated()
@@ -15,7 +17,7 @@ isLoggedIn = (req, res, next) ->
     else
         res.sendStatus(500)
 
-module.exports = (passport, io) ->
+module.exports = (io) ->
 
     apiRouter = express.Router()
 

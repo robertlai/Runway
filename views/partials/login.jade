@@ -1,6 +1,6 @@
 div.col-md-4
   h1 Login
-    div.alert.alert-danger(ng-show='error')
+    div.alert.alert-danger(ng-show='error' ng-bind='error')
     form.form(ng-submit='login()')
       div.form-group
         label Username

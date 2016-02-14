@@ -1,12 +1,12 @@
 express = require('express')
 
 
-module.exports = (passport, io) ->
+module.exports = (io) ->
 
     router = express.Router()
 
-    apiRouter = require('./apiRouter')(passport, io)
-    pageRouter = require('./pageRouter')(passport)
+    apiRouter = require('./apiRouter')(io)
+    pageRouter = require('./pageRouter')
 
     router.use('/api', apiRouter)
     router.use(pageRouter)

@@ -21,7 +21,7 @@ mongoose.connect(
         require('./dbcredentials.json').dbAddress
 )
 
-require('./passport')(passport)
+require('./passport')
 
 app.set('views', __dirname + '/Views')
 app.set('view engine', 'jade')
@@ -54,9 +54,8 @@ app.use(favicon(__dirname + '/Public/Images/favicon.ico'))
 app.use(session({ secret: 'ilovescotchscotchyscotchscotch', cookie: { maxAge: 30 * 60 * 1000 }, rolling: true }))
 app.use(passport.initialize())
 app.use(passport.session())
-app.use(flash())
 
-router = require('./Routes/router')(passport, io)
+router = require('./Routes/router')(io)
 app.use(router)
 require('./Routes/socketRouter')(io)
 

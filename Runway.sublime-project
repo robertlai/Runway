@@ -1,10 +1,27 @@
 {
-    "folders": [
-        {
-            "path": ".",
-            "folder_exclude_patterns": [
-                "node_modules"
-            ]
-        }
-    ]
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				"*.sublime-workspace",
+				"dbcredentials.json",
+				"*.js",
+				"!server.js"
+			],
+			"folder_exclude_patterns":
+			[
+				"node_modules",
+				"node_modules/"
+			],
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"tab_size": 4,
+		"translate_tabs_to_spaces": true,
+		"trim_trailing_white_space_on_save": true,
+		"use_tab_stops": true
+	}
 }

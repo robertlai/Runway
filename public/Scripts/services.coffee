@@ -36,10 +36,10 @@ angular.module('runwayApp')
                         deferred.resolve()
                     else
                         user = false
-                        deferred.reject()
+                        deferred.reject(data.error)
                 .error (data) ->
                     user = false
-                    deferred.reject()
+                    deferred.reject(data.error)
 
             return deferred.promise
 
@@ -64,15 +64,14 @@ angular.module('runwayApp')
                     if status is 200 and data.status
                         deferred.resolve()
                     else
-                        deferred.reject()
+                        deferred.reject(data.error)
                 .error (data) ->
-                    deferred.reject()
+                    deferred.reject(data.error)
 
             return deferred.promise
 
         {
             isLoggedIn: isLoggedIn
-            setUser: setUser
             login: login
             logout: logout
             register: register

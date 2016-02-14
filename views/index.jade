@@ -4,11 +4,15 @@ html(ng-app='runwayApp')
 
         link(rel="stylesheet" href='/css/bootstrap.min.css')
 
-        script(type='text/javascript' src='/jquery.min.js')
-        script(type='text/javascript' src='/js/bootstrap.min.js')
-        script(type='text/javascript' src='/angular.js')
-        script(type='text/javascript' src='/angular-ui-router.min.js')
-        script(type='text/javascript' src='/angular-ui-router-title.js')
+        link(rel='stylesheet' href='/Styles/style.css')
+        link(rel='stylesheet' href='/Styles/home.css')
+
+        script(type='text/javascript', src='/angular.min.js')
+        script(type='text/javascript', src='/jquery.min.js')
+        script(type='text/javascript', src='/js/bootstrap.min.js')
+        script(type='text/javascript', src='/Scripts/homeApp.js')
+        script(type='text/javascript', src='/angular-ui-router.min.js')
+        script(type='text/javascript', src='/angular-ui-router-title.js')
         script(type='text/javascript', src='/Scripts/main.js')
         script(type='text/javascript', src='/Scripts/services.js')
         script(type='text/javascript', src='/Scripts/controllers.js')
@@ -16,6 +20,7 @@ html(ng-app='runwayApp')
         title(ng-bind='("Runway - " + $title || "Runway")')
         base(href='/')
 
-    div.container
+    body
         div(ui-view='')
+
 
