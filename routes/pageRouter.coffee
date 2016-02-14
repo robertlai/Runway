@@ -13,7 +13,7 @@ passport = require('passport')
 
 
 pageRouter = express.Router()
-partialRouter = require('./partialRouter')()
+partialRouter = require('./partialRouter')
 pageRouter.use('/partials', partialRouter)
 
 # auth
