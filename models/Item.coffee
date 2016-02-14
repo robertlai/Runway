@@ -1,6 +1,7 @@
 mongoose = require('mongoose')
 
 itemSchema = new mongoose.Schema({
+    # todo: make filename 'date' and make it a javascript 'Date' object
     fileName: Number
     group: String
     type: String

@@ -42,7 +42,7 @@ homeApp = angular.module('homeApp', ['ui.router', 'ui.router.title'])
                 controller: 'editJoinedController'
                 parent: 'manage.edit'
             )
-    ]
+]
 
 .directive 'groupTypeTabs', ->
     restrist: 'E'

@@ -17,6 +17,10 @@ module.exports = (passport) ->
     pageRouter.use('/partials', partialRouter)
 
     # auth
+
+    pageRouter.post '/isUserLoggedIn', (req, res, next) ->
+        res.json({ loggedIn: req.isAuthenticated()})
+
     pageRouter.post '/login', (req, res, next) ->
         passport.authenticate('login', (err, user, message) ->
             if err?
@@ -61,7 +65,7 @@ module.exports = (passport) ->
     #         message: req.flash('registerMessage')
     #     })
 
-    pageRouter.get '/', (req, res) ->
+    pageRouter.get '/*', (req, res) ->
         res.render('index')
 
     # pageRouter.get '/*', (req, res) ->

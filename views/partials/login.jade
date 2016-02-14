@@ -4,7 +4,7 @@ div.col-md-4
     form.form(ng-submit='login()')
       div.form-group
         label Username
-        input.form-control(type='text', name='username', ng-model='loginForm.username', required='')
+        input.form-control(type='text', name='username', ng-model='loginForm.username', required='' autofocus)
       div.form-group
         label Password
         input.form-control(type='password', name='password', ng-model='loginForm.password', required='')

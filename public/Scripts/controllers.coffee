@@ -1,14 +1,20 @@
-angular.module('myApp').controller 'loginController', [
-    '$scope'
-    '$location'
-    'AuthService'
-    (scope, location, AuthService) ->
+angular.module('runwayApp')
 
+.controller 'loginController', [
+    '$rootScope'
+    '$scope'
+    '$state'
+    'AuthService'
+    (rootScope, scope, state, AuthService) ->
         scope.login = ->
             scope.error = false
             scope.disabled = true
             AuthService.login(scope.loginForm.username, scope.loginForm.password).then ->
-                location.path '/'
+                if rootScope.loginRedirect.stateName
+                    state.go(rootScope.loginRedirect.stateName, rootScope.loginRedirect.stateParams)
+                    delete rootScope.loginRedirect
+                else
+                    state.go('/')
                 scope.disabled = false
                 scope.loginForm = {}
             .catch ->
@@ -18,8 +24,7 @@ angular.module('myApp').controller 'loginController', [
                 scope.loginForm = {}
 ]
 
-
-angular.module('myApp').controller 'logoutController', [
+.controller 'logoutController', [
     '$scope'
     '$location'
     'AuthService'
@@ -30,7 +35,7 @@ angular.module('myApp').controller 'logoutController', [
                 location.path '/login'
 ]
 
-angular.module('myApp').controller 'registerController', [
+.controller 'registerController', [
     '$scope'
     '$location'
     'AuthService'
