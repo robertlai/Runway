@@ -8,7 +8,7 @@ nav.navbar.navbar-default.navbar-fixed-top
                 span.icon-bar
             a.navbar-brand(ui-sref='home.groups')
                 img.logo(src='/Images/title.png')
-            span.navbar-brand {{'Welcome, ' + user.username + '!'}}
+            span.navbar-brand Welcome, {{user.username}}!
         #bs-example-navbar-collapse-1.collapse.navbar-collapse
             ul.nav.navbar-nav
                 li(ui-sref-active='active')
@@ -27,7 +27,7 @@ nav.navbar.navbar-default.navbar-fixed-top
                     a(ui-sref='home.manage') Manage
             ul.nav.navbar-nav.navbar-right
                 li.dropdown
-                    a.dropdown-toggle(data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false') {{user.username}}
+                    a.dropdown-toggle(data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false' ng-bind='user.username')
                         span.caret
                     ul.dropdown-menu
                         li.divider(role='separator')

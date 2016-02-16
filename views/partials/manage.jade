@@ -1,8 +1,8 @@
 div.container
     h1.groupsTitle Manage Groups
     button.btn.btn-primary.addGroupButton(ng-click='openAddGroupModal()') Add Group
-    div.alert.alert-danger(ng-bind='error' ng-show='error')
     div.container.tilePanel
+        div.alert.alert-danger(ng-show='error' ng-bind='error')
         div(ng-repeat='group in groups | orderBy: name track by $index' ui-sref='home.one')
             div.btn-primary
                 h2 {{group}}

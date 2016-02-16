@@ -73,7 +73,7 @@ runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.boo
 ]
 
 
-.run ['$rootScope', '$state', 'AuthService', '$http', (rootScope, state, AuthService, http) ->
+.run ['$rootScope', '$state', 'AuthService', (rootScope, state, AuthService) ->
     rootScope.$on '$stateChangeStart', (event, nextState, nextParams) ->
         AuthService.isLoggedIn().then (isLoggedIn) ->
             if nextState.authenticated and !isLoggedIn

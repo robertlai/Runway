@@ -78,7 +78,7 @@ angular.module('runwayApp')
             scope.groups.push(groupToAdd)
 ]
 
-.controller 'addGroupModalController', ['$scope', '$http', '$uibModalInstance', 'groupService', (scope, http, uibModalInstance, groupService) ->
+.controller 'addGroupModalController', ['$scope', '$uibModalInstance', 'groupService', (scope, uibModalInstance, groupService) ->
     scope.addGroup = ->
         # todo: make it evident that this is doing something (loading spinner?)
         groupService.addGroup(scope.newGroupName)
