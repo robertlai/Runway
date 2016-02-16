@@ -1,12 +1,15 @@
-div.col-md-4
-  h1 Login
-    div.alert.alert-danger(ng-show='error' ng-bind='error')
-    form.form(ng-submit='login()')
-      div.form-group
-        label Username
-        input.form-control(type='text', name='username', ng-model='loginForm.username', required='' autofocus)
-      div.form-group
-        label Password
-        input.form-control(type='password', name='password', ng-model='loginForm.password', required='')
-      div
-        button.btn.btn-default(type='submit', ng-disabled='disabled') Login
+link(rel='stylesheet', href='/Styles/login.css')
+div.content
+    H1 Login
+    p.alert.alert-danger(ng-show='error' ng-bind='error')
+    form(ng-submit='login()')
+        div.form-group
+            label Username
+            input.form-control(type='text' name='username' ng-model='loginForm.username' required autofocus)
+        div.form-group
+            label Password
+            input.form-control(type='password' name='password' ng-model='loginForm.password' required)
+        div.form-group
+            p.col-xs-7 Need an account?
+                a(ui-sref='register') Signup
+            button.btn.btn-primary.col-xs-4#signInButton(type='submit') Login

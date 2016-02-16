@@ -1,52 +1,54 @@
-html, body {
-    height: 100%;
-    overflow: hidden;
+/*spacer for content under navBar*/
+div[ui-view='content'] {
+    margin-top: 80px;
+}
+/*spacer for content under end*/
+
+
+/*group tiles*/
+.tilePanel {
+    padding: 20px 0;
+    text-align: center;
+    -moz-column-width: 18em;
+    -webkit-column-width: 18em;
 }
 
-a img {
-    margin-top: -12px;
-    margin-left: -5px;
-    max-height: 45px;
-    pointer-events: none;
-    cursor: default;
+.tilePanel > div {
+    display: inline-block;
+    width:  100%;
 }
 
-.homeUiView {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: stretch;
-    overflow: hidden;
-    min-height: 0%;
-    max-height: 80%;
-    width: 50%;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: #808080;
-    opacity: 0.9;
-    padding: 10px 10px;
-    border-radius: 10px;
+.tilePanel > div > div > h2 {
+    word-wrap: break-word;
 }
 
-.fillHeight {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
+.tilePanel > div > div {
+    margin-top: 15px;
+    margin-bottom: 5px;
+    padding: 10px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
-.scrollBox {
-    overflow-x: hidden;
-    overflow-y: auto;
+.tilePanel > div:hover > div {
+    transform: translate(0px, -15px);
+    border: 1px solid #C8C8C8;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 5px 2px;
+    opacity: 0.8;
+    transition: 0.5s;
 }
+/*group tiles end*/
 
-.title {
-    width: 100%;
-    font-size: 24px;
-    margin-bottom: 10px;
-}
 
-.paddedRow {
-    margin-bottom: 10px;
+/*manage page*/
+
+.groupsTitle {
+    float: left;
 }
+.addGroupButton {
+    float: right;
+    position: relative;
+    top: 30px
+}
+/*manage page end*/

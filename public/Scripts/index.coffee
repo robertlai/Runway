@@ -1,43 +1,103 @@
-runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title'])
+runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.bootstrap', 'ngAnimate'])
 
 
 .config ['$stateProvider', '$urlRouterProvider', '$locationProvider', (stateProvider, urlRouterProvider, locationProvider) ->
     locationProvider.html5Mode({ enabled: true })
-    urlRouterProvider.otherwise('/')
+    urlRouterProvider.otherwise('/home/groups/owned')
 
     stateProvider
     .state('login',
         url: '/login'
-        templateUrl: 'partials/login'
-        controller: 'loginController'
         resolve: $title: -> 'Login'
         authenticated: false
+        views: {
+            'content@': {
+                templateUrl: '/partials/login'
+                controller: 'loginController'
+            }
+        }
     )
     .state('register',
         url: '/register'
-        templateUrl: 'partials/register'
-        controller: 'registerController'
         resolve: $title: -> 'Register'
         authenticated: false
+        views: {
+            'content@': {
+                templateUrl: '/partials/register'
+                controller: 'registerController'
+            }
+        }
     )
-    .state('/',
-        url: '/'
-        templateUrl: '/partials/home'
-        resolve: $title: -> 'Home'
-        authenticated: true
+    .state('home',
+        abstract: true
+        url: '/home'
+        replace: true
+        views: {
+            'navBar@': {
+                replace: true
+                templateUrl: '/partials/navBar'
+                controller: 'navBarController'
+            }
+            'content@': {
+                template: '<div ui-view class="homeUiView"></div>'
+            }
+        }
     )
-    .state('one',
+    .state('home.one',
         url: '/one'
-        template: '<h1>This is page one!</h1>'
         resolve: $title: -> 'One"s Title'
         authenticated: true
+        template: '<h1>This is page one!</h1>'
     )
-    .state('two',
+    .state('home.two',
         url: '/two'
-        template: '<h1>This is page two!</h1>'
         resolve: $title: -> 'One"s Title'
-        authenticated: false
+        authenticated: true
+        template: '<h1>This is page two!</h1>'
     )
+    .state('home.groups',
+        url: '/groups/:groupType'
+        params: groupType: 'owned'
+        resolve: $title: -> 'Groups'
+        authenticated: true
+        templateUrl: '/partials/groups'
+        controller: 'groupsController'
+    )
+    .state('home.manage',
+        url: '/manage'
+        resolve: $title: -> 'Manage'
+        authenticated: true
+        templateUrl: '/partials/manage'
+        controller: 'manageController'
+    )
+        # .state('home.manage.list',
+        #     url: '/:groupType'
+        #     templateUrl: '/partials/manage-list'
+        #     controller: 'manageListController'
+        #     resolve: $title: -> 'Manage'
+        #     authenticated: true
+        # )
+        # .state('home.manage.edit',
+        #     abstract: true
+        #     url: '/edit'
+        #     templateUrl: '/partials/manage-edit'
+        #     resolve: $title: -> 'Edit Group'
+        #     authenticated: true
+        # )
+        #     .state('home.manage.edit.owned',
+        #         url: '/owned/:groupName'
+        #         templateUrl: '/partials/manage-edit-owned'
+        #         controller: 'editOwnedController'
+        #         parent: 'home.manage.edit'
+        #         authenticated: true
+        #     )
+        #     .state('home.manage.edit.joined',
+        #         url: '/joined/:groupName'
+        #         templateUrl: '/partials/manage-edit-joined'
+        #         controller: 'editJoinedController'
+        #         parent: 'home.manage.edit'
+        #         authenticated: true
+        #     )
 ]
 
 

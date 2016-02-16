@@ -17,51 +17,37 @@ partialRouter = require('./partialRouter')
 pageRouter.use('/partials', partialRouter)
 
 # auth
+pageRouter.post '/getUserStatus', (req, res, next) ->
+    res.json({ loggedIn: req.isAuthenticated(), user: req.user})
 
-pageRouter.post '/isUserLoggedIn', (req, res, next) ->
-    res.json({ loggedIn: req.isAuthenticated()})
+pageRouter.post '/login', (req, res, next) ->
+    passport.authenticate('login', (error, user, message) ->
+        if error?
+            res.sendStatus(500).json({error: error})
+        else if !user
+            res.sendStatus(401).json({error: message})
+        else
+            req.logIn user, (error) ->
+                if error?
+                    res.sendStatus(500).json({error: error})
+                else
+                    res.sendStatus(200).json({status: 'Login successful!', user: req.user})
+    )(req, res, next)
 
-pageRouter.post '/login', passport.authenticate('login', (error, user, message) ->
-    if error?
-        res.sendStatus(500).json({error: error})
-    else if !user
-        res.sendStatus(401).json({error: message})
-    else
-        req.logIn user, (error) ->
-            if error?
-                res.sendStatus(500).json({error: error})
-            else
-                res.sendStatus(200).json({status: 'Login successful!'})
-)
-
-pageRouter.post '/register', passport.authenticate('register', (error, user, message) ->
-    if error?
-        res.sendStatus(500).json({error: error})
-    else if !user
-        res.sendStatus(409).json({error: message})
-    else
-        res.sendStatus(200).json({status: 'Registration successful!'})
-)
+pageRouter.post '/register', (req, res, next) ->
+    passport.authenticate('register', (error, user, message) ->
+        if error?
+            res.sendStatus(500).json({error: error})
+        else if !user
+            res.sendStatus(409).json({error: message})
+        else
+            res.sendStatus(200).json({status: 'Registration successful!'})
+    )(req, res, next)
 
 pageRouter.get '/logout', (req, res) ->
     req.logout()
     res.sendStatus(200).json({status: 'Bye!'})
 # end auth
-
-# pageRouter.get '/login', (req, res) ->
-#     req.logout()
-#     res.render('login', {
-#         title: 'Login'
-#         message: req.flash('loginMessage')
-#     })
-
-
-# pageRouter.get '/register', (req, res) ->
-#     req.logout()
-#     res.render('login', {
-#         title: 'Register'
-#         message: req.flash('registerMessage')
-#     })
 
 pageRouter.get '/*', (req, res) ->
     res.render('index')

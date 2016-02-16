@@ -47,6 +47,7 @@ app.use(express.static(__dirname + '/node_modules/jquery-ui-touch-punch'))
 app.use(express.static(__dirname + '/node_modules/angular-ui-bootstrap'))
 app.use(express.static(__dirname + '/node_modules/angular-ui-router/release'))
 app.use(express.static(__dirname + '/node_modules/angular-ui-router-title/src'))
+app.use(express.static(__dirname + '/node_modules/angular-animate'))
 
 app.use(favicon(__dirname + '/Public/Images/favicon.ico'))
 

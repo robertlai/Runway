@@ -1,0 +1,12 @@
+.modal-header
+    h3.modal-title Create a new Group
+.modal-body
+    .alert.alert-danger(ng-bind='error' ng-show='error') {{error}}
+    form.form-horizontal(ng-submit='addGroup()')
+        .form-group
+            label.col-sm-3.control-label(for='newGroupName') Group Name
+            .col-sm-9
+                input#newGroupName.form-control(type='text' ng-model='newGroupName' placeholder='Group Name' autofocus)
+.modal-footer
+    button.btn.btn-primary(type='button' ng-click='addGroup()') Add Group
+    button.btn.btn-warning(type='button' ng-click='cancel()') Cancel

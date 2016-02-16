@@ -1,0 +1,35 @@
+nav.navbar.navbar-default.navbar-fixed-top
+    div.container-fluid
+        div.navbar-header
+            button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1', aria-expanded='false')
+                span.sr-only
+                span.icon-bar
+                span.icon-bar
+                span.icon-bar
+            a.navbar-brand(ui-sref='home.groups')
+                img.logo(src='/Images/title.png')
+            span.navbar-brand {{'Welcome, ' + user.username + '!'}}
+        #bs-example-navbar-collapse-1.collapse.navbar-collapse
+            ul.nav.navbar-nav
+                li(ui-sref-active='active')
+                    a(ui-sref='home.one') One
+                li(ui-sref-active='active')
+                    a(ui-sref='home.two') Two
+                li.dropdown(ui-sref-active='active')
+                    a.dropdown-toggle(data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false') Groups
+                        span.caret
+                    ul.dropdown-menu
+                        li
+                            a(ui-sref='home.groups({groupType: "owned"})') Owned
+                        li
+                            a(ui-sref='home.groups({groupType: "joined"})') Joined
+                li(ui-sref-active='active')
+                    a(ui-sref='home.manage') Manage
+            ul.nav.navbar-nav.navbar-right
+                li.dropdown
+                    a.dropdown-toggle(data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false') {{user.username}}
+                        span.caret
+                    ul.dropdown-menu
+                        li.divider(role='separator')
+                        li
+                            a(ng-click='logout()') Logout
