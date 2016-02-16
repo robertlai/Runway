@@ -70,34 +70,6 @@ runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.boo
         templateUrl: '/partials/manage'
         controller: 'manageController'
     )
-        # .state('home.manage.list',
-        #     url: '/:groupType'
-        #     templateUrl: '/partials/manage-list'
-        #     controller: 'manageListController'
-        #     resolve: $title: -> 'Manage'
-        #     authenticated: true
-        # )
-        # .state('home.manage.edit',
-        #     abstract: true
-        #     url: '/edit'
-        #     templateUrl: '/partials/manage-edit'
-        #     resolve: $title: -> 'Edit Group'
-        #     authenticated: true
-        # )
-        #     .state('home.manage.edit.owned',
-        #         url: '/owned/:groupName'
-        #         templateUrl: '/partials/manage-edit-owned'
-        #         controller: 'editOwnedController'
-        #         parent: 'home.manage.edit'
-        #         authenticated: true
-        #     )
-        #     .state('home.manage.edit.joined',
-        #         url: '/joined/:groupName'
-        #         templateUrl: '/partials/manage-edit-joined'
-        #         controller: 'editJoinedController'
-        #         parent: 'home.manage.edit'
-        #         authenticated: true
-        #     )
 ]
 
 
