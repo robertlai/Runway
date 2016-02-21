@@ -79,6 +79,9 @@ angular.module('runwayApp')
 ]
 
 .controller 'addGroupModalController', ['$scope', '$uibModalInstance', 'groupService', (scope, uibModalInstance, groupService) ->
+
+    scope.selectedColour = '#0099CC'
+
     scope.addGroup = ->
         # todo: make it evident that this is doing something (loading spinner?)
         groupService.addGroup(scope.newGroupName)

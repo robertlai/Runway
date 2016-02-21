@@ -1,23 +1,30 @@
 doctype html
 html(ng-app='runwayApp')
     head
-        link(rel='stylesheet', href='/css/bootstrap.min.css')
+        link(rel='stylesheet', href='/node_modules/bootstrap/dist/css/bootstrap.min.css')
+        link(rel='stylesheet', href='/node_modules/jquery-ui-bundle/jquery-ui.min.css')
+        link(rel='stylesheet', href='/node_modules/angularjs-color-picker/dist/angularjs-color-picker.min.css')
+        link(rel='stylesheet', href='/node_modules/angularjs-color-picker/dist/themes/angularjs-color-picker-bootstrap.min.css')
+
         link(rel='stylesheet', href='/Styles/style.css')
         link(rel='stylesheet', href='/Styles/home.css')
         link(rel='stylesheet', href='/Styles/workspace.css')
-        link(rel='stylesheet', href='/jquery-ui-bundle/jquery-ui.min.css')
 
-        script(type='text/javascript', src='/angular.min.js')
-        script(type='text/javascript', src='/jquery.min.js')
-        script(type='text/javascript', src='/js/bootstrap.min.js')
-        script(type='text/javascript', src='/angular-ui-router.min.js')
-        script(type='text/javascript', src='/angular-ui-router-title.js')
-        script(type='text/javascript', src='/ui-bootstrap-tpls.min.js')
-        script(type='text/javascript', src='/angular-animate.min.js')
-        script(type='text/javascript', src='/dropzone.js')
-        script(type='text/javascript', src='/jquery-ui-bundle/jquery-ui.min.js')
-        script(type='text/javascript', src='/jquery.ui.touch-punch.min.js')
+        script(type='text/javascript', src='/node_modules/angular/angular.min.js')
+        script(type='text/javascript', src='/node_modules/jquery/dist/jquery.min.js')
+
+        script(type='text/javascript', src='/node_modules/angular-ui-bootstrap/ui-bootstrap-tpls.min.js')
+        script(type='text/javascript', src='/node_modules/angular-ui-router-title/src/angular-ui-router-title.js')
+        script(type='text/javascript', src='/node_modules/angular-ui-router/release/angular-ui-router.min.js')
+        script(type='text/javascript', src='/node_modules/angularjs-color-picker/dist/angularjs-color-picker.js')
+        script(type='text/javascript', src='/node_modules/angularjs-color-picker/node_modules/tinycolor2/dist/tinycolor-min.js')
+        script(type='text/javascript', src='/node_modules/bootstrap/dist/js/bootstrap.min.js')
+        script(type='text/javascript', src='/node_modules/dropzone/dist/dropzone.js')
+        script(type='text/javascript', src='/node_modules/jquery-ui-bundle/jquery-ui.min.js')
+        script(type='text/javascript', src='/node_modules/jquery-ui-touch-punch/jquery.ui.touch-punch.min.js')
+
         script(type='text/javascript', src='/socket.io/socket.io.js')
+
         script(type='text/javascript', src='/Scripts/index.js')
         script(type='text/javascript', src='/Scripts/services.js')
         script(type='text/javascript', src='/Scripts/controllers.js')

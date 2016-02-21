@@ -83,3 +83,13 @@ input.filterInput {
     word-wrap: break-word;
 }
 /*end tilePanel*/
+
+
+
+.tile {
+    background-color: #00FF1E;
+}
+
+.tile:hover {
+    /*opacity: 0.5;*/
+}
