@@ -2,11 +2,11 @@ express = require('express')
 
 fs = require('fs')
 multer  = require('multer')
-upload = multer({ dest: 'Uploads/' })
+upload = multer({ dest: 'uploads/' })
 
-Item = require('../Models/Item')
-User = require('../Models/User')
-Group = require('../Models/Group')
+Item = require('../models/Item')
+User = require('../models/User')
+Group = require('../models/Group')
 
 passport = require('passport')
 

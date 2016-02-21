@@ -6,9 +6,10 @@ html(ng-app='runwayApp')
         link(rel='stylesheet', href='/node_modules/angularjs-color-picker/dist/angularjs-color-picker.min.css')
         link(rel='stylesheet', href='/node_modules/angularjs-color-picker/dist/themes/angularjs-color-picker-bootstrap.min.css')
 
-        link(rel='stylesheet', href='/Styles/style.css')
-        link(rel='stylesheet', href='/Styles/home.css')
-        link(rel='stylesheet', href='/Styles/workspace.css')
+        link(rel='stylesheet', href='/styles/style.css')
+        link(rel='stylesheet', href='/styles/login.css')
+        link(rel='stylesheet', href='/styles/home.css')
+        link(rel='stylesheet', href='/styles/workspace.css')
 
         script(type='text/javascript', src='/node_modules/angular/angular.min.js')
         script(type='text/javascript', src='/node_modules/jquery/dist/jquery.min.js')
@@ -25,9 +26,9 @@ html(ng-app='runwayApp')
 
         script(type='text/javascript', src='/socket.io/socket.io.js')
 
-        script(type='text/javascript', src='/Scripts/index.js')
-        script(type='text/javascript', src='/Scripts/services.js')
-        script(type='text/javascript', src='/Scripts/controllers.js')
+        script(type='text/javascript', src='/scripts/index.js')
+        script(type='text/javascript', src='/scripts/services.js')
+        script(type='text/javascript', src='/scripts/controllers.js')
 
         title(ng-bind='("Runway - " + $title || "Runway")')
         base(href='/')

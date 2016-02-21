@@ -22,11 +22,11 @@ mongoose.connect(
 
 require('./passport')
 
-app.set('views', __dirname + '/Views')
+app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
 
 app.use coffeeMiddleware {
-    src: __dirname + '/Public',
+    src: __dirname + '/public',
     compress: false
     debug: false
     bare: false
@@ -37,18 +37,18 @@ app.use(logger('dev'))
 app.use(cookieParser())
 app.use(bodyParser())
 
-app.use(express.static(__dirname + '/Public'))
+app.use(express.static(__dirname + '/public'))
 app.use('/node_modules', express.static(__dirname + '/node_modules'))
 
-app.use(favicon(__dirname + '/Public/Images/favicon.ico'))
+app.use(favicon(__dirname + '/public/images/favicon.ico'))
 
 app.use(session({ secret: 'ilovescotchscotchyscotchscotch', cookie: { maxAge: 30 * 60 * 1000 }, rolling: true }))
 app.use(passport.initialize())
 app.use(passport.session())
 
-router = require('./Routes/router')(io)
+router = require('./routes/router')(io)
 app.use(router)
-require('./Routes/socketRouter')(io)
+require('./routes/socketRouter')(io)
 
 port = (process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000)
 ip = process.env.OPENSHIFT_NODEJS_IP

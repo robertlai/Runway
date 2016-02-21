@@ -1,5 +1,5 @@
 LocalStrategy = require('passport-local').Strategy
-User = require('./Models/User')
+User = require('./models/User')
 passport = require('passport')
 
 passport.serializeUser (user, done) ->

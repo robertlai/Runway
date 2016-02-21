@@ -2,7 +2,7 @@ div.container
     div.tilePanel.header
         div Manage Groups
         div
-            input.filterInput.form-control(ng-model='filterQuery' type='text' size='30' placeholder='filter groups')
+            input.filterInput.form-control(ng-model='filterQuery' type='text' size='30' placeholder='filter groups' autofocus)
         div
             input.form-control.btn.btn-primary.addGroupButton(type='button' ng-click='openAddGroupModal()' value='Add Group')
     div.alert.alert-danger(ng-show='error' ng-bind='error')

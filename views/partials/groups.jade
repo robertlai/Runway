@@ -2,7 +2,7 @@ div.container
     div.tilePanel.header
         div Groups: {{groupType}}
         div
-            input.filterInput.form-control(ng-model='filterQuery' type='text' size='30' placeholder='filter groups')
+            input.filterInput.form-control(ng-model='filterQuery' type='text' size='30' placeholder='filter groups' autofocus)
     div.alert.alert-danger(ng-show='error' ng-bind='error')
     div.tilePanel
         div(ng-repeat='group in groups | orderBy: name | filter: filterQuery track by $index' ui-sref='workspace({groupName: group})')
