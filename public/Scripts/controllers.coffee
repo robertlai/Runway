@@ -14,7 +14,7 @@ angular.module('runwayApp')
                     state.go(rootScope.loginRedirect.stateName, rootScope.loginRedirect.stateParams)
                     delete rootScope.loginRedirect
                 else
-                    state.go('home.one')
+                    state.go('home.groups')
                 scope.loginForm = {}
             .catch (errorMessage) ->
                 scope.error = errorMessage
@@ -91,6 +91,9 @@ angular.module('runwayApp')
         uibModalInstance.dismiss()
 ]
 
+# todo: ensure that the user has permission to access this group
+# should be checking this when they get here
+# but also with every request for content from this gorup
 .controller 'workspaceController', ['$scope', '$stateParams', 'AuthService', (scope, stateParams, AuthService) ->
 
     init = ->

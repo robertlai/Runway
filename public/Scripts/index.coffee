@@ -43,18 +43,6 @@ runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.boo
             }
         }
     )
-        .state('home.one',
-            url: '/one'
-            resolve: $title: -> 'One"s Title'
-            authenticated: true
-            template: '<h1>This is page one!</h1>'
-        )
-        .state('home.two',
-            url: '/two'
-            resolve: $title: -> 'One"s Title'
-            authenticated: true
-            template: '<h1>This is page two!</h1>'
-        )
         .state('home.groups',
             url: '/groups/:groupType'
             params: groupType: 'owned'
