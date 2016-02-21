@@ -76,7 +76,7 @@ runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.boo
 .run ['$rootScope', '$state', 'AuthService', (rootScope, state, AuthService) ->
     rootScope.$on '$stateChangeStart', (event, nextState, nextParams) ->
         if nextState.authenticated
-            AuthService.isLoggedIn()
+            AuthService.loggedIn()
                 .catch (error) ->
                     rootScope.loginRedirect = {
                         stateName: nextState.name

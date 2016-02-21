@@ -11,7 +11,7 @@ Group = require('../Models/Group')
 passport = require('passport')
 
 
-isLoggedIn = (req, res, next) ->
+loggedIn = (req, res, next) ->
     if req.isAuthenticated()
         next()
     else
@@ -21,7 +21,7 @@ module.exports = (io) ->
 
     apiRouter = express.Router()
 
-    apiRouter.get '/groups/:groupType', isLoggedIn, (req, res) ->
+    apiRouter.get '/groups/:groupType', loggedIn, (req, res) ->
         # todo: use the req.params.groupType to get the correct group types for return
         if req.params.groupType is 'owned'
             username = req.user.username
@@ -44,7 +44,7 @@ module.exports = (io) ->
         else
             res.sendStatus(404)
 
-    apiRouter.post '/newGroup', isLoggedIn, (req, res) ->
+    apiRouter.post '/newGroup', loggedIn, (req, res) ->
         username = req.user.username
         newGroupName = req.query.newGroupName
         try
@@ -67,7 +67,7 @@ module.exports = (io) ->
         catch err
             res.sendStatus(500)
 
-    apiRouter.post '/text', isLoggedIn, (req, res) ->
+    apiRouter.post '/text', loggedIn, (req, res) ->
         fileName = (new Date()).getTime()
         group = req.query.group
         type = 'text'
@@ -97,7 +97,7 @@ module.exports = (io) ->
         catch err
             res.sendStatus(500)
 
-    apiRouter.post '/fileUpload', isLoggedIn, upload.single('file'), (req, res) ->
+    apiRouter.post '/fileUpload', loggedIn, upload.single('file'), (req, res) ->
         fileName = (new Date()).getTime()
         group = req.query.group
         type = req.file.mimetype
@@ -124,7 +124,7 @@ module.exports = (io) ->
             res.redirect 'back'
             fs.unlinkSync(fullFilePath)
 
-    apiRouter.get '/picture', isLoggedIn, (req, res) ->
+    apiRouter.get '/picture', loggedIn, (req, res) ->
         try
             Item.findOne({fileName: req.query.fileToGet, group: req.query.groupName})
             .select('file type')

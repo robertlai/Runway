@@ -8,7 +8,7 @@ angular.module('runwayApp')
 
         getUser = -> user
 
-        isLoggedIn = ->
+        loggedIn = ->
             deferred = q.defer()
 
             http.post '/getUserStatus'
@@ -75,7 +75,7 @@ angular.module('runwayApp')
 
         {
             getUser: getUser
-            isLoggedIn: isLoggedIn
+            loggedIn: loggedIn
             login: login
             logout: logout
             register: register
