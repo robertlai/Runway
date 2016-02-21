@@ -48,13 +48,23 @@ img.logo {
     }
 }
 
-.tilePanel > div > div > h2 {
-    word-wrap: break-word;
+.tilePanel > div {
+    display: inline-block;
+    width: 100%;
+}
+
+.tilePanel.header > div {
+    font-size: 24pt;
+    text-align: left;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+input.filterInput {
+    margin-top: 4px;
 }
 
 .tilePanel > div > div {
-    display: inline-block;
-    width: 100%;
     margin-top: 15px;
     margin-bottom: 5px;
     padding: 10px;
@@ -68,15 +78,8 @@ img.logo {
     opacity: 0.8;
     transition: 0.5s;
 }
-/*end tilePanel*/
 
-/*manage page*/
-div.relative {
-    position: relative;
+.tilePanel > div > div > h2 {
+    word-wrap: break-word;
 }
-.addGroupButton {
-    position: absolute;
-    right: 0;
-    top: 0;
-}
-/*end manage page*/
+/*end tilePanel*/

@@ -96,11 +96,6 @@ angular.module('runwayApp')
 # but also with every request for content from this gorup
 .controller 'workspaceController', ['$scope', '$stateParams', 'AuthService', (scope, stateParams, AuthService) ->
 
-    init = ->
-        scope.username = AuthService.getUser().username
-        scope.groupName = stateParams.groupName
-        socket.emit('groupConnect', scope.username, scope.groupName)
-
     $dropzone = $('#dropzone')
 
     mouseX = undefined
@@ -225,6 +220,11 @@ angular.module('runwayApp')
 
     scope.showChat = ->
         scope.chatVisible = true
+
+    init = ->
+        scope.username = AuthService.getUser().username
+        scope.groupName = stateParams.groupName
+        socket.emit('groupConnect', scope.username, scope.groupName)
 
     init()
 ]

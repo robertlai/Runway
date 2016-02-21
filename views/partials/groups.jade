@@ -1,8 +1,11 @@
 div.container
-    h1.groupsTitle Groups: {{groupType}}
+    div.tilePanel.header
+        div Groups: {{groupType}}
+        div
+            input.filterInput.form-control(ng-model='filterQuery' type='text' size='30' placeholder='filter groups')
     div.alert.alert-danger(ng-show='error' ng-bind='error')
     div.tilePanel
-        div(ng-repeat='group in groups | orderBy: name track by $index' ui-sref='workspace({groupName: group})')
+        div(ng-repeat='group in groups | orderBy: name | filter: filterQuery track by $index' ui-sref='workspace({groupName: group})')
             div.btn-primary
                 h2(ng-bind='group')
                 p(ng-show='group.indexOf("wef") != -1') This is a long description of this groups and all the information you would ever want to know about it. More... Info... For... longth...
