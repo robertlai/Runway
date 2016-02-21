@@ -6,9 +6,9 @@ nav.navbar.navbar-default.navbar-fixed-top
                 span.icon-bar
                 span.icon-bar
                 span.icon-bar
-            a.navbar-brand(ui-sref='home.groups')
+            a.navbar-brand(ui-sref='home.groups({groupType: "owned"})')
                 img.logo(src='/Images/title.png')
-            span.navbar-brand Welcome, {{user.username}}!
+            span.navbar-brand Welcome {{username}}!
         #bs-example-navbar-collapse-1.collapse.navbar-collapse
             ul.nav.navbar-nav
                 li(ui-sref-active='active')
@@ -27,9 +27,10 @@ nav.navbar.navbar-default.navbar-fixed-top
                     a(ui-sref='home.manage') Manage
             ul.nav.navbar-nav.navbar-right
                 li.dropdown
-                    a.dropdown-toggle(data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false') {{user.username}}
+                    a.dropdown-toggle(data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false') {{username}}
                         span.caret
                     ul.dropdown-menu
+                        //- todo: add account settings
                         li.divider(role='separator')
                         li
                             a(ng-click='logout()') Logout

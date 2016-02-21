@@ -1,8 +1,8 @@
 div.container
     h1.groupsTitle Groups: {{groupType}}
-    div.container.tilePanel
-        div.alert.alert-danger(ng-show='error' ng-bind='error')
-        div(ng-repeat='group in groups | orderBy: name track by $index' ui-sref='home.one')
+    div.alert.alert-danger(ng-show='error' ng-bind='error')
+    div.tilePanel
+        div(ng-repeat='group in groups | orderBy: name track by $index' ui-sref='workspace({groupName: group})')
             div.btn-primary
                 h2(ng-bind='group')
                 p(ng-show='group.indexOf("wef") != -1') This is a long description of this groups and all the information you would ever want to know about it. More... Info... For... longth...

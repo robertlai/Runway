@@ -1,6 +1,5 @@
-html, body {
+html, body, div[ui-view="content"] {
     height: 100%;
-    overflow: hidden;
 }
 
 #container {

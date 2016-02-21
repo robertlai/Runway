@@ -43,43 +43,56 @@ runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.boo
             }
         }
     )
-    .state('home.one',
-        url: '/one'
-        resolve: $title: -> 'One"s Title'
+        .state('home.one',
+            url: '/one'
+            resolve: $title: -> 'One"s Title'
+            authenticated: true
+            template: '<h1>This is page one!</h1>'
+        )
+        .state('home.two',
+            url: '/two'
+            resolve: $title: -> 'One"s Title'
+            authenticated: true
+            template: '<h1>This is page two!</h1>'
+        )
+        .state('home.groups',
+            url: '/groups/:groupType'
+            params: groupType: 'owned'
+            resolve: $title: -> 'Groups'
+            authenticated: true
+            templateUrl: '/partials/groups'
+            controller: 'groupsController'
+        )
+        .state('home.manage',
+            url: '/manage'
+            resolve: $title: -> 'Manage'
+            authenticated: true
+            templateUrl: '/partials/manage'
+            controller: 'manageController'
+        )
+    .state('workspace',
+        url: '/workspace/:groupName'
+        params: groupName: 'groupName'
+        resolve: $title: -> 'Workspace: ' + 'groupName'
         authenticated: true
-        template: '<h1>This is page one!</h1>'
-    )
-    .state('home.two',
-        url: '/two'
-        resolve: $title: -> 'One"s Title'
-        authenticated: true
-        template: '<h1>This is page two!</h1>'
-    )
-    .state('home.groups',
-        url: '/groups/:groupType'
-        params: groupType: 'owned'
-        resolve: $title: -> 'Groups'
-        authenticated: true
-        templateUrl: '/partials/groups'
-        controller: 'groupsController'
-    )
-    .state('home.manage',
-        url: '/manage'
-        resolve: $title: -> 'Manage'
-        authenticated: true
-        templateUrl: '/partials/manage'
-        controller: 'manageController'
+        views: {
+            'content@': {
+                templateUrl: '/partials/workspace'
+                controller: 'workspaceController'
+            }
+        }
     )
 ]
 
-
+# todo: add angular interceptor to handle a similar situation as below but for http requests
 .run ['$rootScope', '$state', 'AuthService', (rootScope, state, AuthService) ->
     rootScope.$on '$stateChangeStart', (event, nextState, nextParams) ->
-        AuthService.isLoggedIn().then (isLoggedIn) ->
-            if nextState.authenticated and !isLoggedIn
-                rootScope.loginRedirect = {
-                    stateName: nextState.name
-                    stateParams: nextParams
-                }
-                state.go('login')
+        if nextState.authenticated
+            AuthService.isLoggedIn()
+                .catch (error) ->
+                    rootScope.loginRedirect = {
+                        stateName: nextState.name
+                        stateParams: nextParams
+                    }
+                    state.go('login')
 ]

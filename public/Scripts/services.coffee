@@ -11,22 +11,20 @@ angular.module('runwayApp')
         isLoggedIn = ->
             deferred = q.defer()
 
-            if user
-                deferred.resolve(true)
-            else
-                http.post '/getUserStatus'
-                    .success (data) ->
-                        loggedIn = data.loggedIn
-                        if loggedIn
-                            user = {
-                                username: data.user.username
-                            }
-                        else
-                            user = false
-                        deferred.resolve(data.loggedIn)
-                    .error (data) ->
-                        user = false
-                        deferred.resolve(user)
+            http.post '/getUserStatus'
+                .success (data) ->
+                    loggedIn = data.loggedIn
+                    if loggedIn
+                        user = {
+                            username: data.user.username
+                        }
+                        deferred.resolve()
+                    else
+                        user = null
+                        deferred.reject()
+                .error (data) ->
+                    user = null
+                    deferred.reject()
 
             return deferred.promise
 
@@ -41,10 +39,10 @@ angular.module('runwayApp')
                         }
                         deferred.resolve()
                     else
-                        user = false
+                        user = null
                         deferred.reject(data.error)
                 .error (data) ->
-                    user = false
+                    user = null
                     deferred.reject(data.error)
 
             return deferred.promise
@@ -53,10 +51,10 @@ angular.module('runwayApp')
             deferred = q.defer()
             http.get '/logout'
                 .success (data) ->
-                    user = false
+                    user = null
                     deferred.resolve()
                 .error (data) ->
-                    user = false
+                    user = null
                     deferred.reject()
 
             return deferred.promise

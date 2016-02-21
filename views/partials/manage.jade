@@ -1,9 +1,10 @@
 div.container
-    h1.groupsTitle Manage Groups
-    button.btn.btn-primary.addGroupButton(ng-click='openAddGroupModal()') Add Group
-    div.container.tilePanel
+    div.relative
+        h1.groupsTitle Manage Groups
+        button.btn.btn-primary.addGroupButton(ng-click='openAddGroupModal()') Add Group
         div.alert.alert-danger(ng-show='error' ng-bind='error')
-        div(ng-repeat='group in groups | orderBy: name track by $index' ui-sref='home.one')
-            div.btn-primary
-                h2 {{group}}
-                p(ng-show='group.indexOf("wef") != -1') This is a long description of this groups and all the information you would ever want to know about it. More... Info... For... longth...
+        div.tilePanel
+            div(ng-repeat='group in groups | orderBy: name track by $index' ui-sref='home.one')
+                div.btn-primary
+                    h2 {{group}}
+                    p(ng-show='group.indexOf("wef") != -1') This is a long description of this groups and all the information you would ever want to know about it. More... Info... For... longth...

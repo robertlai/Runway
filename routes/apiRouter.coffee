@@ -15,7 +15,7 @@ isLoggedIn = (req, res, next) ->
     if req.isAuthenticated()
         next()
     else
-        res.sendStatus(500)
+        res.sendStatus(401)
 
 module.exports = (io) ->
 
