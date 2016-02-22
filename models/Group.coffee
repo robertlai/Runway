@@ -1,7 +1,8 @@
 mongoose = require('mongoose')
+Schema = mongoose.Schema
 
-messageSchema = new mongoose.Schema({
-    timestamp: Number
+messageSchema = new Schema({
+    date: Date
     user: String
     content: String
 }, _id: false)

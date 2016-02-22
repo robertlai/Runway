@@ -2,7 +2,7 @@ express = require('express')
 fs = require('fs')
 
 partialRouter = express.Router()
-validPartials = (fileName.slice(0, -5) for fileName in fs.readdirSync('./views/partials'))
+validPartials = (date.slice(0, -5) for date in fs.readdirSync('./views/partials'))
 
 partialRouter.get '/:partialName', (req, res) ->
     name = req.params.partialName

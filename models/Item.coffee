@@ -1,8 +1,8 @@
 mongoose = require('mongoose')
+Schema = mongoose.Schema
 
-itemSchema = new mongoose.Schema({
-    # todo: make filename 'date' and make it a javascript 'Date' object
-    fileName: Number
+itemSchema = new Schema({
+    date: Date
     group: String
     type: String
     x: Number

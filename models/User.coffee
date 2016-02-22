@@ -1,11 +1,13 @@
 mongoose = require('mongoose')
+Schema = mongoose.Schema
 bcrypt = require('bcrypt-nodejs')
 
 
-userSchema = new mongoose.Schema({
+userSchema = new Schema({
     username: String
     password: String
-    groups: []
+    ownedGroups: [String]
+    joinedGroups: [String]
 })
 
 userSchema.methods.generateHash = (password) ->

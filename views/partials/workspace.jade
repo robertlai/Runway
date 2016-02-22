@@ -10,7 +10,7 @@ div#container(ng-init='init("#{username}", "#{groupName}")')
                 div.userBubble.noselect(uib-tooltip='{{message.user}}' tooltip-placement='right' tooltip-trigger='mouseenter') {{message.user.substring(0, 1).toUpperCase()}}
                 div.chatMessage.noselect(ng-bind='message.content')
                 button.btn.btn-primary(type='button' ng-click='addMessageToWorkspace(message.content)') +
-                button.btn.btn-primary(type='button' ng-if='message.user === username' ng-click='removeMessage(message.timestamp)') x
+                button.btn.btn-primary(type='button' ng-if='message.user === username' ng-click='removeMessage(message.date)') x
         div#chatFooter
             form(ng-submit='sendMessage()')
                 input#messageInputBox(type='text' ng-model='newMessage' placeholder='Type a message...' autofocus)

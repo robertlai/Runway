@@ -22,25 +22,15 @@ module.exports = (io) ->
     apiRouter = express.Router()
 
     apiRouter.get '/groups/:groupType', loggedIn, (req, res) ->
-        # todo: use the req.params.groupType to get the correct group types for return
-        if req.params.groupType is 'owned'
+        groupType = req.params.groupType
+        if groupType in ['owned', 'joined']
             username = req.user.username
             try
                 User.findOne {username: username}, (err1, user) ->
                     throw err1 if err1
-                    res.json(user.groups)
+                    res.json(user[groupType + 'Groups'])
             catch err
                 res.sendStatus(500)
-        else if req.params.groupType is 'joined'
-            res.json([
-                    'joined group 1'
-                    'joined group 2'
-                    'joined group 3'
-                    'joined group 4'
-                    'joined group 5'
-                    'joined group 6'
-                    'joined group 7'
-                ])
         else
             res.sendStatus(404)
 
@@ -60,7 +50,7 @@ module.exports = (io) ->
                         throw err2 if err2
                         User.findOne {username: username}, (err3, user) ->
                             throw err3 if err3
-                            user.groups.push(newGroupName)
+                            user.ownedGroups.push(newGroupName)
                             user.save (err4, user2) ->
                                 throw err4 if err4
                                 res.json(newGroupName)
@@ -68,7 +58,7 @@ module.exports = (io) ->
             res.sendStatus(500)
 
     apiRouter.post '/text', loggedIn, (req, res) ->
-        fileName = (new Date()).getTime()
+        date = new Date()
         group = req.query.group
         type = 'text'
         x = 1
@@ -76,8 +66,8 @@ module.exports = (io) ->
         text = req.body.text
         try
             item = new Item {
+                date: date
                 group: group
-                fileName: fileName
                 type: type
                 x: x
                 y: y
@@ -86,7 +76,7 @@ module.exports = (io) ->
             item.save (err1, file) ->
                 throw err1 if err1
                 newItem = {
-                    fileName: fileName
+                    date: date
                     type: type
                     x: x
                     y: y
@@ -98,14 +88,14 @@ module.exports = (io) ->
             res.sendStatus(500)
 
     apiRouter.post '/fileUpload', loggedIn, upload.single('file'), (req, res) ->
-        fileName = (new Date()).getTime()
+        date = new Date()
         group = req.query.group
         type = req.file.mimetype
         x = req.query.x
         y = req.query.y
         fullFilePath = req.file.path
         item = new Item {
-            fileName: fileName
+            date: date
             group: group
             type: type
             x: x
@@ -115,7 +105,7 @@ module.exports = (io) ->
         item.save (err1) ->
             if !err1
                 newItem = {
-                    fileName: fileName
+                    date: date
                     type: type
                     x: x
                     y: y
@@ -124,9 +114,9 @@ module.exports = (io) ->
             res.redirect 'back'
             fs.unlinkSync(fullFilePath)
 
-    apiRouter.get '/picture', loggedIn, (req, res) ->
+    apiRouter.get '/file', loggedIn, (req, res) ->
         try
-            Item.findOne({fileName: req.query.fileToGet, group: req.query.groupName})
+            Item.findOne({date: req.query.date, group: req.query.groupName})
             .select('file type')
             .exec (err, file) ->
                 throw err if (not file or err)

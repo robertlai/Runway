@@ -15,14 +15,14 @@ module.exports = (io) ->
         socket.on 'getInitialMessages', ->
             Group.findOne({name: socket.group})
             .select('messages')
-            .sort('timestamp')
+            .sort('date')
             .exec (err, data) ->
                 if data and !err
                     socket.emit('initialMessages', data.messages)
 
         socket.on 'postNewMessage', (messageContent) ->
             newMessage = {
-                timestamp: (new Date()).getTime()
+                date: new Date()
                 user: socket.username
                 content: messageContent
             }
@@ -32,25 +32,25 @@ module.exports = (io) ->
                 if !err
                     io.sockets.in(socket.group).emit('newMessage', newMessage)
 
-        socket.on 'postRemoveMessage', (timestamp) ->
+        socket.on 'postRemoveMessage', (date) ->
             Group.update {name: socket.group},
-            { $pull: 'messages': {timestamp: timestamp}},
+            { $pull: 'messages': {date: date}},
             (err) ->
                 if !err
-                    io.sockets.in(socket.group).emit('removeMessage', timestamp)
+                    io.sockets.in(socket.group).emit('removeMessage', date)
 
 
         socket.on 'getInitialItems', ->
             Item.find({group: socket.group})
-            .select('fileName type x y text')
-            .sort('fileName')
+            .select('date type x y text')
+            .sort('date')
             .exec (err, itemsInfo) ->
                 if !err
                     socket.emit('newItem', itemInfo) for itemInfo in itemsInfo
 
-        socket.on 'updateItemLocation', (fileName, newX, newY) ->
-            Item.findOne({fileName: fileName})
-            .select('fileName x y')
+        socket.on 'updateItemLocation', (date, newX, newY) ->
+            Item.findOne({date: date})
+            .select('date x y')
             .exec (err, item) ->
                 if item and not err
                     item.x = newX

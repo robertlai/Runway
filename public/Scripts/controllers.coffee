@@ -75,6 +75,7 @@ angular.module('runwayApp')
             controller: 'addGroupModalController'
         )
         modalInstance.result.then (groupToAdd) ->
+            scope.error = null
             scope.groups.push(groupToAdd)
 ]
 
@@ -146,13 +147,13 @@ angular.module('runwayApp')
         scope.$apply()
         chatBody.scrollTop = chatBody.scrollHeight if scrollAtBottom
 
-    socket.on 'removeMessage', (timestamp) ->
+    socket.on 'removeMessage', (date) ->
         scope.messages = scope.messages.filter (message) ->
-            message.timestamp isnt timestamp
+            message.date isnt date
         scope.$apply()
 
     socket.on 'updateItem', (itemInfo) ->
-        $('#' + itemInfo.fileName).offset ({
+        $('#' + itemInfo.date).offset ({
             top: itemInfo.y / 100.0 * maxy()
             left: itemInfo.x / 100.0 * maxx()
         })
@@ -162,14 +163,14 @@ angular.module('runwayApp')
         if itemInfo.type is 'text'
             innerContent = $('<p/>', class: 'noselect').text(itemInfo.text)
         else if itemInfo.type.substring(0, 5) is 'image'
-            innerContent = $('<img/>', src: '/api/picture?fileToGet=' + itemInfo.fileName + '&groupName=' + scope.groupName)
+            innerContent = $('<img/>', src: '/api/file?date=' + itemInfo.date + '&groupName=' + scope.groupName)
         else if itemInfo.type is 'application/pdf'
-            innerContent = $('<div style="padding-top:25px; background-color:black;"><object data="/api/picture?fileToGet=' +
-                itemInfo.fileName + '&groupName=' + scope.groupName + "'/></div>")
+            innerContent = $('<div style="padding-top:25px; background-color:black;"><object data="/api/file?date=' +
+                itemInfo.date + '&groupName=' + scope.groupName + "'/></div>")
 
         if innerContent
             innerContent.css('position', 'absolute')
-            .attr('id', itemInfo.fileName)
+            .attr('id', itemInfo.date)
             .appendTo($dropzone).draggable(
                 containment: 'parent'
                 stop: (event, ui) ->
@@ -214,8 +215,8 @@ angular.module('runwayApp')
             socket.emit('postNewMessage', scope.newMessage)
             scope.newMessage = ''
 
-    scope.removeMessage = (timestamp) ->
-        socket.emit('postRemoveMessage', timestamp)
+    scope.removeMessage = (date) ->
+        socket.emit('postRemoveMessage', date)
 
 
     scope.hideChat = ->
