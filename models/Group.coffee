@@ -1,15 +1,10 @@
 mongoose = require('mongoose')
 Schema = mongoose.Schema
 
-messageSchema = new Schema({
-    date: Date
-    user: String
-    content: String
-}, _id: false)
-
-groupSchema = new mongoose.Schema({
+groupSchema = new Schema({
     name: String
-    messages: [messageSchema]
+    _owner: { type: Schema.Types.ObjectId, ref: 'user' }
+    _members: [{ type: Schema.Types.ObjectId, ref: 'user' }]
 })
 
 module.exports = mongoose.model('group', groupSchema)

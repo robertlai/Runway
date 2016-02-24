@@ -43,6 +43,24 @@ runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.boo
             }
         }
     )
+        .state('home.settings',
+            abstract: true
+            url: '/settings'
+            replace: true
+            resolve: $title: -> 'Account Setting'
+            templateUrl: '/partials/settings'
+            controller: 'settingsController'
+        )
+            .state('home.settings.general',
+                url: '/general'
+                authenticated: true
+                templateUrl: '/partials/settings-general'
+            )
+            .state('home.settings.security',
+                url: '/security'
+                authenticated: true
+                templateUrl: '/partials/settings-security'
+            )
         .state('home.groups',
             url: '/groups/:groupType'
             params: groupType: 'owned'
@@ -61,7 +79,7 @@ runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.boo
     .state('workspace',
         url: '/workspace/:groupName'
         params: groupName: 'groupName'
-        resolve: $title: -> 'Workspace: ' + 'groupName'
+        resolve: $title: ($stateParams) -> 'Workspace: ' + $stateParams.groupName
         authenticated: true
         views: {
             'content@': {

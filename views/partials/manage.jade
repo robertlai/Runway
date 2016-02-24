@@ -1,13 +1,13 @@
-div.container
-    div.tilePanel.header
+.container
+    .tilePanel.header
         div Manage Groups
         div
             input.filterInput.form-control(ng-model='filterQuery' type='text' size='30' placeholder='filter groups' autofocus)
         div
             input.form-control.btn.btn-primary.addGroupButton(type='button' ng-click='openAddGroupModal()' value='Add Group')
-    div.alert.alert-danger(ng-show='error' ng-bind='error')
-    div.tilePanel
+    .alert.alert-danger(ng-show='error' ng-bind='error')
+    .tilePanel
         div(ng-repeat='group in groups | orderBy: name | filter: filterQuery track by $index' ui-sref='home.manage')
-            div.btn-primary
-                h2 {{group}}
-                p(ng-show='group.indexOf("wef") != -1') This is a long description of this groups and all the information you would ever want to know about it. More... Info... For... longth...
+            .btn-primary
+                h2 {{group.name}}
+                p(ng-show='group.name.indexOf("wef") != -1') This is a long description of this groups and all the information you would ever want to know about it. More... Info... For... longth...

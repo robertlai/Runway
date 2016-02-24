@@ -33,6 +33,15 @@ angular.module('runwayApp')
                 state.go('login')
 ]
 
+.controller 'settingsController', [
+    '$scope'
+    '$state'
+    'AuthService'
+    (scope, state, AuthService) ->
+        user = AuthService.getUser()
+        console.log user
+]
+
 .controller 'registerController', [
     '$scope'
     '$state'
@@ -41,7 +50,7 @@ angular.module('runwayApp')
         AuthService.logout()
         scope.register = ->
             scope.error = false
-            AuthService.register(scope.registerForm.username, scope.registerForm.password)
+            AuthService.register(scope.registerForm)
                 .then ->
                     state.go('login')
                     scope.registerForm = {}
@@ -76,7 +85,8 @@ angular.module('runwayApp')
         )
         modalInstance.result.then (groupToAdd) ->
             scope.error = null
-            scope.groups.push(groupToAdd)
+            # todo: make this return a full group object, not just the name
+            scope.groups.push({name: groupToAdd})
 ]
 
 .controller 'addGroupModalController', ['$scope', '$uibModalInstance', 'groupService', (scope, uibModalInstance, groupService) ->
@@ -117,7 +127,8 @@ angular.module('runwayApp')
         autoProcessQueue: true
         acceptedFiles: 'image/*, application/pdf'
         accept: (file, done) ->
-            this.options.url = '/api/fileUpload?group=' + scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy()
+            # todo: user scope.group to get scope.groupName everywhere
+            @options.url = '/api/fileUpload?group=' + scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy()
             hoverTextOff()
             done()
     }
@@ -127,14 +138,15 @@ angular.module('runwayApp')
 
     socket = io()
 
-    socket.on 'setupComplete', ->
+    socket.on 'setupComplete', (group) ->
+        scope.group = group
         socket.emit('getInitialMessages')
         socket.emit('getInitialItems')
-
 
     socket.on 'initialMessages', (messages) ->
         addMessageContent ->
             scope.messages = messages
+        , true
 
     socket.on 'newMessage', (message) ->
         addMessageContent ->
@@ -147,9 +159,9 @@ angular.module('runwayApp')
         scope.$apply()
         chatBody.scrollTop = chatBody.scrollHeight if scrollAtBottom
 
-    socket.on 'removeMessage', (date) ->
+    socket.on 'removeMessage', (_message) ->
         scope.messages = scope.messages.filter (message) ->
-            message.date isnt date
+            message._id isnt _message
         scope.$apply()
 
     socket.on 'updateItem', (itemInfo) ->
@@ -215,8 +227,8 @@ angular.module('runwayApp')
             socket.emit('postNewMessage', scope.newMessage)
             scope.newMessage = ''
 
-    scope.removeMessage = (date) ->
-        socket.emit('postRemoveMessage', date)
+    scope.removeMessage = (_message) ->
+        socket.emit('postRemoveMessage', _message)
 
 
     scope.hideChat = ->
@@ -226,9 +238,9 @@ angular.module('runwayApp')
         scope.chatVisible = true
 
     init = ->
-        scope.username = AuthService.getUser().username
+        scope.user = AuthService.getUser()
         scope.groupName = stateParams.groupName
-        socket.emit('groupConnect', scope.username, scope.groupName)
+        socket.emit('groupConnect', scope.user, scope.groupName)
 
     init()
 ]

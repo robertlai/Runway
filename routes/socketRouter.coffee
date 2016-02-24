@@ -1,47 +1,54 @@
 Group = require('../models/Group')
 Item = require('../models/Item')
+Message = require('../models/Message')
 
 module.exports = (io) ->
 
     io.on 'connection', (socket) ->
 
-        socket.on 'groupConnect', (user, group) ->
-            socket.join(group)
-            socket.username = user
-            socket.group = group
-            socket.emit('setupComplete')
-
+        socket.on 'groupConnect', (user, groupName) ->
+            # todo: valide here that the user has access to the group before adding them to the socket group
+            Group.findOne({name: groupName}) # select whole group object for later user checking if user is allowed
+            .exec (err1, group) ->
+                if group and !err1
+                    socket.join(group._id)
+                    socket.user = user
+                    socket.group = group
+                    socket.emit('setupComplete', group)
 
         socket.on 'getInitialMessages', ->
-            Group.findOne({name: socket.group})
-            .select('messages')
+            Message.find({_group: socket.group._id})
+            .select('date content _user') # get all feilds of message
+            .populate('_user', 'username') # only populate username of user
             .sort('date')
-            .exec (err, data) ->
-                if data and !err
-                    socket.emit('initialMessages', data.messages)
+            .exec (err, messages) ->
+                if messages and !err
+                    socket.emit('initialMessages', messages)
 
         socket.on 'postNewMessage', (messageContent) ->
-            newMessage = {
+            newMessage = new Message {
                 date: new Date()
-                user: socket.username
+                _user: socket.user._id
+                _group: socket.group._id
                 content: messageContent
             }
-            Group.update { name: socket.group },
-            { $push: 'messages': newMessage },
-            (err) ->
-                if !err
-                    io.sockets.in(socket.group).emit('newMessage', newMessage)
+            newMessage.save (err1, message) ->
+                if !err1
+                    Message.populate newMessage, {
+                        path: '_user'
+                        select: 'username' # only populate username
+                    }, (err3, populatedMessage) ->
+                        if populatedMessage and !err3
+                            io.sockets.in(socket.group._id).emit('newMessage', populatedMessage)
 
-        socket.on 'postRemoveMessage', (date) ->
-            Group.update {name: socket.group},
-            { $pull: 'messages': {date: date}},
-            (err) ->
+        socket.on 'postRemoveMessage', (_message) ->
+            Message.findById(_message).remove().exec (err) ->
                 if !err
-                    io.sockets.in(socket.group).emit('removeMessage', date)
+                    io.sockets.in(socket.group._id).emit('removeMessage', _message)
 
 
         socket.on 'getInitialItems', ->
-            Item.find({group: socket.group})
+            Item.find({_group: socket.group._id})
             .select('date type x y text')
             .sort('date')
             .exec (err, itemsInfo) ->
@@ -56,4 +63,4 @@ module.exports = (io) ->
                     item.x = newX
                     item.y = newY
                     item.save()
-                    io.sockets.in(socket.group).emit('updateItem', item)
+                    io.sockets.in(socket.group._id).emit('updateItem', item)

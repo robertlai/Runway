@@ -1,0 +1,11 @@
+.container
+    .col-xs-2
+        ul.nav.nav-pills.nav-stacked.affix
+            li
+                h3 Account Settings
+            li(ui-sref-active='active')
+                a(ui-sref='home.settings.general') General
+            li(ui-sref-active='active')
+                a(ui-sref='home.settings.security') Security
+    .col-xs-10
+        div.settingsUiView(ui-view='')

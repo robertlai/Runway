@@ -2,12 +2,12 @@
     h3.modal-title Create a new Group
 .modal-body
     .alert.alert-danger(ng-show='error' ng-bind='error')
-    div.form-horizontal
+    .form-horizontal
         .form-group
             label.col-xs-3.control-label Group Name:
             .col-xs-9
                 input.form-control(type='text' ng-model='newGroupName' placeholder='Group Name' autofocus)
-        .form-group.form-inline
+        .form-group
             label.col-xs-3.control-label Color:
             .col-xs-9
                 color-picker(

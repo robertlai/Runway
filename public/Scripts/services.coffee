@@ -15,9 +15,7 @@ angular.module('runwayApp')
                 .success (data) ->
                     loggedIn = data.loggedIn
                     if loggedIn
-                        user = {
-                            username: data.user.username
-                        }
+                        user = data.user
                         deferred.resolve()
                     else
                         user = null
@@ -34,9 +32,7 @@ angular.module('runwayApp')
             http.post '/login', { username: username, password: password }
                 .success (data, status) ->
                     if status is 200 and data.status
-                        user = {
-                            username: data.user.username
-                        }
+                        user = data.user
                         deferred.resolve()
                     else
                         user = null
@@ -59,10 +55,10 @@ angular.module('runwayApp')
 
             return deferred.promise
 
-        register = (username, password) ->
+        register = (registerForm) ->
             deferred = q.defer()
 
-            http.post '/register', { username: username, password: password }
+            http.post '/register', registerForm
                 .success (data, status) ->
                     if status is 200 and data.status
                         deferred.resolve()

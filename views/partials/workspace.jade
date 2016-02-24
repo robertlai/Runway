@@ -1,16 +1,19 @@
-div#container(ng-init='init("#{username}", "#{groupName}")')
-    div#dropzone
+//- todo: include this link in index.jade (styles mess up other pages for now)
+link(rel='stylesheet', href='/styles/workspace.css')
+
+#container(ng-init='init("#{username}", "#{groupName}")')
+    #dropzone
         h1.noselect#dndText Drag and drop files here
     input#showButton(type='button' value='Show' ng-hide='chatVisible' ng-click='showChat()')
-    div#chatPanel(ng-show='chatVisible')
-        div#chatHeader
+    #chatPanel(ng-show='chatVisible')
+        #chatHeader
             input#hideButton(type='button' value='Hide' ng-click='hideChat()')
-        div#chatBody
-            div.messageRow(ng-repeat='message in messages track by $index')
-                div.userBubble.noselect(uib-tooltip='{{message.user}}' tooltip-placement='right' tooltip-trigger='mouseenter') {{message.user.substring(0, 1).toUpperCase()}}
-                div.chatMessage.noselect(ng-bind='message.content')
+        #chatBody
+            .messageRow(ng-repeat='message in messages track by $index')
+                .userBubble.noselect(uib-tooltip='{{message._user.username}}' tooltip-placement='right' tooltip-trigger='mouseenter') {{message._user.username.substring(0, 1).toUpperCase()}}
+                .chatMessage.noselect(ng-bind='message.content')
                 button.btn.btn-primary(type='button' ng-click='addMessageToWorkspace(message.content)') +
-                button.btn.btn-primary(type='button' ng-if='message.user === username' ng-click='removeMessage(message.date)') x
-        div#chatFooter
+                button.btn.btn-primary(type='button' ng-if='message._user.username === user.username' ng-click='removeMessage(message._id)') x
+        #chatFooter
             form(ng-submit='sendMessage()')
                 input#messageInputBox(type='text' ng-model='newMessage' placeholder='Type a message...' autofocus)

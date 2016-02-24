@@ -12,15 +12,20 @@ passport.deserializeUser (id, done) ->
 passport.use 'register', new LocalStrategy({
     usernameField: 'username'
     passwordField: 'password'
-}, (username, password, done) ->
+    passReqToCallback: true
+}, (req, username, password, done) ->
     User.findOne { 'username': username }, (err, user) ->
         if err
             done(err)
         else if user
             done(null, false, 'That username is already taken.')
         else
-            newUser = new User
-            newUser.username = username
+            newUser = new User {
+                firstName: req.body.firstName
+                lastName: req.body.lastName
+                email: req.body.email
+                username: username
+            }
             newUser.password = newUser.generateHash(password)
             newUser.save (err) ->
                 if err

@@ -1,11 +1,11 @@
-div.container
-    div.tilePanel.header
+.container
+    .tilePanel.header
         div Groups: {{groupType}}
         div
             input.filterInput.form-control(ng-model='filterQuery' type='text' size='30' placeholder='filter groups' autofocus)
-    div.alert.alert-danger(ng-show='error' ng-bind='error')
-    div.tilePanel
-        div(ng-repeat='group in groups | orderBy: name | filter: filterQuery track by $index' ui-sref='workspace({groupName: group})')
-            div.btn-primary
-                h2(ng-bind='group')
-                p(ng-show='group.indexOf("wef") != -1') This is a long description of this groups and all the information you would ever want to know about it. More... Info... For... longth...
+    .alert.alert-danger(ng-show='error' ng-bind='error')
+    .tilePanel
+        div(ng-repeat='group in groups | orderBy: name | filter: filterQuery track by $index' ui-sref='workspace({groupName: group.name})')
+            .btn-primary
+                h2(ng-bind='group.name')
+                p(ng-show='group.name.indexOf("wef") != -1') This is a long description of this groups and all the information you would ever want to know about it. More... Info... For... longth...

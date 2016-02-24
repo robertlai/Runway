@@ -26,14 +26,19 @@ module.exports = (io) ->
         if groupType in ['owned', 'joined']
             username = req.user.username
             try
-                User.findOne {username: username}, (err1, user) ->
+                groupField = '_' + groupType + 'Groups'
+                User.findOne({username: username})
+                .select(groupField) # only select groupType groups
+                .populate(groupField, 'name') # only populate name of group
+                .exec (err1, user) ->
                     throw err1 if err1
-                    res.json(user[groupType + 'Groups'])
+                    res.json(user[groupField])
             catch err
                 res.sendStatus(500)
         else
             res.sendStatus(404)
 
+    # todo: make this take a group object, not just a name
     apiRouter.post '/newGroup', loggedIn, (req, res) ->
         username = req.user.username
         newGroupName = req.query.newGroupName
@@ -45,12 +50,14 @@ module.exports = (io) ->
                 else
                     newGroup = new Group {
                         name: newGroupName
+                        _owner: req.user._id
+                        _members: [req.user._id]
                     }
                     newGroup.save (err2, group) ->
                         throw err2 if err2
                         User.findOne {username: username}, (err3, user) ->
                             throw err3 if err3
-                            user.ownedGroups.push(newGroupName)
+                            user._ownedGroups.push(group._id)
                             user.save (err4, user2) ->
                                 throw err4 if err4
                                 res.json(newGroupName)

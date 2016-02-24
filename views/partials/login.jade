@@ -1,14 +1,14 @@
-div.content
+.content
     h1 Login
     p.alert.alert-danger(ng-show='error' ng-bind='error')
     form(ng-submit='login()')
-        div.form-group
+        .form-group
             label Username
             input.form-control(type='text' name='username' ng-model='loginForm.username' required autofocus)
-        div.form-group
+        .form-group
             label Password
             input.form-control(type='password' name='password' ng-model='loginForm.password' required)
-        div.form-group
+        .form-group
             p.col-xs-7 Need an account?
                 a(ui-sref='register') Signup
             button.btn.btn-primary.col-xs-4#signInButton(type='submit') Login
