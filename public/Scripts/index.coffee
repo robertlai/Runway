@@ -79,7 +79,7 @@ runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.boo
     .state('workspace',
         url: '/workspace/:groupName'
         params: groupName: 'groupName'
-        resolve: $title: ($stateParams) -> 'Workspace: ' + $stateParams.groupName
+        resolve: $title: ($stateParams) -> 'Workspace'
         authenticated: true
         views: {
             'content@': {

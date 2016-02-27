@@ -99,10 +99,12 @@ angular.module('runwayApp')
 
     scope.addGroup = ->
         # todo: make it evident that this is doing something (loading spinner?)
+        scope.disableModal = true
         groupService.addGroup(scope.newGroupName)
             .then (newGroup) ->
                 uibModalInstance.close(newGroup)
             .catch (message) ->
+                scope.disableModal = false
                 scope.error = message
 
     scope.cancel = ->

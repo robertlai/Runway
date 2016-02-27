@@ -2,22 +2,26 @@
     h3.modal-title Create a new Group
 .modal-body
     .alert.alert-danger(ng-show='error' ng-bind='error')
-    .form-horizontal
-        .form-group
-            label.col-xs-3.control-label Group Name:
-            .col-xs-9
-                input.form-control(type='text' ng-model='newGroupName' placeholder='Group Name' autofocus)
-        .form-group
-            label.col-xs-3.control-label Color:
-            .col-xs-9
-                color-picker(
-                    ng-model='selectedColour'
-                    color-picker-format="'hex'"
-                    color-picker-alpha="false"
-                    color-picker-swatch-only="true"
-                    color-picker-pos="'bottom left'"
-                    color-picker-swatch-bootstrap="true"
-                )
+    fieldset(ng-disabled='disableModal')
+        form.form-horizontal(ng-submit='addGroup()')
+            .form-group
+                label.col-xs-3.control-label Group Name:
+                .col-xs-9
+                    input.form-control(type='text' ng-model='newGroupName' placeholder='Group Name' autofocus)
+            .form-group
+                label.col-xs-3.control-label Color:
+                .col-xs-9
+                    color-picker(
+                        ng-model='selectedColour'
+                        color-picker-format="'hex'"
+                        color-picker-alpha="false"
+                        color-picker-swatch-only="true"
+                        color-picker-pos="'bottom left'"
+                        color-picker-swatch-bootstrap="true"
+                    )
+            .form-group
+                .col-xs-offset-3.col-xs-9
+                    button.btn.btn-primary(type='submit') Add Group
 .modal-footer
-    button.btn.btn-primary(type='button' ng-click='addGroup()') Add Group
-    button.btn.btn-warning(type='button' ng-click='cancel()') Cancel
+    fieldset(ng-disabled='disableModal')
+        button.btn.btn-warning(type='button' ng-click='cancel()') Cancel
