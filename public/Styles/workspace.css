@@ -109,6 +109,17 @@ html, body, div[ui-view="content"] {
     margin-bottom: 5px;
 }
 
+.loadingDiv {
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+    margin-right: 5px;
+    margin-left: 5px;
+    padding: 5px;
+    background-color: gray;
+    width: 100%
+}
+
 .userBubble {
     min-height: 25px;
     min-width: 25px;

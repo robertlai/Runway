@@ -52,6 +52,7 @@ module.exports = (io) ->
                         name: newGroupName
                         _owner: req.user._id
                         _members: [req.user._id]
+                        numberOfMessagesToLoad: 30
                     }
                     newGroup.save (err2, group) ->
                         throw err2 if err2

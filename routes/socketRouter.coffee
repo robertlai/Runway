@@ -18,12 +18,24 @@ module.exports = (io) ->
 
         socket.on 'getInitialMessages', ->
             Message.find({_group: socket.group._id})
-            .select('date content _user') # get all feilds of message
+            .select('date content _user')
             .populate('_user', 'username') # only populate username of user
-            .sort('date')
+            .sort({date: -1})
+            .limit(socket.group.numberOfMessagesToLoad)
             .exec (err, messages) ->
                 if messages and !err
                     socket.emit('initialMessages', messages)
+
+        socket.on 'getMoreMessages', (lastDate) ->
+            Message.find({_group: socket.group._id})
+            .select('date content _user')
+            .populate('_user', 'username') # only populate username of user
+            .where('date').lt(lastDate)
+            .sort({date: -1})
+            .limit(socket.group.numberOfMessagesToLoad)
+            .exec (err, messages) ->
+                if messages and !err
+                    socket.emit('moreMessages', messages)
 
         socket.on 'postNewMessage', (messageContent) ->
             newMessage = new Message {

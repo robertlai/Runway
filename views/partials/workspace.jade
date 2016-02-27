@@ -9,9 +9,11 @@ link(rel='stylesheet', href='/styles/workspace.css')
         #chatHeader
             input#hideButton(type='button' value='Hide' ng-click='hideChat()')
         #chatBody
-            .messageRow(ng-repeat='message in messages track by $index')
+            .messageRow(ng-show='messagesLoading')
+                .loadingDiv loading...
+            .messageRow(ng-repeat='message in messages | orderBy: "date" track by $index')
                 .userBubble.noselect(uib-tooltip='{{message._user.username}}' tooltip-placement='right' tooltip-trigger='mouseenter') {{message._user.username.substring(0, 1).toUpperCase()}}
-                .chatMessage.noselect(ng-bind='message.content')
+                .chatMessage(ng-bind='message.content')
                 button.btn.btn-primary(type='button' ng-click='addMessageToWorkspace(message.content)') +
                 button.btn.btn-primary(type='button' ng-if='message._user.username === user.username' ng-click='removeMessage(message._id)') x
         #chatFooter

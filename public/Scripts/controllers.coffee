@@ -7,6 +7,7 @@ angular.module('runwayApp')
     'AuthService'
     (rootScope, scope, state, AuthService) ->
         AuthService.logout()
+        # todo:  disable login when submitting
         scope.login = ->
             scope.error = false
             AuthService.login(scope.loginForm.username, scope.loginForm.password).then ->
@@ -107,7 +108,7 @@ angular.module('runwayApp')
 
 # todo: ensure that the user has permission to access this group
 # should be checking this when they get here
-# but also with every request for content from this gorup
+# but also with every request for content from this group
 .controller 'workspaceController', ['$scope', '$stateParams', 'AuthService', (scope, stateParams, AuthService) ->
 
     $dropzone = $('#dropzone')
@@ -143,21 +144,31 @@ angular.module('runwayApp')
         socket.emit('getInitialMessages')
         socket.emit('getInitialItems')
 
+    addMessageContent = (addFunction, all) ->
+        scope.$apply()
+        chatBody = document.getElementById('chatBody')
+        scrollAtBottom = all || Math.abs(chatBody.scrollTop - chatBody.scrollHeight + chatBody.offsetHeight) < 50
+        addFunction()
+        scope.messagesLoading = false
+        scope.$apply()
+        chatBody.scrollTop = chatBody.scrollHeight if scrollAtBottom
+
     socket.on 'initialMessages', (messages) ->
         addMessageContent ->
             scope.messages = messages
         , true
 
+    socket.on 'moreMessages', (moreMessages) ->
+        scope.allMessagesLoaded = moreMessages.length is 0
+        chatBody = document.getElementById('chatBody')
+        chatBody.scrollTop = 1
+        addMessageContent ->
+            scope.messages = scope.messages.concat(moreMessages)
+        chatBody.scrollTop = chatBody.scrollHeight - scope.preLoadScrollHeight
+
     socket.on 'newMessage', (message) ->
         addMessageContent ->
             scope.messages.push(message)
-
-    addMessageContent = (addFunction, all) ->
-        chatBody = document.getElementById('chatBody')
-        scrollAtBottom = all || Math.abs(chatBody.scrollTop - chatBody.scrollHeight + chatBody.offsetHeight) < 50
-        addFunction()
-        scope.$apply()
-        chatBody.scrollTop = chatBody.scrollHeight if scrollAtBottom
 
     socket.on 'removeMessage', (_message) ->
         scope.messages = scope.messages.filter (message) ->
@@ -230,6 +241,13 @@ angular.module('runwayApp')
     scope.removeMessage = (_message) ->
         socket.emit('postRemoveMessage', _message)
 
+    $('#chatBody').on 'scroll', (event) ->
+        chatBody = document.getElementById('chatBody')
+        if !scope.allMessagesLoaded and chatBody.scrollTop is 0
+            scope.messagesLoading = true
+            scope.$apply()
+            scope.preLoadScrollHeight = chatBody.scrollHeight
+            socket.emit('getMoreMessages', scope.messages[scope.messages.length - 1].date)
 
     scope.hideChat = ->
         scope.chatVisible = false
@@ -238,6 +256,7 @@ angular.module('runwayApp')
         scope.chatVisible = true
 
     init = ->
+        scope.messagesLoading = true
         scope.user = AuthService.getUser()
         scope.groupName = stateParams.groupName
         socket.emit('groupConnect', scope.user, scope.groupName)
