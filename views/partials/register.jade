@@ -1,27 +1,28 @@
 .content
     h1 Register
     p.alert.alert-danger(ng-show='error' ng-bind='error')
-    form.form.form-horizontal(ng-submit='register()')
-        .form-group
-            label.col-xs-3.control-label Name
-            .col-xs-9
-                .input-group
-                    input.form-control(type='text' ng-model='registerForm.firstName' placeholder='first' required autofocus)
-                    span.input-group-addon ~
-                    input.form-control(type='text' ng-model='registerForm.lastName' placeholder='last' required)
-        .form-group
-            label.col-xs-3.control-label Email
-            .col-xs-9
-                input.form-control(type='email' ng-model='registerForm.email' placeholder='email' required)
-        .form-group
-            label.col-xs-3.control-label Username
-            .col-xs-9
-                input.form-control(type='text' ng-model='registerForm.username' placeholder='username' required)
-        .form-group
-            label.col-xs-3.control-label Password
-            .col-xs-9
-                input.form-control(type='password' ng-model='registerForm.password' placeholder='password' required)
-        .form-group
-            .col-xs-7 Already have an account?
-                a(ui-sref='login') Login
-            button.btn.btn-primary.col-xs-4#signInButton(type='submit') Register
+    fieldset(ng-disabled='disableRegister')
+        form.form.form-horizontal(ng-submit='register()')
+            .form-group
+                label.col-xs-3.control-label Name
+                .col-xs-9
+                    .input-group
+                        input.form-control(type='text' ng-model='registerForm.firstName' placeholder='first' required autofocus)
+                        span.input-group-addon ~
+                        input.form-control(type='text' ng-model='registerForm.lastName' placeholder='last' required)
+            .form-group
+                label.col-xs-3.control-label Email
+                .col-xs-9
+                    input.form-control(type='email' ng-model='registerForm.email' placeholder='email' required)
+            .form-group
+                label.col-xs-3.control-label Username
+                .col-xs-9
+                    input.form-control(type='text' ng-model='registerForm.username' placeholder='username' required)
+            .form-group
+                label.col-xs-3.control-label Password
+                .col-xs-9
+                    input.form-control(type='password' ng-model='registerForm.password' placeholder='password' required)
+            .form-group
+                .col-xs-7 Already have an account?
+                    a(ui-sref='login') Login
+                button.btn.btn-primary.col-xs-4#signInButton(type='submit') Register

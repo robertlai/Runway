@@ -7,17 +7,18 @@ angular.module('runwayApp')
     'AuthService'
     (rootScope, scope, state, AuthService) ->
         AuthService.logout()
-        # todo:  disable login when submitting
         scope.login = ->
+            scope.disableLogin = true
             scope.error = false
             AuthService.login(scope.loginForm.username, scope.loginForm.password).then ->
                 if rootScope.loginRedirect
                     state.go(rootScope.loginRedirect.stateName, rootScope.loginRedirect.stateParams)
-                    delete rootScope.loginRedirect
+                    delete rootScope.gloginRedirect
                 else
                     state.go('home.groups')
                 scope.loginForm = {}
             .catch (errorMessage) ->
+                scope.disableLogin = false
                 scope.error = errorMessage
                 scope.loginForm = {}
 ]
@@ -50,12 +51,14 @@ angular.module('runwayApp')
     (scope, state, AuthService) ->
         AuthService.logout()
         scope.register = ->
+            scope.disableRegister = true
             scope.error = false
             AuthService.register(scope.registerForm)
                 .then ->
                     state.go('login')
                     scope.registerForm = {}
                 .catch (errorMessage) ->
+                    scope.disableRegister = false
                     scope.error = errorMessage
                     scope.registerForm = {}
 ]
