@@ -252,12 +252,6 @@ angular.module('runwayApp')
             scope.preLoadScrollHeight = chatBody.scrollHeight
             socket.emit('getMoreMessages', scope.messages[scope.messages.length - 1].date)
 
-    scope.hideChat = ->
-        scope.chatVisible = false
-
-    scope.showChat = ->
-        scope.chatVisible = true
-
     init = ->
         scope.messagesLoading = true
         scope.user = AuthService.getUser()

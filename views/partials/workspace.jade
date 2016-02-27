@@ -4,10 +4,12 @@ link(rel='stylesheet', href='/styles/workspace.css')
 #container(ng-init='init("#{username}", "#{groupName}")')
     #dropzone
         h1.noselect#dndText Drag and drop files here
-    input#showButton(type='button' value='Show' ng-hide='chatVisible' ng-click='showChat()')
+    input#showButton(type='button' value='Show' ng-hide='chatVisible' ng-click='chatVisible = !chatVisible')
     #chatPanel(ng-show='chatVisible')
         #chatHeader
-            input#hideButton(type='button' value='Hide' ng-click='hideChat()')
+            button#hideButton(onclick='history.back()')
+                span(class='glyphicon glyphicon-menu-left')
+            button#hideButton(ng-click='chatVisible = !chatVisible') Hide
         #chatBody
             .messageRow(ng-show='messagesLoading')
                 .loadingDiv loading...
