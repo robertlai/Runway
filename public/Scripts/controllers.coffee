@@ -138,10 +138,8 @@ angular.module('runwayApp')
 
     socket = io()
 
-    socket.on 'setupComplete', (group) ->
+    socket.on 'setGroup', (group) ->
         scope.group = group
-        socket.emit('getInitialMessages')
-        socket.emit('getInitialItems')
 
     addMessageContent = (addFunction, all) ->
         scope.$apply()

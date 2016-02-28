@@ -9,22 +9,29 @@ module.exports = (io) ->
         socket.on 'groupConnect', (user, groupId) ->
             # todo: valide here that the user has access to the group before adding them to the socket group
             Group.findById(groupId) # select whole group object for later user checking if user is allowed
+            .select('_id numberOfMessagesToLoad')
             .exec (err, group) ->
                 if group and !err
                     socket.join(group._id)
                     socket.user = user
                     socket.group = group
-                    socket.emit('setupComplete', group)
+                    socket.emit('setGroup', group)
 
-        socket.on 'getInitialMessages', ->
-            Message.find({_group: socket.group._id})
-            .select('date content _user')
-            .populate('_user', 'username') # only populate username of user
-            .sort({date: -1})
-            .limit(socket.group.numberOfMessagesToLoad)
-            .exec (err, messages) ->
-                if messages and !err
-                    socket.emit('initialMessages', messages)
+                    Message.find({_group: group._id})
+                    .select('date content _user')
+                    .populate('_user', 'username') # only populate username of user
+                    .sort({date: -1})
+                    .limit(group.numberOfMessagesToLoad)
+                    .exec (err, messages) ->
+                            socket.emit('initialMessages', messages)
+
+                    Item.find({_group: group._id})
+                    .select('date type x y text')
+                    .sort('date')
+                    .exec (err, itemsInfo) ->
+                        if !err
+                            socket.emit('newItem', itemInfo) for itemInfo in itemsInfo
+
 
         socket.on 'getMoreMessages', (lastDate) ->
             Message.find({_group: socket.group._id})
@@ -57,15 +64,6 @@ module.exports = (io) ->
             Message.findById(_message).remove().exec (err) ->
                 if !err
                     io.sockets.in(socket.group._id).emit('removeMessage', _message)
-
-
-        socket.on 'getInitialItems', ->
-            Item.find({_group: socket.group._id})
-            .select('date type x y text')
-            .sort('date')
-            .exec (err, itemsInfo) ->
-                if !err
-                    socket.emit('newItem', itemInfo) for itemInfo in itemsInfo
 
         socket.on 'updateItemLocation', (date, newX, newY) ->
             Item.findOne({date: date})

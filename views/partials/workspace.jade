@@ -1,7 +1,7 @@
 //- todo: include this link in index.jade (styles mess up other pages for now)
 link(rel='stylesheet', href='/styles/workspace.css')
 
-#container(ng-init='init("#{username}", "#{groupName}")')
+#container
     #dropzone
         h1.noselect#dndText Drag and drop files here
     input#showButton(type='button' value='Show' ng-hide='chatVisible' ng-click='chatVisible = !chatVisible')
