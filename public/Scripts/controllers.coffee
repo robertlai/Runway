@@ -106,10 +106,7 @@ angular.module('runwayApp')
         uibModalInstance.dismiss()
 ]
 
-# todo: ensure that the user has permission to access this group
-# should be checking this when they get here
-# but also with every request for content from this group
-.controller 'workspaceController', ['$scope', '$stateParams', 'AuthService', (scope, stateParams, AuthService) ->
+.controller 'workspaceController', ['$scope', '$state', '$stateParams', 'AuthService', (scope, state, stateParams, AuthService) ->
 
     $dropzone = $('#dropzone')
 
@@ -140,6 +137,9 @@ angular.module('runwayApp')
 
     socket.on 'setGroup', (group) ->
         scope.group = group
+
+    socket.on 'notAllowed', ->
+        state.go('home.groups')
 
     addMessageContent = (addFunction, all) ->
         scope.$apply()

@@ -7,11 +7,10 @@ module.exports = (io) ->
     io.on 'connection', (socket) ->
 
         socket.on 'groupConnect', (user, groupId) ->
-            # todo: valide here that the user has access to the group before adding them to the socket group
-            Group.findById(groupId) # select whole group object for later user checking if user is allowed
-            .select('_id numberOfMessagesToLoad')
+            Group.findById(groupId)
+            .select('_id numberOfMessagesToLoad _members')
             .exec (err, group) ->
-                if group and !err
+                if group and !err and group._members.indexOf(user._id) != -1
                     socket.join(group._id)
                     socket.user = user
                     socket.group = group
@@ -19,10 +18,11 @@ module.exports = (io) ->
 
                     Message.find({_group: group._id})
                     .select('date content _user')
-                    .populate('_user', 'username') # only populate username of user
+                    .populate('_user', 'username')
                     .sort({date: -1})
                     .limit(group.numberOfMessagesToLoad)
                     .exec (err, messages) ->
+                        if messages and !err
                             socket.emit('initialMessages', messages)
 
                     Item.find({_group: group._id})
@@ -31,12 +31,14 @@ module.exports = (io) ->
                     .exec (err, itemsInfo) ->
                         if !err
                             socket.emit('newItem', itemInfo) for itemInfo in itemsInfo
+                else
+                    socket.emit('notAllowed')
 
 
         socket.on 'getMoreMessages', (lastDate) ->
             Message.find({_group: socket.group._id})
             .select('date content _user')
-            .populate('_user', 'username') # only populate username of user
+            .populate('_user', 'username')
             .where('date').lt(lastDate)
             .sort({date: -1})
             .limit(socket.group.numberOfMessagesToLoad)
@@ -55,7 +57,7 @@ module.exports = (io) ->
                 if !err
                     Message.populate newMessage, {
                         path: '_user'
-                        select: 'username' # only populate username
+                        select: 'username'
                     }, (err, populatedMessage) ->
                         if populatedMessage and !err
                             io.sockets.in(socket.group._id).emit('newMessage', populatedMessage)

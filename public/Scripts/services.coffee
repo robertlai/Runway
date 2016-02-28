@@ -69,7 +69,7 @@ angular.module('runwayApp')
 
             return deferred.promise
 
-        loggedIn() # check if the user is logged in already
+        loggedIn()
         {
             getUser: getUser
             loggedIn: loggedIn
