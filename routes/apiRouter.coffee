@@ -111,7 +111,14 @@ module.exports = (io) ->
         }
         item.save (err1, newItem) ->
             if !err1
-                io.sockets.in(_group).emit('newItem', newItem)
+                itemToSendBack = {
+                    _id: newItem._id
+                    date: date
+                    type: type
+                    x: x
+                    y: y
+                }
+                io.sockets.in(_group).emit('newItem', itemToSendBack)
             else
             res.redirect 'back'
             fs.unlinkSync(fullFilePath)
