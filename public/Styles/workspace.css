@@ -77,8 +77,9 @@ html, body, div[ui-view="content"] {
     padding: 16px;
 }
 
-#hideButton {
+.actionButton {
     border: none;
+    border-right: solid black 1px;
     background-color: transparent;
     color: gray;
     font-size: 14px;
@@ -88,7 +89,7 @@ html, body, div[ui-view="content"] {
     padding: 16px;
 }
 
-#hideButton:hover, #showButton:hover {
+.actionButton:hover, #showButton:hover {
     background-color: #5d176a;
 }
 
