@@ -24,8 +24,8 @@ module.exports = (io) ->
                 User.findById(_user)
                 .select(groupField)
                 .populate(groupField, 'name description colour')
-                .exec (err1, user) ->
-                    throw err1 if err1
+                .exec (err, user) ->
+                    throw err if err
                     res.json(user[groupField])
             catch err
                 res.sendStatus(500)
@@ -36,8 +36,8 @@ module.exports = (io) ->
         newGroup = req.body
         _user = req.user._id
         try
-            Group.find {name: newGroup.name}, (err1, groups) ->
-                throw err1 if err1
+            Group.find {name: newGroup.name}, (err, groups) ->
+                throw err if err
                 if groups.length > 0
                     res.sendStatus(409)
                 else
@@ -49,14 +49,14 @@ module.exports = (io) ->
                         _members: [req.user._id]
                         numberOfMessagesToLoad: 30
                     }
-                    newGroup.save (err2, savedGroup) ->
-                        throw err2 if err2
+                    newGroup.save (err, savedGroup) ->
+                        throw err if err
                         User.findById(_user)
-                        .exec (err3, user) ->
-                            throw err3 if err3
+                        .exec (err, user) ->
+                            throw err if err
                             user._ownedGroups.push(savedGroup._id)
-                            user.save (err4, user2) ->
-                                throw err4 if err4
+                            user.save (err) ->
+                                throw err if err
                                 res.json(savedGroup)
         catch err
             res.sendStatus(500)
@@ -79,8 +79,8 @@ module.exports = (io) ->
                 y: y
                 text: text
             }
-            item.save (err1, newItem) ->
-                throw err1 if err1
+            item.save (err, newItem) ->
+                throw err if err
                 io.sockets.in(_group).emit('newItem', newItem)
                 res.sendStatus(201)
         catch err
@@ -103,8 +103,8 @@ module.exports = (io) ->
             y: y
             file: fs.readFileSync(fullFilePath)
         }
-        item.save (err1, newItem) ->
-            if !err1
+        item.save (err, newItem) ->
+            if !err
                 itemToSendBack = {
                     _id: newItem._id
                     date: date
@@ -113,7 +113,6 @@ module.exports = (io) ->
                     y: y
                 }
                 io.sockets.in(_group).emit('newItem', itemToSendBack)
-            else
             res.redirect 'back'
             fs.unlinkSync(fullFilePath)
 

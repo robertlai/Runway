@@ -9,8 +9,8 @@ module.exports = (io) ->
         socket.on 'groupConnect', (user, groupId) ->
             # todo: valide here that the user has access to the group before adding them to the socket group
             Group.findById(groupId) # select whole group object for later user checking if user is allowed
-            .exec (err1, group) ->
-                if group and !err1
+            .exec (err, group) ->
+                if group and !err
                     socket.join(group._id)
                     socket.user = user
                     socket.group = group
@@ -44,13 +44,13 @@ module.exports = (io) ->
                 _group: socket.group._id
                 content: messageContent
             }
-            newMessage.save (err1, message) ->
-                if !err1
+            newMessage.save (err, message) ->
+                if !err
                     Message.populate newMessage, {
                         path: '_user'
                         select: 'username' # only populate username
-                    }, (err3, populatedMessage) ->
-                        if populatedMessage and !err3
+                    }, (err, populatedMessage) ->
+                        if populatedMessage and !err
                             io.sockets.in(socket.group._id).emit('newMessage', populatedMessage)
 
         socket.on 'postRemoveMessage', (_message) ->
