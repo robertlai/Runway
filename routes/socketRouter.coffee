@@ -6,9 +6,9 @@ module.exports = (io) ->
 
     io.on 'connection', (socket) ->
 
-        socket.on 'groupConnect', (user, groupName) ->
+        socket.on 'groupConnect', (user, groupId) ->
             # todo: valide here that the user has access to the group before adding them to the socket group
-            Group.findOne({name: groupName}) # select whole group object for later user checking if user is allowed
+            Group.findById(groupId) # select whole group object for later user checking if user is allowed
             .exec (err1, group) ->
                 if group and !err1
                     socket.join(group._id)

@@ -3,9 +3,12 @@
         div Groups: {{groupType}}
         div
             input.filterInput.form-control(ng-model='filterQuery' type='text' size='30' placeholder='filter groups' autofocus)
+        div(ng-if='groupType === "owned"')
+            input.form-control.btn.btn-primary.addGroupButton(type='button' ng-click='openAddGroupModal()' value='Add Group')
     .alert.alert-danger(ng-show='error' ng-bind='error')
     .tilePanel
-        div(ng-repeat='group in groups | orderBy: name | filter: filterQuery track by $index' ui-sref='workspace({groupName: group.name})')
-            .btn-primary
+        div(ng-repeat='group in groups | orderBy: name | filter: filterQuery track by $index' ui-sref='workspace({groupId: group._id})')
+            div(ng-style="{'background-color':group.colour}")
                 h2(ng-bind='group.name')
-                p(ng-show='group.name.indexOf("wef") != -1') This is a long description of this groups and all the information you would ever want to know about it. More... Info... For... longth...
+                p(ng-bind='group.description')
+                div.btn-xs.btn-default.actionButton(ng-click='openEditGroupModal($event)') Edit

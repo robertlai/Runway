@@ -41,7 +41,6 @@ angular.module('runwayApp')
     'AuthService'
     (scope, state, AuthService) ->
         user = AuthService.getUser()
-        console.log user
 ]
 
 .controller 'registerController', [
@@ -63,7 +62,7 @@ angular.module('runwayApp')
                     scope.registerForm = {}
 ]
 
-.controller 'groupsController', ['$scope', '$stateParams', 'groupService', (scope, stateParams, groupService) ->
+.controller 'groupsController', ['$scope', '$uibModal', '$stateParams', 'groupService', (scope, uibModal, stateParams, groupService) ->
     scope.groups = []
     scope.groupType = stateParams.groupType
     groupService.getGroups(stateParams.groupType)
@@ -71,15 +70,9 @@ angular.module('runwayApp')
             scope.groups = groups
         .catch (error) ->
             scope.error = error
-]
 
-.controller 'manageController', ['$scope', '$uibModal', 'groupService', (scope, uibModal, groupService) ->
-    scope.groups = []
-    groupService.getGroups('owned')
-        .then (groups) ->
-            scope.groups = groups
-        .catch (error) ->
-            scope.error = error
+    scope.openEditGroupModal = ($event) ->
+        $event.stopPropagation()
 
     scope.openAddGroupModal = ->
         modalInstance = uibModal.open(
@@ -89,20 +82,22 @@ angular.module('runwayApp')
         )
         modalInstance.result.then (groupToAdd) ->
             scope.error = null
-            # todo: make this return a full group object, not just the name
-            scope.groups.push({name: groupToAdd})
+            scope.groups.push(groupToAdd)
 ]
 
 .controller 'addGroupModalController', ['$scope', '$uibModalInstance', 'groupService', (scope, uibModalInstance, groupService) ->
 
-    scope.selectedColour = '#0099CC'
+    scope.newGroup = {
+        name: ''
+        description: ''
+        colour: '#0099CC'
+    }
 
     scope.addGroup = ->
-        # todo: make it evident that this is doing something (loading spinner?)
         scope.disableModal = true
-        groupService.addGroup(scope.newGroupName)
-            .then (newGroup) ->
-                uibModalInstance.close(newGroup)
+        groupService.addGroup(scope.newGroup)
+            .then (addedGroup) ->
+                uibModalInstance.close(addedGroup)
             .catch (message) ->
                 scope.disableModal = false
                 scope.error = message
@@ -133,8 +128,7 @@ angular.module('runwayApp')
         autoProcessQueue: true
         acceptedFiles: 'image/*, application/pdf'
         accept: (file, done) ->
-            # todo: user scope.group to get scope.groupName everywhere
-            @options.url = '/api/fileUpload?group=' + scope.groupName + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy()
+            @options.url = '/api/fileUpload?group=' + scope.group.name + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy()
             hoverTextOff()
             done()
     }
@@ -191,10 +185,10 @@ angular.module('runwayApp')
         if itemInfo.type is 'text'
             innerContent = $('<p/>', class: 'noselect').text(itemInfo.text)
         else if itemInfo.type.substring(0, 5) is 'image'
-            innerContent = $('<img/>', src: '/api/file?date=' + itemInfo.date + '&groupName=' + scope.groupName)
+            innerContent = $('<img/>', src: '/api/file?date=' + itemInfo.date + '&groupName=' + scope.group.name)
         else if itemInfo.type is 'application/pdf'
             innerContent = $('<div style="padding-top:25px; background-color:black;"><object data="/api/file?date=' +
-                itemInfo.date + '&groupName=' + scope.groupName + "'/></div>")
+                itemInfo.date + '&groupName=' + scope.group.name + "'/></div>")
 
         if innerContent
             innerContent.css('position', 'absolute')
@@ -212,7 +206,7 @@ angular.module('runwayApp')
         data = {'text': string}
         $.ajax ({
             method: 'POST'
-            url: '/api/text?group=' + scope.groupName
+            url: '/api/text?group=' + scope.group.name
             data: JSON.stringify(data)
             processData: false
             contentType: 'application/json; charset=utf-8'
@@ -257,8 +251,7 @@ angular.module('runwayApp')
     init = ->
         scope.messagesLoading = true
         scope.user = AuthService.getUser()
-        scope.groupName = stateParams.groupName
-        socket.emit('groupConnect', scope.user, scope.groupName)
+        socket.emit('groupConnect', scope.user, stateParams.groupId)
 
     init()
 ]

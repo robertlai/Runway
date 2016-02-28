@@ -69,17 +69,10 @@ runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.boo
             templateUrl: '/partials/groups'
             controller: 'groupsController'
         )
-        .state('home.manage',
-            url: '/manage'
-            resolve: $title: -> 'Manage'
-            authenticated: true
-            templateUrl: '/partials/manage'
-            controller: 'manageController'
-        )
     .state('workspace',
-        url: '/workspace/:groupName'
-        params: groupName: 'groupName'
-        resolve: $title: ($stateParams) -> 'Workspace'
+        url: '/workspace/:groupId'
+        params: groupId: 'groupId'
+        resolve: $title: -> 'Workspace'
         authenticated: true
         views: {
             'content@': {

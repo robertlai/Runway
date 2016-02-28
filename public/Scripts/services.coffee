@@ -103,21 +103,18 @@ angular.module('runwayApp')
 
             return deferred.promise
 
-        addGroup = (newGroupName) ->
+        addGroup = (newGroup) ->
             deferred = q.defer()
 
-            if newGroupName and newGroupName.trim().length > 0
-                if newGroupName.match(/[^A-Za-z0-9\-_ ]/)
-                    deferred.reject('This group contains invalid characters.')
-                else
-                    http.post('/api/newGroup?newGroupName=' + newGroupName)
-                        .success (addedGroup) ->
-                            deferred.resolve(newGroupName)
-                        .error (error, status) ->
-                            if status is 409
-                                deferred.reject('This group already exists.')
-                            else
-                                deferred.reject('Server Error.  Please contact support.')
+            if newGroup and newGroup.name.trim().length > 0
+                http.post('/api/newGroup', newGroup)
+                    .success (addedGroup) ->
+                        deferred.resolve(addedGroup)
+                    .error (error, status) ->
+                        if status is 409
+                            deferred.reject('This group already exists.')
+                        else
+                            deferred.reject('Server Error.  Please contact support.')
             else
                 deferred.reject('Please provide a group name.')
 

@@ -72,6 +72,15 @@ input.filterInput {
     cursor: pointer;
 }
 
+div.actionButton {
+    opacity: 0;
+}
+
+.tilePanel > div:hover > div > div.actionButton {
+    opacity: 1;
+    transition: 0.5s;
+}
+
 .tilePanel > div:hover > div {
     transform: translate(0px, -15px);
     box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 5px 2px;
@@ -84,12 +93,6 @@ input.filterInput {
 }
 /*end tilePanel*/
 
-
-
-.tile {
-    background-color: #00FF1E;
-}
-
-.tile:hover {
-    /*opacity: 0.5;*/
+textarea {
+    resize: vertical;
 }
