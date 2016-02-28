@@ -24,10 +24,10 @@ module.exports = (io) ->
     apiRouter.get '/groups/:groupType', loggedIn, (req, res) ->
         groupType = req.params.groupType
         if groupType in ['owned', 'joined']
-            username = req.user.username
+            _user = req.user._id
             try
                 groupField = '_' + groupType + 'Groups'
-                User.findOne({username: username})
+                User.findById(_user)
                 .select(groupField)
                 .populate(groupField, 'name description colour')
                 .exec (err1, user) ->
@@ -40,7 +40,7 @@ module.exports = (io) ->
 
     apiRouter.post '/newGroup', loggedIn, (req, res) ->
         newGroup = req.body
-        username = req.user.username
+        _user = req.user._id
         try
             Group.find {name: newGroup.name}, (err1, groups) ->
                 throw err1 if err1
@@ -57,7 +57,8 @@ module.exports = (io) ->
                     }
                     newGroup.save (err2, savedGroup) ->
                         throw err2 if err2
-                        User.findOne {username: username}, (err3, user) ->
+                        User.findById(_user)
+                        .exec (err3, user) ->
                             throw err3 if err3
                             user._ownedGroups.push(savedGroup._id)
                             user.save (err4, user2) ->
@@ -68,7 +69,8 @@ module.exports = (io) ->
 
     apiRouter.post '/text', loggedIn, (req, res) ->
         date = new Date()
-        group = req.query.group
+        _group = req.query._group
+        _owner = req.user._id
         type = 'text'
         x = 1
         y = 1
@@ -76,62 +78,52 @@ module.exports = (io) ->
         try
             item = new Item {
                 date: date
-                group: group
+                _group: _group
+                _owner: _owner
                 type: type
                 x: x
                 y: y
                 text: text
             }
-            item.save (err1, file) ->
+            item.save (err1, newItem) ->
                 throw err1 if err1
-                newItem = {
-                    date: date
-                    type: type
-                    x: x
-                    y: y
-                    text: text
-                }
-                io.sockets.in(group).emit('newItem', newItem)
+                io.sockets.in(_group).emit('newItem', newItem)
                 res.sendStatus(201)
         catch err
             res.sendStatus(500)
 
     apiRouter.post '/fileUpload', loggedIn, upload.single('file'), (req, res) ->
         date = new Date()
-        group = req.query.group
+        _group = req.query._group
+        _owner = req.user._id
         type = req.file.mimetype
         x = req.query.x
         y = req.query.y
         fullFilePath = req.file.path
         item = new Item {
             date: date
-            group: group
+            _group: _group
+            _owner: _owner
             type: type
             x: x
             y: y
             file: fs.readFileSync(fullFilePath)
         }
-        item.save (err1) ->
+        item.save (err1, newItem) ->
             if !err1
-                newItem = {
-                    date: date
-                    type: type
-                    x: x
-                    y: y
-                }
-                io.sockets.in(group).emit('newItem', newItem)
+                io.sockets.in(_group).emit('newItem', newItem)
+            else
             res.redirect 'back'
             fs.unlinkSync(fullFilePath)
 
     apiRouter.get '/file', loggedIn, (req, res) ->
         try
-            Item.findOne({date: req.query.date, group: req.query.groupName})
+            Item.findById(req.query._file)
             .select('file type')
             .exec (err, file) ->
                 throw err if (not file or err)
                 res.set('Content-Type': file.type)
-                b = file.file
-                res.send(b)
+                res.send(file.file)
         catch err
             res.sendStatus(500)
 

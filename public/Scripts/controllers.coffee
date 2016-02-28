@@ -128,7 +128,7 @@ angular.module('runwayApp')
         autoProcessQueue: true
         acceptedFiles: 'image/*, application/pdf'
         accept: (file, done) ->
-            @options.url = '/api/fileUpload?group=' + scope.group.name + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy()
+            @options.url = '/api/fileUpload?_group=' + scope.group._id + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy()
             hoverTextOff()
             done()
     }
@@ -185,28 +185,29 @@ angular.module('runwayApp')
         if itemInfo.type is 'text'
             innerContent = $('<p/>', class: 'noselect').text(itemInfo.text)
         else if itemInfo.type.substring(0, 5) is 'image'
-            innerContent = $('<img/>', src: '/api/file?date=' + itemInfo.date + '&groupName=' + scope.group.name)
+            innerContent = $('<img/>', src: '/api/file?_file=' + itemInfo._id)
         else if itemInfo.type is 'application/pdf'
-            innerContent = $('<div style="padding-top:25px; background-color:black;"><object data="/api/file?date=' +
-                itemInfo.date + '&groupName=' + scope.group.name + "'/></div>")
+            innerContent = $('<div style="padding-top:25px; background-color:black;"><object data="/api/file?_file=' +
+                itemInfo._id + "'/></div>")
 
         if innerContent
             innerContent.css('position', 'absolute')
             .attr('id', itemInfo.date)
+            .offset(
+                top: itemInfo.y / 100.0 * maxy()
+                left: itemInfo.x / 100.0 * maxx()
+            )
             .appendTo($dropzone).draggable(
                 containment: 'parent'
                 stop: (event, ui) ->
                     socket.emit('updateItemLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy())
-            ).offset(
-                top: itemInfo.y / 100.0 * maxy()
-                left: itemInfo.x / 100.0 * maxx()
             )
 
     scope.addMessageToWorkspace = (string) ->
         data = {'text': string}
         $.ajax ({
             method: 'POST'
-            url: '/api/text?group=' + scope.group.name
+            url: '/api/text?_group=' + scope.group._id
             data: JSON.stringify(data)
             processData: false
             contentType: 'application/json; charset=utf-8'
