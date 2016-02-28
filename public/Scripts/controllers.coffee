@@ -71,8 +71,22 @@ angular.module('runwayApp')
         .catch (error) ->
             scope.error = error
 
-    scope.openEditGroupModal = ($event) ->
+    scope.openEditGroupModal = ($event, groupToEdit) ->
         $event.stopPropagation()
+        modalInstance = uibModal.open(
+            animation: true
+            resolve:
+                editingGroup: groupToEdit
+            templateUrl: '/partials/editGroupModal'
+            controller: 'editGroupModalController'
+        )
+        modalInstance.result.then (editedGroup) ->
+            scope.error = null
+            for group, index in scope.groups
+                if group._id is editedGroup._id
+                    scope.groups[index] = editedGroup
+                    break
+            return
 
     scope.openAddGroupModal = ->
         modalInstance = uibModal.open(
@@ -98,6 +112,24 @@ angular.module('runwayApp')
         groupService.addGroup(scope.newGroup)
             .then (addedGroup) ->
                 uibModalInstance.close(addedGroup)
+            .catch (message) ->
+                scope.disableModal = false
+                scope.error = message
+
+    scope.cancel = ->
+        uibModalInstance.dismiss()
+]
+
+.controller 'editGroupModalController', ['$scope', '$uibModalInstance', 'groupService', 'editingGroup',
+(scope, uibModalInstance, groupService, editingGroup) ->
+
+    scope.editingGroup = angular.copy(editingGroup)
+
+    scope.editGroup = ->
+        scope.disableModal = true
+        groupService.editGroup(scope.editingGroup)
+            .then (editedGroup) ->
+                uibModalInstance.close(editedGroup)
             .catch (message) ->
                 scope.disableModal = false
                 scope.error = message
@@ -168,8 +200,10 @@ angular.module('runwayApp')
             scope.messages.push(message)
 
     socket.on 'removeMessage', (_message) ->
-        scope.messages = scope.messages.filter (message) ->
-            message._id isnt _message
+        for message, index in scope.messages
+            if message._id is _message
+                scope.messages.splice(index, 1)
+                break
         scope.$apply()
 
     socket.on 'updateItem', (itemInfo) ->

@@ -7,8 +7,8 @@
             input.form-control.btn.btn-primary.addGroupButton(type='button' ng-click='openAddGroupModal()' value='Add Group')
     .alert.alert-danger(ng-show='error' ng-bind='error')
     .tilePanel
-        div(ng-repeat='group in groups | orderBy: name | filter: filterQuery track by $index' ui-sref='workspace({groupId: group._id})')
+        div(ng-repeat='group in groups | orderBy: "name" | filter: filterQuery track by $index' ui-sref='workspace({groupId: group._id})')
             div(ng-style="{'background-color':group.colour}")
                 h2(ng-bind='group.name')
                 p(ng-bind='group.description')
-                div.btn-xs.btn-default.actionButton(ng-click='openEditGroupModal($event)') Edit
+                div.btn-xs.btn-default.actionButton(ng-click='openEditGroupModal($event, group)') Edit

@@ -36,9 +36,10 @@ module.exports = (io) ->
         newGroup = req.body
         _user = req.user._id
         try
-            Group.find {name: newGroup.name}, (err, groups) ->
-                throw err if err
-                if groups.length > 0
+            Group.findOne {name: newGroup.name}, (err, group) ->
+                if err
+                    throw err
+                else if group
                     res.sendStatus(409)
                 else
                     newGroup = new Group {
@@ -58,6 +59,30 @@ module.exports = (io) ->
                             user.save (err) ->
                                 throw err if err
                                 res.json(savedGroup)
+        catch err
+            res.sendStatus(500)
+
+    apiRouter.post '/editGroup', (req, res) ->
+        groupToEdit = req.body
+        _user = req.user._id
+        try
+            Group.findOne {name: groupToEdit.name}, (err, group) ->
+                if err
+                    throw err
+                else if group and group._id.toString() != groupToEdit._id.toString()
+                    res.sendStatus(409)
+                else
+                    editedGroup = {
+                        name: groupToEdit.name
+                        description: groupToEdit.description
+                        colour: groupToEdit.colour
+                    }
+                    Group.findByIdAndUpdate groupToEdit._id,
+                    { $set: editedGroup },
+                    (err) ->
+                        throw err if err
+                        editedGroup._id = groupToEdit._id
+                        res.json(editedGroup)
         catch err
             res.sendStatus(500)
 

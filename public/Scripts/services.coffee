@@ -120,8 +120,26 @@ angular.module('runwayApp')
 
             return deferred.promise
 
+        editGroup = (groupToEdit) ->
+            deferred = q.defer()
+
+            if groupToEdit and groupToEdit.name.trim().length > 0
+                http.post('/api/editGroup', groupToEdit)
+                    .success (editedGroup) ->
+                        deferred.resolve(editedGroup)
+                    .error (error, status) ->
+                        if status is 409
+                            deferred.reject('This group already exists.')
+                        else
+                            deferred.reject('Server Error.  Please contact support.')
+            else
+                deferred.reject('Please provide a group name.')
+
+            return deferred.promise
+
         {
             getGroups: getGroups
             addGroup: addGroup
+            editGroup: editGroup
         }
 ]
