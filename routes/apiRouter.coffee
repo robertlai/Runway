@@ -11,17 +11,11 @@ Group = require('../models/Group')
 passport = require('passport')
 
 
-loggedIn = (req, res, next) ->
-    if req.isAuthenticated()
-        next()
-    else
-        res.sendStatus(401)
-
 module.exports = (io) ->
 
     apiRouter = express.Router()
 
-    apiRouter.get '/groups/:groupType', loggedIn, (req, res) ->
+    apiRouter.get '/groups/:groupType', (req, res) ->
         groupType = req.params.groupType
         if groupType in ['owned', 'joined']
             _user = req.user._id
@@ -38,7 +32,7 @@ module.exports = (io) ->
         else
             res.sendStatus(404)
 
-    apiRouter.post '/newGroup', loggedIn, (req, res) ->
+    apiRouter.post '/newGroup', (req, res) ->
         newGroup = req.body
         _user = req.user._id
         try
@@ -67,7 +61,7 @@ module.exports = (io) ->
         catch err
             res.sendStatus(500)
 
-    apiRouter.post '/text', loggedIn, (req, res) ->
+    apiRouter.post '/text', (req, res) ->
         date = new Date()
         _group = req.query._group
         _owner = req.user._id
@@ -92,7 +86,7 @@ module.exports = (io) ->
         catch err
             res.sendStatus(500)
 
-    apiRouter.post '/fileUpload', loggedIn, upload.single('file'), (req, res) ->
+    apiRouter.post '/fileUpload', upload.single('file'), (req, res) ->
         date = new Date()
         _group = req.query._group
         _owner = req.user._id
@@ -123,7 +117,7 @@ module.exports = (io) ->
             res.redirect 'back'
             fs.unlinkSync(fullFilePath)
 
-    apiRouter.get '/file', loggedIn, (req, res) ->
+    apiRouter.get '/file', (req, res) ->
         try
             Item.findById(req.query._file)
             .select('file type')
