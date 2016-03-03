@@ -48,6 +48,7 @@ angular.module('runwayApp')
     '$state'
     'AuthService'
     (scope, state, AuthService) ->
+        # todo: check for duplicate usernames when adding and editing users
         AuthService.logout()
         scope.register = ->
             scope.disableRegister = true
@@ -71,17 +72,38 @@ angular.module('runwayApp')
         .catch (error) ->
             scope.error = error
 
-    scope.openEditGroupModal = ($event, groupToEdit) ->
+    scope.openEditGroupPropertiesModal = ($event, groupToEdit) ->
         $event.stopPropagation()
         modalInstance = uibModal.open(
             animation: true
             resolve:
                 editingGroup: groupToEdit
-            templateUrl: '/partials/editGroupModal'
-            controller: 'editGroupModalController'
+            templateUrl: '/partials/editGroupPropertiesModal'
+            controller: 'editGroupPropertiesModalController'
+        )
+        modalInstance.result.then (editedGroup, deleteGroup = false) ->
+            scope.error = null
+            for group, index in scope.groups
+                if group._id is editedGroup._id
+                    if deleteGroup
+                        scope.groups.splice(index, 1)
+                    else
+                        scope.groups[index] = editedGroup
+                    break
+            return
+
+    scope.openEditGroupMembersModal = ($event, groupToEdit) ->
+        $event.stopPropagation()
+        modalInstance = uibModal.open(
+            animation: true
+            size: 'lg'
+            resolve:
+                editingGroup: groupToEdit
+            templateUrl: '/partials/editGroupMembersModal'
+            controller: 'editGroupMembersModalController'
         )
         modalInstance.result.then (editedGroup) ->
-            scope.error = null
+            console.log editedGroup
             for group, index in scope.groups
                 if group._id is editedGroup._id
                     scope.groups[index] = editedGroup
@@ -120,7 +142,7 @@ angular.module('runwayApp')
         uibModalInstance.dismiss()
 ]
 
-.controller 'editGroupModalController', ['$scope', '$uibModalInstance', 'groupService', 'editingGroup',
+.controller 'editGroupPropertiesModalController', ['$scope', '$uibModalInstance', 'groupService', 'editingGroup',
 (scope, uibModalInstance, groupService, editingGroup) ->
 
     scope.editingGroup = angular.copy(editingGroup)
@@ -134,8 +156,59 @@ angular.module('runwayApp')
                 scope.disableModal = false
                 scope.error = message
 
+    scope.delete = ->
+        scope.disableModal = true
+        if confirm('Are you sure you and to delete this group?\nAll members will be removed and all content destroyed.\nThere is no going back!')
+            if confirm('Last chance.  Are you 100% sure you want to do this?')
+                groupService.deleteGroup(scope.editingGroup)
+                    .then ->
+                        uibModalInstance.close(scope.editingGroup, true)
+                    .catch (message) ->
+                        scope.disableModal = false
+                        scope.error = message
+            else
+                scope.disableModal = false
+        else
+            scope.disableModal = false
+
     scope.cancel = ->
         uibModalInstance.dismiss()
+]
+
+.controller 'editGroupMembersModalController', ['$scope', '$http', '$uibModalInstance', 'AuthService', 'groupService', 'userService', 'editingGroup',
+(scope, http, uibModalInstance, AuthService, groupService, userService, editingGroup) ->
+    # todo: this should be passed an id / resolve the id of the group and populate everything before getting here
+    # then all info will be present and the info doesn't have to be retuned from the modal and it becomes state free
+    scope.owner = AuthService.getUser()
+
+    scope.editingGroup = angular.copy(editingGroup)
+
+    scope.getUsers = (query) ->
+        userService.getUsers(query)
+            .then (members) ->
+                members
+            .catch (message) ->
+                scope.error = message
+
+    scope.addMember = ->
+        scope.disableModal = true
+        groupService.addMember(scope.editingGroup._id, scope.memberToAdd)
+            .then ->
+                scope.disableModal = false
+                scope.editingGroup._members.push(scope.memberToAdd)
+                scope.memberToAdd = null
+            .catch (message) ->
+                scope.disableModal = false
+                scope.error = message
+
+    scope.deleteMember = (member) ->
+        console.log 'deleting', member
+
+    scope.getMemberDisplay = (member) ->
+        if member then member.username + ' (' + member.firstName + ' ' + member.lastName + ')' else ''
+
+    scope.close = ->
+        uibModalInstance.close(scope.editingGroup)
 ]
 
 .controller 'workspaceController', ['$scope', '$state', '$stateParams', 'AuthService', (scope, state, stateParams, AuthService) ->
@@ -207,7 +280,7 @@ angular.module('runwayApp')
         scope.$apply()
 
     socket.on 'updateItem', (itemInfo) ->
-        $('#' + itemInfo.date).offset ({
+        $('#' + itemInfo._id).offset ({
             top: itemInfo.y / 100.0 * maxy()
             left: itemInfo.x / 100.0 * maxx()
         })
@@ -224,7 +297,7 @@ angular.module('runwayApp')
 
         if innerContent
             innerContent.css('position', 'absolute')
-            .attr('id', itemInfo.date)
+            .attr('id', itemInfo._id)
             .offset(
                 top: itemInfo.y / 100.0 * maxy()
                 left: itemInfo.x / 100.0 * maxx()
@@ -232,7 +305,7 @@ angular.module('runwayApp')
             .appendTo($dropzone).draggable(
                 containment: 'parent'
                 stop: (event, ui) ->
-                    socket.emit('updateItemLocation', $(this).attr('id'), ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy())
+                    socket.emit('updateItemLocation', itemInfo._id, ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy())
             )
 
     scope.addMessageToWorkspace = (string) ->

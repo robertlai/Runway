@@ -53,6 +53,7 @@ img.logo {
     width: 100%;
 }
 
+
 .tilePanel.header > div {
     font-size: 24pt;
     text-align: left;
@@ -72,11 +73,14 @@ input.filterInput {
     cursor: pointer;
 }
 
-div.actionButton {
+.hiddenButton {
     opacity: 0;
+    display: inline-block;
+    width: 40%;
+    margin: 0 5% 0 5%;
 }
 
-.tilePanel > div:hover > div > div.actionButton {
+.tilePanel > div:hover > div > .hiddenButton {
     opacity: 1;
     transition: 0.5s;
 }
@@ -95,4 +99,20 @@ div.actionButton {
 
 textarea {
     resize: vertical;
+}
+
+
+.table-fixed thead {
+    width: 100%;
+}
+.table-fixed tbody {
+    max-height: 300px;
+    overflow-y: auto;
+    width: 100%;
+}
+.table-fixed thead, .table-fixed tbody, .table-fixed tr, .table-fixed td, .table-fixed th {
+    display: block;
+}
+.table-fixed tbody td, .table-fixed thead > tr> th {
+    float: left;
 }

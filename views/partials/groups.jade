@@ -11,4 +11,5 @@
             div(ng-style="{'background-color':group.colour}")
                 h2(ng-bind='group.name')
                 p(ng-bind='group.description')
-                div.btn-xs.btn-default.actionButton(ng-click='openEditGroupModal($event, group)') Edit
+                .btn-sm.btn-default.hiddenButton(ng-click='openEditGroupPropertiesModal($event, group)') Properties
+                .btn-sm.btn-default.hiddenButton(ng-click='openEditGroupMembersModal($event, group)') Members

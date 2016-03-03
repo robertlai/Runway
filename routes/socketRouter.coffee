@@ -67,11 +67,12 @@ module.exports = (io) ->
                 if !err
                     io.sockets.in(socket.group._id).emit('removeMessage', _message)
 
-        socket.on 'updateItemLocation', (date, newX, newY) ->
-            Item.findOne({date: date})
-            .select('date x y')
+        socket.on 'updateItemLocation', (_item, newX, newY) ->
+            Item.findById(_item)
+            .select('x y')
             .exec (err, item) ->
                 if item and not err
+                    item._Id = _item
                     item.x = newX
                     item.y = newY
                     item.save()

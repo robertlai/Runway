@@ -1,6 +1,6 @@
 angular.module('runwayApp')
 
-.service 'AuthService', [
+.factory 'AuthService', [
     '$q'
     '$http'
     (q, http) ->
@@ -80,7 +80,7 @@ angular.module('runwayApp')
 ]
 
 
-.service 'groupService', [
+.factory 'groupService', [
     '$http'
     '$q'
     (http, q) ->
@@ -137,9 +137,61 @@ angular.module('runwayApp')
 
             return deferred.promise
 
+        addMember = (_group, memberToAdd) ->
+            deferred = q.defer()
+
+            http.post('/api/addGroupMember', {_group: _group, memberToAdd: memberToAdd})
+                .success ->
+                    deferred.resolve()
+                .error (error, status) ->
+                    if status is 409
+                        deferred.reject('This user has already been added to this group.')
+                    else
+                        deferred.reject('Server Error.  Please contact support.')
+
+            return deferred.promise
+
+        deleteGroup = (groupToDelete) ->
+            deferred = q.defer()
+
+            http.post('/api/deleteGroup', groupToDelete)
+                .success ->
+                    deferred.resolve()
+                .error (error, status) ->
+                    if status is 401
+                        deferred.reject('You must be the owner of a group in order to delte it.')
+                    else
+                        deferred.reject('Server Error.  Please contact support.')
+
+            return deferred.promise
+
         {
             getGroups: getGroups
             addGroup: addGroup
             editGroup: editGroup
+            deleteGroup: deleteGroup
+            addMember: addMember
+        }
+]
+
+
+.factory 'userService', [
+    '$http'
+    '$q'
+    (http, q) ->
+
+        getUsers = (query) ->
+            deferred = q.defer()
+
+            http.post('/api/getUsers', {query: query})
+                .success (members) ->
+                    deferred.resolve(members)
+                .error (error) ->
+                    deferred.reject('Server Error.  Please contact support.')
+
+            return deferred.promise
+
+        {
+            getUsers: getUsers
         }
 ]
