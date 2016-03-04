@@ -1,9 +1,9 @@
 runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.bootstrap', 'color.picker'])
 
 
-.config ['$stateProvider', '$urlRouterProvider', '$locationProvider', (stateProvider, urlRouterProvider, locationProvider) ->
+.config ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'Constants', (stateProvider, urlRouterProvider, locationProvider, Constants) ->
     locationProvider.html5Mode({ enabled: true })
-    urlRouterProvider.otherwise('/home/groups/owned')
+    urlRouterProvider.otherwise('/home/groups/' + Constants.OWNED_GROUP)
 
     stateProvider
     .state('login',
@@ -63,7 +63,7 @@ runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.boo
             )
         .state('home.groups',
             url: '/groups/:groupType'
-            params: groupType: 'owned'
+            params: groupType: Constants.OWNED_GROUP
             resolve: $title: -> 'Groups'
             authenticated: true
             templateUrl: '/partials/groups'

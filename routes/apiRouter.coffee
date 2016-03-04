@@ -4,6 +4,8 @@ fs = require('fs')
 multer  = require('multer')
 upload = multer({ dest: 'uploads/' })
 
+Constants = require('../Constants')
+
 Item = require('../models/Item')
 User = require('../models/User')
 Group = require('../models/Group')
@@ -17,7 +19,7 @@ module.exports = (io) ->
 
     apiRouter.get '/groups/:groupType', (req, res) ->
         groupType = req.params.groupType
-        if groupType in ['owned', 'joined']
+        if groupType in Constants.GROUP_TYPES
             _user = req.user._id
             try
                 groupField = '_' + groupType + 'Groups'

@@ -121,12 +121,13 @@ angular.module('runwayApp')
             scope.groups.push(groupToAdd)
 ]
 
-.controller 'addGroupModalController', ['$scope', '$uibModalInstance', 'groupService', (scope, uibModalInstance, groupService) ->
+.controller 'addGroupModalController', ['$scope', '$uibModalInstance', 'groupService', 'Constants',
+(scope, uibModalInstance, groupService, Constants) ->
 
     scope.newGroup = {
         name: ''
         description: ''
-        colour: '#0099CC'
+        colour: Constants.DEFAULT_GROUP_COLOUR
     }
 
     scope.addGroup = ->
@@ -142,8 +143,8 @@ angular.module('runwayApp')
         uibModalInstance.dismiss()
 ]
 
-.controller 'editGroupPropertiesModalController', ['$scope', '$uibModalInstance', 'groupService', 'editingGroup',
-(scope, uibModalInstance, groupService, editingGroup) ->
+.controller 'editGroupPropertiesModalController', ['$scope', '$uibModalInstance', 'groupService', 'editingGroup', 'Constants'
+(scope, uibModalInstance, groupService, editingGroup, Constants) ->
 
     scope.editingGroup = angular.copy(editingGroup)
 
@@ -158,8 +159,8 @@ angular.module('runwayApp')
 
     scope.delete = ->
         scope.disableModal = true
-        if confirm('Are you sure you and to delete this group?\nAll members will be removed and all content destroyed.\nThere is no going back!')
-            if confirm('Last chance.  Are you 100% sure you want to do this?')
+        if confirm(Constants.Messages.CONFIRM_GROUP_DELETE_1)
+            if confirm(Constants.Messages.CONFIRM_GROUP_DELETE_2)
                 groupService.deleteGroup(scope.editingGroup)
                     .then ->
                         uibModalInstance.close(scope.editingGroup, true)

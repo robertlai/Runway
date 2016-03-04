@@ -83,7 +83,8 @@ angular.module('runwayApp')
 .factory 'groupService', [
     '$http'
     '$q'
-    (http, q) ->
+    'Constants'
+    (http, q, Constants) ->
 
         getGroups = (groupType) ->
             deferred = q.defer()
@@ -93,13 +94,13 @@ angular.module('runwayApp')
                     if groups.length > 0
                         deferred.resolve(groups)
                     else
-                        if groupType is 'owned'
-                            deferred.reject('You have no groups. Create one!')
-                        else if groupType is 'joined'
-                            deferred.reject('You have not been added to any groups.')
+                        if groupType is Constants.OWNED_GROUP
+                            deferred.reject(Constants.Messages.NO_OWNED_GROUPS)
+                        else if groupType is Constants.JOINED_GROUP
+                            deferred.reject(Constants.Messages.NO_JOINED_GROUPS)
 
                 .error (error) ->
-                    deferred.reject('Server Error.  Please contact support.')
+                    deferred.reject(Constants.Messages.SERVER_ERROR)
 
             return deferred.promise
 
@@ -112,11 +113,11 @@ angular.module('runwayApp')
                         deferred.resolve(addedGroup)
                     .error (error, status) ->
                         if status is 409
-                            deferred.reject('This group already exists.')
+                            deferred.reject(Constants.Messages.GROUP_ALREADY_EXISTS)
                         else
-                            deferred.reject('Server Error.  Please contact support.')
+                            deferred.reject(Constants.Messages.SERVER_ERROR)
             else
-                deferred.reject('Please provide a group name.')
+                deferred.reject(Constants.Messages.NO_GROUP_NAME_PROVIDED)
 
             return deferred.promise
 
@@ -129,11 +130,11 @@ angular.module('runwayApp')
                         deferred.resolve(editedGroup)
                     .error (error, status) ->
                         if status is 409
-                            deferred.reject('This group already exists.')
+                            deferred.reject(Constants.Messages.GROUP_ALREADY_EXISTS)
                         else
-                            deferred.reject('Server Error.  Please contact support.')
+                            deferred.reject(Constants.Messages.SERVER_ERROR)
             else
-                deferred.reject('Please provide a group name.')
+                deferred.reject(Constants.Messages.NO_GROUP_NAME_PROVIDED)
 
             return deferred.promise
 
@@ -145,9 +146,9 @@ angular.module('runwayApp')
                     deferred.resolve()
                 .error (error, status) ->
                     if status is 409
-                        deferred.reject('This user has already been added to this group.')
+                        deferred.reject(Constants.Messages.USER_ALREADY_IN_GROUP)
                     else
-                        deferred.reject('Server Error.  Please contact support.')
+                        deferred.reject(Constants.Messages.SERVER_ERROR)
 
             return deferred.promise
 
@@ -159,9 +160,9 @@ angular.module('runwayApp')
                     deferred.resolve()
                 .error (error, status) ->
                     if status is 401
-                        deferred.reject('You must be the owner of a group in order to delte it.')
+                        deferred.reject(Constants.Messages.MUST_BE_OWNER_TO_DELETE)
                     else
-                        deferred.reject('Server Error.  Please contact support.')
+                        deferred.reject(Constants.Messages.SERVER_ERROR)
 
             return deferred.promise
 
@@ -178,7 +179,8 @@ angular.module('runwayApp')
 .factory 'userService', [
     '$http'
     '$q'
-    (http, q) ->
+    'Constants'
+    (http, q, Constants) ->
 
         getUsers = (query) ->
             deferred = q.defer()
@@ -187,7 +189,7 @@ angular.module('runwayApp')
                 .success (members) ->
                     deferred.resolve(members)
                 .error (error) ->
-                    deferred.reject('Server Error.  Please contact support.')
+                    deferred.reject(Constants.Messages.SERVER_ERROR)
 
             return deferred.promise
 
