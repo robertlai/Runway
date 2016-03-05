@@ -35,14 +35,22 @@ app.use coffeeMiddleware {
 
 app.use(logger('dev'))
 app.use(cookieParser())
-app.use(bodyParser())
+app.use(bodyParser.json())
 
 app.use(express.static(__dirname + '/public'))
 app.use('/node_modules', express.static(__dirname + '/node_modules'))
 
 app.use(favicon(__dirname + '/public/images/favicon.ico'))
 
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch', cookie: { maxAge: 30 * 60 * 1000 }, rolling: true }))
+app.use(session({
+    secret: 'ilovescotchscotchyscotchscotch'
+    cookie: {
+        maxAge: 30 * 60 * 1000
+    }
+    rolling: true
+    resave: false
+    saveUninitialized: false
+}))
 app.use(passport.initialize())
 app.use(passport.session())
 
