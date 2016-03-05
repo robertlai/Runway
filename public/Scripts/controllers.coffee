@@ -13,7 +13,7 @@ angular.module('runwayApp')
             AuthService.login(scope.loginForm.username, scope.loginForm.password).then ->
                 if rootScope.loginRedirect
                     state.go(rootScope.loginRedirect.stateName, rootScope.loginRedirect.stateParams)
-                    delete rootScope.gloginRedirect
+                    delete rootScope.loginRedirect
                 else
                     state.go('home.groups')
                 scope.loginForm = {}
