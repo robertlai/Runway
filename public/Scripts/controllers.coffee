@@ -1,26 +1,26 @@
 angular.module('runwayApp')
 
 .controller 'loginController', [
-    '$rootScope'
     '$scope'
     '$state'
+    '$stateParams'
     'AuthService'
-    (rootScope, scope, state, AuthService) ->
+    (scope, state, stateParams, AuthService) ->
         AuthService.logout()
         scope.login = ->
             scope.disableLogin = true
             scope.error = false
-            AuthService.login(scope.loginForm.username, scope.loginForm.password).then ->
-                if rootScope.loginRedirect
-                    state.go(rootScope.loginRedirect.stateName, rootScope.loginRedirect.stateParams)
-                    delete rootScope.loginRedirect
-                else
-                    state.go('home.groups')
-                scope.loginForm = {}
-            .catch (errorMessage) ->
-                scope.disableLogin = false
-                scope.error = errorMessage
-                scope.loginForm = {}
+            AuthService.login(scope.loginForm.username, scope.loginForm.password)
+                .then ->
+                    if stateParams.stateName
+                        state.go(stateParams.stateName, JSON.parse(stateParams.stateParams))
+                    else
+                        state.go('home.groups')
+                    scope.loginForm = {}
+                .catch (errorMessage) ->
+                    scope.disableLogin = false
+                    scope.error = errorMessage
+                    scope.loginForm = {}
 ]
 
 .controller 'navBarController', [

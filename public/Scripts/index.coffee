@@ -7,7 +7,7 @@ runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.boo
 
     stateProvider
     .state('login',
-        url: '/login'
+        url: '/login?stateName&stateParams'
         resolve: $title: -> 'Login'
         authenticated: false
         views: {
@@ -89,9 +89,8 @@ runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.boo
         if nextState.authenticated
             AuthService.loggedIn()
                 .catch (error) ->
-                    rootScope.loginRedirect = {
+                    state.go('login', {
                         stateName: nextState.name
-                        stateParams: nextParams
-                    }
-                    state.go('login')
+                        stateParams: JSON.stringify(nextParams)
+                    })
 ]
