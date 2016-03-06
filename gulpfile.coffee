@@ -12,7 +12,7 @@ nodemon = require('gulp-nodemon')
 
 
 gulp.task 'coffeelint', ->
-    gulp.src('./client/scripts/*.coffee')
+    gulp.src('./src/scripts/*.coffee')
         .pipe(coffeelint())
         .pipe(coffeelint.reporter())
 
@@ -21,7 +21,7 @@ gulp.task 'clean:scripts', -> del('public/scripts/scripts.min.js')
 gulp.task 'scripts', ['coffeelint', 'clean:scripts'], ->
     outputDir = 'public/scripts/'
     outputFile = 'scripts.min.js'
-    gulp.src('./client/scripts/index.coffee', read: false)
+    gulp.src('./src/scripts/index.coffee', read: false)
         .pipe(browserify({transform: ['coffeeify'], extensions: ['.coffee']}))
         .pipe(uglify())
         .pipe(concat(outputFile))
@@ -43,7 +43,7 @@ gulp.task 'clean:css', -> del('public/styles/styles.min.css')
 gulp.task 'css', ['clean:css'], ->
     outputDir = 'public/styles/'
     outputFile = 'styles.min.css'
-    gulp.src('client/styles/*.sass')
+    gulp.src('src/styles/*.sass')
         .pipe(sass().on('error', sass.logError))
         .pipe(concat(outputFile))
         .pipe(autoprefixer(browsers: ['> 0%']))
@@ -75,7 +75,7 @@ gulp.task 'jade', ['clean:jade'], ->
 gulp.task 'clean:images', -> del('public/images')
 gulp.task 'images', ['clean:images'], ->
     outputDir = 'public/images'
-    gulp.src(['./client/images/**/*.*'])
+    gulp.src(['./src/images/**/*.*'])
         .pipe(gulp.dest(outputDir))
 
 # todo: cleanup all paths
@@ -83,11 +83,11 @@ gulp.task 'images', ['clean:images'], ->
 allTasks = ['vendorCss', 'css', 'vendorScripts', 'scripts', 'jade', 'images']
 
 gulp.task 'dev', allTasks, ->
-    gulp.watch('./client/scripts/*.coffee', ['scripts'])
+    gulp.watch('./src/scripts/*.coffee', ['scripts'])
     gulp.watch(['./vendor.coffee', './package.json'], ['vendorScripts', 'vendorCss'])
-    gulp.watch(['./package.json', './client/styles/*.sass'], ['css'])
+    gulp.watch(['./package.json', './src/styles/*.sass'], ['css'])
     gulp.watch('views/partials/*.jade', ['jade'])
-    gulp.watch('./client/images/**/*.*', ['images'])
+    gulp.watch('./src/images/**/*.*', ['images'])
     nodemon({
         script: 'server.coffee'
     })
