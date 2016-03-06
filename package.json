@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./server.js",
-    "dev": "gulp"
+    "start": "gulp release && node ./server.js",
+    "dev": "gulp dev"
   },
   "dependencies": {
     "angular": "^1.4.7",
@@ -45,9 +45,9 @@
     "gulp-coffeelint": "^0.6.0",
     "gulp-concat": "^2.6.0",
     "gulp-csso": "^1.1.0",
+    "gulp-jade": "^1.1.0",
     "gulp-nodemon": "^2.0.6",
     "gulp-sass": "^2.2.0",
-    "gulp-uglify": "^1.5.3",
-    "nodemon": "^1.9.1"
+    "gulp-uglify": "^1.5.3"
   }
 }

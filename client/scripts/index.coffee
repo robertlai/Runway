@@ -16,7 +16,7 @@ runwayApp
         authenticated: false
         views: {
             'content@': {
-                templateUrl: '/partials/login'
+                templateUrl: '/partials/login.html'
                 controller: 'loginController'
             }
         }
@@ -27,7 +27,7 @@ runwayApp
         authenticated: false
         views: {
             'content@': {
-                templateUrl: '/partials/register'
+                templateUrl: '/partials/register.html'
                 controller: 'registerController'
             }
         }
@@ -39,7 +39,7 @@ runwayApp
         views: {
             'navBar@': {
                 replace: true
-                templateUrl: '/partials/navBar'
+                templateUrl: '/partials/navBar.html'
                 controller: 'navBarController'
             }
             'content@': {
@@ -52,25 +52,25 @@ runwayApp
             url: '/settings'
             replace: true
             resolve: $title: -> 'Account Setting'
-            templateUrl: '/partials/settings'
+            templateUrl: '/partials/settings.html'
             controller: 'settingsController'
         )
             .state('home.settings.general',
                 url: '/general'
                 authenticated: true
-                templateUrl: '/partials/settings-general'
+                templateUrl: '/views/settings-general.html'
             )
             .state('home.settings.security',
                 url: '/security'
                 authenticated: true
-                templateUrl: '/partials/settings-security'
+                templateUrl: '/views/settings-security.html'
             )
         .state('home.groups',
             url: '/groups/:groupType'
             params: groupType: Constants.OWNED_GROUP
             resolve: $title: -> 'Groups'
             authenticated: true
-            templateUrl: '/partials/groups'
+            templateUrl: '/partials/groups.html'
             controller: 'groupsController'
         )
     .state('workspace',
@@ -80,7 +80,7 @@ runwayApp
         authenticated: true
         views: {
             'content@': {
-                templateUrl: '/partials/workspace'
+                templateUrl: '/partials/workspace.html'
                 controller: 'workspaceController'
             }
         }

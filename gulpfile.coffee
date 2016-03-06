@@ -7,6 +7,7 @@ concat = require('gulp-concat')
 sass = require('gulp-sass')
 autoprefixer = require('gulp-autoprefixer')
 csso = require('gulp-csso')
+jade = require('gulp-jade')
 nodemon = require('gulp-nodemon')
 
 
@@ -14,6 +15,7 @@ gulp.task 'coffeelint', ->
     gulp.src('./client/scripts/*.coffee')
         .pipe(coffeelint())
         .pipe(coffeelint.reporter())
+
 
 gulp.task 'clean:scripts', -> del('public/scripts/scripts.min.js')
 gulp.task 'scripts', ['coffeelint', 'clean:scripts'], ->
@@ -62,23 +64,32 @@ gulp.task 'vendorCss', ['clean:vendorCss'], ->
         .pipe(gulp.dest(outputDir))
 
 
-gulp.task 'watch', ->
+gulp.task 'clean:jade', -> del('public/partials')
+gulp.task 'jade', ['clean:jade'], ->
+    outputDir = 'public/partials'
+    gulp.src('views/partials/*.jade')
+        .pipe(jade())
+        .pipe(gulp.dest(outputDir))
+
+
+gulp.task 'clean:images', -> del('public/images')
+gulp.task 'images', ['clean:images'], ->
+    outputDir = 'public/images'
+    gulp.src(['./client/images/**/*.*'])
+        .pipe(gulp.dest(outputDir))
+
+# todo: cleanup all paths
+
+allTasks = ['vendorCss', 'css', 'vendorScripts', 'scripts', 'jade', 'images']
+
+gulp.task 'dev', allTasks, ->
     gulp.watch('./client/scripts/*.coffee', ['scripts'])
     gulp.watch(['./vendor.coffee', './package.json'], ['vendorScripts', 'vendorCss'])
     gulp.watch(['./package.json', './client/styles/*.sass'], ['css'])
-
-
-gulp.task 'start', ->
+    gulp.watch('views/partials/*.jade', ['jade'])
+    gulp.watch('./client/images/**/*.*', ['images'])
     nodemon({
         script: 'server.coffee'
     })
 
-
-gulp.task 'default', [
-    'watch'
-    'vendorCss'
-    'vendorScripts'
-    'css'
-    'scripts'
-    'start'
-]
+gulp.task 'release', allTasks

@@ -78,7 +78,7 @@ angular.module('runwayApp')
             animation: true
             resolve:
                 editingGroup: groupToEdit
-            templateUrl: '/partials/editGroupPropertiesModal'
+            templateUrl: '/partials/editGroupPropertiesModal.html'
             controller: 'editGroupPropertiesModalController'
         )
         modalInstance.result.then (editedGroup, deleteGroup = false) ->
@@ -99,7 +99,7 @@ angular.module('runwayApp')
             size: 'lg'
             resolve:
                 editingGroup: groupToEdit
-            templateUrl: '/partials/editGroupMembersModal'
+            templateUrl: '/partials/editGroupMembersModal.html'
             controller: 'editGroupMembersModalController'
         )
         modalInstance.result.then (editedGroup) ->
@@ -113,7 +113,7 @@ angular.module('runwayApp')
     scope.openAddGroupModal = ->
         modalInstance = uibModal.open(
             animation: true
-            templateUrl: '/partials/addGroupModal'
+            templateUrl: '/partials/addGroupModal.html'
             controller: 'addGroupModalController'
         )
         modalInstance.result.then (groupToAdd) ->

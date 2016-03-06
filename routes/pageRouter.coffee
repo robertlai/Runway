@@ -3,8 +3,6 @@ passport = require('passport')
 
 
 pageRouter = express.Router()
-partialRouter = require('./partialRouter')
-pageRouter.use('/partials', partialRouter)
 
 pageRouter.post '/getUserStatus', (req, res, next) ->
     currentUser = req.user
