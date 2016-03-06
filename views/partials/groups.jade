@@ -1,5 +1,5 @@
 .container
-    .tilePanel.header
+    .tilePanel.tilePanelHeader
         div Groups: {{groupType}}
         div
             input.filterInput.form-control(ng-model='filterQuery.name' type='text' size='30' placeholder='filter groups' autofocus)
@@ -9,7 +9,7 @@
     .tilePanel
         div(ng-repeat='group in groups | orderBy: "name" | filter: filterQuery track by $index' ui-sref='workspace({groupId: group._id})')
             div(ng-style="{'background-color':group.colour}")
-                h2(ng-bind='group.name')
+                h2.groupName(ng-bind='group.name')
                 p(ng-bind='group.description')
                 .btn-sm.btn-default.hiddenButton(ng-click='openEditGroupPropertiesModal($event, group)') Properties
                 .btn-sm.btn-default.hiddenButton(ng-click='openEditGroupMembersModal($event, group)') Members

@@ -2,7 +2,7 @@ html, body, div[ui-view="content"] {
     height: 100%;
 }
 
-#container {
+.workspace {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -12,7 +12,7 @@ html, body, div[ui-view="content"] {
     height: 100%;
 }
 
-#dropzone {
+.dropzone {
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -23,31 +23,32 @@ html, body, div[ui-view="content"] {
     min-width: 75%;
 }
 
-#dropzone.hover {
+.dropzoneHover {
     border: 2px solid red;
 }
 
-#dndText {
+.dndText {
     color: Lightgray;
 }
 
-#chatPanel {
+.chatPanel {
     display: flex;
     justify-content: space-between;
     flex-direction: column;
     background-color: #ffdd99;
     width: 25%;
+    box-sizing: border-box;
     border-left: 2px solid black;
     overflow-y: hidden;
 }
 
-#chatHeader {
-    top: 0px;
+.chatHeader {
+    top: 0;
     height: 48px;
     background-color: #ffdd99;
 }
 
-#chatBody {
+.chatBody {
     height: 100%;
     flex-grow: 1;
     background-color: white;
@@ -57,13 +58,13 @@ html, body, div[ui-view="content"] {
     overflow-y: auto;
 }
 
-#chatFooter {
-    bottom: 0px;
+.chatFooter {
+    bottom: 0;
     height: 48px;
     background-color: white;
 }
 
-#showButton {
+.showButton {
     position: absolute;
     top: 0;
     right: 0;
@@ -77,6 +78,8 @@ html, body, div[ui-view="content"] {
     padding: 16px;
 }
 
+/*todo: combine these*/
+
 .actionButton {
     border: none;
     border-right: solid black 1px;
@@ -89,11 +92,11 @@ html, body, div[ui-view="content"] {
     padding: 16px;
 }
 
-.actionButton:hover, #showButton:hover {
+.actionButton:hover, .showButton:hover {
     background-color: #5d176a;
 }
 
-#messageInputBox {
+.messageInputBox {
     height: 48px;
     width: 100%;
     padding: 10px
@@ -131,7 +134,6 @@ html, body, div[ui-view="content"] {
     margin-left: 5px;
     padding: 5px;
     background-color: gray;
-    word-wrap: none;
 }
 
 .chatMessage {
@@ -145,12 +147,12 @@ html, body, div[ui-view="content"] {
     word-break: break-all;
 }
 
-button.btn.btn-primary {
+.messageButton {
     margin-right: 5px;
 }
 
-.dz-preview {
-    display: none;
+.dz-preview, .dz-default, .dz-message {
+    display: none !important;
 }
 
 .ui-draggable:hover {

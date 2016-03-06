@@ -7,7 +7,8 @@
 				"*.sublime-workspace",
 				"dbcredentials.json",
 				"*.js",
-				"!server.js"
+				"!server.js",
+				"!public/scripts/*.js"
 			],
 			"folder_exclude_patterns":
 			[

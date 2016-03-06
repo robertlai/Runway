@@ -36,13 +36,17 @@
     "tinycolor2": "^1.0.0"
   },
   "devDependencies": {
+    "autoprefixer": "^6.3.3",
     "coffeeify": "^2.0.1",
     "coffeelint": "^1.14.2",
     "del": "^2.2.0",
     "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
     "gulp-browserify": "^0.5.1",
     "gulp-concat": "^2.6.0",
+    "gulp-csso": "^1.1.0",
     "gulp-nodemon": "^2.0.6",
+    "gulp-postcss": "^6.1.0",
     "gulp-uglify": "^1.5.3",
     "nodemon": "^1.9.1"
   }

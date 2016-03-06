@@ -320,11 +320,11 @@ angular.module('runwayApp')
         })
 
     hoverTextOn = ->
-        $('#dropzone').addClass('hover')
+        $('#dropzone').addClass('dropzoneHover')
         $('#dndText').text('Drop to upload')
 
     hoverTextOff = ->
-        $('#dropzone').removeClass('hover')
+        $('#dropzone').removeClass('dropzoneHover')
         $('#dndText').text('Drag and drop files here')
 
     $dropzone.on 'dragover', (e) ->

@@ -1,11 +1,10 @@
-
 .content {
     margin: auto;
     width: 90%;
-    height: 70%;
+    overflow: hidden;
 }
 
-#signInButton {
+.signInButton {
     float: right;
 }
 

@@ -1,22 +1,19 @@
-//- todo: include this link in index.jade (styles mess up other pages for now)
-link(rel='stylesheet', href='/styles/workspace.css')
-
-#container
-    #dropzone
-        h1.noselect#dndText Drag and drop files here
-    input#showButton(type='button' value='Show' ng-hide='chatVisible' ng-click='chatVisible = !chatVisible')
-    #chatPanel(ng-show='chatVisible')
-        #chatHeader
+.workspace
+    #dropzone.dropzone
+        h1.noselect#dndText.dndText Drag and drop files here
+    input.showButton(type='button' value='Show' ng-hide='chatVisible' ng-click='chatVisible = !chatVisible')
+    .chatPanel(ng-show='chatVisible')
+        .chatHeader
             button.actionButton.glyphicon.glyphicon-home(ui-sref='home.groups')
             button.actionButton(ng-click='chatVisible = !chatVisible') Hide
-        #chatBody
+        #chatBody.chatBody
             .messageRow(ng-show='messagesLoading')
                 .loadingDiv loading...
             .messageRow(ng-repeat='message in messages | orderBy: "date" track by $index')
                 .userBubble.noselect(uib-tooltip='{{message._user.username}}' tooltip-placement='right' tooltip-trigger='mouseenter') {{message._user.username.substring(0, 1).toUpperCase()}}
                 .chatMessage(ng-bind='message.content')
-                button.btn.btn-primary(ng-click='addMessageToWorkspace(message.content)') +
-                button.btn.btn-primary(ng-if='message._user._id === user._id' ng-click='removeMessage(message._id)') x
-        #chatFooter
+                button.btn.btn-primary.messageButton(ng-click='addMessageToWorkspace(message.content)') +
+                button.btn.btn-primary.messageButton(ng-if='message._user._id === user._id' ng-click='removeMessage(message._id)') x
+        .chatFooter
             form(ng-submit='sendMessage()')
-                input#messageInputBox(type='text' ng-model='newMessage' placeholder='Type a message...' autofocus)
+                input.messageInputBox(type='text' ng-model='newMessage' placeholder='Type a message...' autofocus)
