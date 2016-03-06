@@ -5,15 +5,11 @@
 			"file_exclude_patterns":
 			[
 				"*.sublime-workspace",
-				"dbcredentials.json",
-				"*.js",
-				"!server.js",
-				"!public/scripts/*.js"
+				"dbcredentials.json"
 			],
 			"folder_exclude_patterns":
 			[
-				"node_modules",
-				"node_modules/"
+				"node_modules"
 			],
 			"path": "."
 		}
