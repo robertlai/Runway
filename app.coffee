@@ -1,4 +1,3 @@
-coffeeMiddleware = require('coffee-middleware')
 fs = require('fs')
 express = require('express')
 app = express()
@@ -24,14 +23,6 @@ require('./passport')
 
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
-
-app.use coffeeMiddleware {
-    src: __dirname + '/public',
-    compress: false
-    debug: false
-    bare: false
-    encodeSrc: false
-}
 
 app.use(logger('dev'))
 app.use(cookieParser())

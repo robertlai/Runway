@@ -1,6 +1,10 @@
 runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.bootstrap', 'color.picker'])
 
+require('./services.coffee')
+require('./controllers.coffee')
+require('./constants.coffee')
 
+runwayApp
 .config ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'Constants', (stateProvider, urlRouterProvider, locationProvider, Constants) ->
     locationProvider.html5Mode({ enabled: true })
     urlRouterProvider.otherwise('/home/groups/' + Constants.OWNED_GROUP)

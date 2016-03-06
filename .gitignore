@@ -3,3 +3,4 @@ node_modules/
 dbcredentials.json
 *.js
 !server.js
+!public/scripts/*.js
