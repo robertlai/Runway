@@ -1,0 +1,115 @@
+$dropzone-background: #f9edd2
+$chat-header-background: #ffdd99
+$workspace-button-background: #ffdd99
+$chat-footer-height: 48px
+
+.workspace
+    display: flex
+    flex-direction: row
+    flex-wrap: nowrap
+    justify-content: flex-start
+    align-items: stretch
+    align-content: stretch
+    height: 100%
+
+    .dropzone
+        display: flex
+        justify-content: center
+        flex-direction: column
+        text-align: center
+        background-color: $dropzone-background
+        flex-grow: 1
+        max-width: 100%
+        min-width: 75%
+        > .dndText
+            color: Lightgray
+        > .dz-preview, > .dz-default, > .dz-message
+            display: none
+        > .ui-draggable:hover
+            cursor: move
+
+    .dropzoneHover
+        border: 2px solid red
+
+    .showButton
+        position: absolute
+        top: 0
+        right: 0
+
+    .actionButton
+        border: none
+        border-right: solid black 1px
+        background-color: $workspace-button-background
+        color: gray
+        font-size: 14px
+        font-weight: bold
+        height: $chat-footer-height
+        line-height: 16px
+        padding: 16px
+        &:hover
+            background-color: #5d176a
+
+    .chatPanel
+        display: flex
+        justify-content: space-between
+        flex-direction: column
+        width: 25%
+        box-sizing: border-box
+        border-left: 2px solid black
+        overflow-y: hidden
+
+        > .chatHeader
+            top: 0
+            height: $chat-footer-height
+            background-color: $chat-header-background
+
+        > .chatBody
+            height: 100%
+            flex-grow: 1
+            background-color: white
+            border-top: 2px solid black
+            border-bottom: 2px solid black
+            overflow-x: hidden
+            overflow-y: auto
+            > .messageRow
+                display: flex
+                flex-direction: row
+                flex-wrap: nowrap
+                justify-content: flex-start
+                align-items: center
+                align-content: stretch
+                margin-top: 5px
+                margin-bottom: 5px
+
+                .roundGreyOrb
+                    color: white
+                    text-align: center
+                    border-radius: 10px
+                    margin-right: 5px
+                    margin-left: 5px
+                    padding: 5px
+                    background-color: gray
+
+                .loadingDiv
+                    @extend .roundGreyOrb
+                    width: 100%
+                .userBubble
+                    @extend .roundGreyOrb
+                    min-height: 25px
+                    min-width: 25px
+                .chatMessage
+                    flex-grow: 1
+                    border-radius: 10px
+                    margin-right: 5px
+                    padding: 5px
+                    background-color: #ffe5b3
+                    overflow-wrap: break-word
+                    word-wrap: break-word
+                    word-break: break-all
+                .messageButton
+                    margin-right: 5px
+
+        > .chatFooter .messageInputBox
+            height: $chat-footer-height
+            width: 100%
+            padding: 10px

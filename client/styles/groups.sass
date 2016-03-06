@@ -1,0 +1,62 @@
+.tilePanel
+    text-align: center
+    @media only screen and (min-width: 400px)
+        column-count: 1
+    @media only screen and (min-width: 700px)
+        column-count: 2
+    @media only screen and (min-width: 900px)
+        column-count: 3
+    @media only screen and (min-width: 1100px)
+        column-count: 4
+    > div
+        display: inline-block
+        width: 100%
+
+        > div
+            margin-top: 15px
+            margin-bottom: 5px
+            padding: 10px
+            border-radius: 5px
+            cursor: pointer
+
+            > .groupName
+                word-wrap: break-word
+            > .hiddenButton
+                opacity: 0
+                display: inline-block
+                width: 40%
+                margin: 0 5% 0 5%
+
+        &:hover > div
+            transform: translate(0px, -15px)
+            box-shadow: rgba(0, 0, 0, 0.2) 0 5px 5px 2px
+            opacity: 0.8
+            transition: 0.5s
+            > .hiddenButton
+                opacity: 1
+                transition: 0.5s
+
+
+.tilePanelHeader > div
+    font-size: 24pt
+    text-align: left
+    margin-top: 5px
+    margin-bottom: 5px
+
+.filterInput
+    margin-top: 4px
+
+textarea
+    resize: vertical
+
+.table-fixed
+    thead
+        width: 100%
+    tbody
+        max-height: 300px
+        overflow-y: auto
+        width: 100%
+    thead, tbody, tr, td, th
+        display: block
+    tbody td, thead > tr > th
+        float: left

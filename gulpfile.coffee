@@ -1,15 +1,22 @@
 gulp = require('gulp')
 del = require('del')
 browserify = require('gulp-browserify')
+coffeelint = require('gulp-coffeelint')
 uglify = require('gulp-uglify')
 concat = require('gulp-concat')
+sass = require('gulp-sass')
 autoprefixer = require('gulp-autoprefixer')
 csso = require('gulp-csso')
 nodemon = require('gulp-nodemon')
 
 
+gulp.task 'coffeelint', ->
+    gulp.src('./client/scripts/*.coffee')
+        .pipe(coffeelint())
+        .pipe(coffeelint.reporter())
+
 gulp.task 'clean:scripts', -> del('public/scripts/scripts.min.js')
-gulp.task 'scripts', ['clean:scripts'], ->
+gulp.task 'scripts', ['coffeelint', 'clean:scripts'], ->
     outputDir = 'public/scripts/'
     outputFile = 'scripts.min.js'
     gulp.src('./client/scripts/index.coffee', read: false)
@@ -34,7 +41,8 @@ gulp.task 'clean:css', -> del('public/styles/styles.min.css')
 gulp.task 'css', ['clean:css'], ->
     outputDir = 'public/styles/'
     outputFile = 'styles.min.css'
-    gulp.src('client/styles/*.css')
+    gulp.src('client/styles/*.sass')
+        .pipe(sass().on('error', sass.logError))
         .pipe(concat(outputFile))
         .pipe(autoprefixer(browsers: ['> 0%']))
         .pipe(csso())
@@ -57,7 +65,7 @@ gulp.task 'vendorCss', ['clean:vendorCss'], ->
 gulp.task 'watch', ->
     gulp.watch('./client/scripts/*.coffee', ['scripts'])
     gulp.watch(['./vendor.coffee', './package.json'], ['vendorScripts', 'vendorCss'])
-    gulp.watch(['./package.json', './client/styles/*.css'], ['css'])
+    gulp.watch(['./package.json', './client/styles/*.sass'], ['css'])
 
 
 gulp.task 'start', ->

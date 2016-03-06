@@ -1,7 +1,7 @@
 .workspace
     #dropzone.dropzone
         h1.noselect#dndText.dndText Drag and drop files here
-    input.showButton(type='button' value='Show' ng-hide='chatVisible' ng-click='chatVisible = !chatVisible')
+    input.actionButton.showButton(type='button' value='Show' ng-hide='chatVisible' ng-click='chatVisible = !chatVisible')
     .chatPanel(ng-show='chatVisible')
         .chatHeader
             button.actionButton.glyphicon.glyphicon-home(ui-sref='home.groups')
