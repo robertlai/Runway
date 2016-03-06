@@ -5,3 +5,4 @@ dbcredentials.json
 *.js
 !server.js
 dist
+uploads

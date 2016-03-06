@@ -9,7 +9,11 @@
 			],
 			"folder_exclude_patterns":
 			[
-				"node_modules"
+				"node_modules",
+				"public",
+				"testFiles",
+				"uploads",
+				"dist"
 			],
 			"path": "."
 		}

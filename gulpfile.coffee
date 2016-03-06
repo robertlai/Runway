@@ -1,4 +1,5 @@
 gulp = require('gulp')
+path = require('path')
 del = require('del')
 browserify = require('gulp-browserify')
 coffeelint = require('gulp-coffeelint')
@@ -11,85 +12,97 @@ jade = require('gulp-jade')
 nodemon = require('gulp-nodemon')
 
 
+allCoffeeSrc = path.join('src', 'scripts', '*.coffee')
+clientScriptsSrcFile = path.join('src', 'scripts', 'index.coffee')
+scriptsDestPath = path.join('dist', 'scripts')
+clientScriptsDestFile = 'client.min.js'
+
+vendorScriptsSrcFile = 'vendor.coffee'
+vendorScriptsDestFile = 'vendor.min.js'
+
+clientStylesSrcPath = path.join('src', 'styles', '*.sass')
+stylesDestPath = path.join('dist', 'styles')
+clientStylesDestFile = 'client.min.css'
+
+vendorStylesSrcPaths = ['node_modules/jquery-ui-bundle/jquery-ui.min.css'
+    'node_modules/angularjs-color-picker/dist/angularjs-color-picker.min.css'
+    'node_modules/angularjs-color-picker/dist/themes/angularjs-color-picker-bootstrap.min.css']
+vendorStylesDestFile = 'vendor.min.css'
+
+jadeSrcPath = path.join('views', 'partials', '*.jade')
+partialsDestPath = path.join('dist', 'partials')
+
+imagesSrcPath = path.join('src', 'images', '*.*')
+imagesDestPath = path.join('dist', 'images')
+
+
 gulp.task 'coffeelint', ->
-    gulp.src('./src/scripts/*.coffee')
+    gulp.src(allCoffeeSrc)
         .pipe(coffeelint())
         .pipe(coffeelint.reporter())
 
 
-gulp.task 'clean:scripts', -> del('dist/scripts/scripts.min.js')
-gulp.task 'scripts', ['coffeelint', 'clean:scripts'], ->
-    outputDir = 'dist/scripts/'
-    outputFile = 'scripts.min.js'
-    gulp.src('./src/scripts/index.coffee', read: false)
+gulp.task 'clean:clientScripts', -> del(scriptsDestPath + clientScriptsDestFile)
+gulp.task 'clientScripts', ['coffeelint', 'clean:clientScripts'], ->
+    gulp.src(clientScriptsSrcFile, read: false)
         .pipe(browserify({transform: ['coffeeify'], extensions: ['.coffee']}))
         .pipe(uglify())
-        .pipe(concat(outputFile))
-        .pipe(gulp.dest(outputDir))
+        .pipe(concat(clientScriptsDestFile))
+        .pipe(gulp.dest(scriptsDestPath))
 
-
-gulp.task 'clean:vendorScripts', -> del('dist/scripts/vendor.min.js')
+# todo: add sourcemaps
+gulp.task 'clean:vendorScripts', -> del(scriptsDestPath + vendorScriptsDestFile)
 gulp.task 'vendorScripts', ['clean:vendorScripts'], ->
-    outputDir = 'dist/scripts/'
-    outputFile = 'vendor.min.js'
-    gulp.src('./vendor.coffee', read: false)
+    gulp.src(vendorScriptsSrcFile, read: false)
         .pipe(browserify({}))
         .pipe(uglify())
-        .pipe(concat(outputFile))
-        .pipe(gulp.dest(outputDir))
+        .pipe(concat(vendorScriptsDestFile))
+        .pipe(gulp.dest(scriptsDestPath))
 
 
-gulp.task 'clean:css', -> del('dist/styles/styles.min.css')
-gulp.task 'css', ['clean:css'], ->
-    outputDir = 'dist/styles/'
-    outputFile = 'styles.min.css'
-    gulp.src('src/styles/*.sass')
+gulp.task 'clean:clientCss', -> del(stylesDestPath + clientStylesDestFile)
+gulp.task 'clientCss', ['clean:clientCss'], ->
+    gulp.src(clientStylesSrcPath)
         .pipe(sass().on('error', sass.logError))
-        .pipe(concat(outputFile))
+        .pipe(concat(clientStylesDestFile))
         .pipe(autoprefixer(browsers: ['> 0%']))
         .pipe(csso())
-        .pipe(gulp.dest(outputDir))
+        .pipe(gulp.dest(stylesDestPath))
 
 
-gulp.task 'clean:vendorCss', -> del('dist/styles/vendor.min.css')
+gulp.task 'clean:vendorCss', -> del(stylesDestPath + vendorStylesDestFile)
 gulp.task 'vendorCss', ['clean:vendorCss'], ->
-    outputDir = 'dist/styles/'
-    outputFile = 'vendor.min.css'
-    gulp.src([
-        './node_modules/jquery-ui-bundle/jquery-ui.min.css'
-        './node_modules/angularjs-color-picker/dist/angularjs-color-picker.min.css'
-        './node_modules/angularjs-color-picker/dist/themes/angularjs-color-picker-bootstrap.min.css'])
-        .pipe(concat(outputFile))
+    gulp.src(vendorStylesSrcPaths)
+        .pipe(concat(vendorStylesDestFile))
         .pipe(csso())
-        .pipe(gulp.dest(outputDir))
+        .pipe(gulp.dest(stylesDestPath))
 
 
-gulp.task 'clean:jade', -> del('dist/partials')
+gulp.task 'clean:jade', -> del(partialsDestPath)
 gulp.task 'jade', ['clean:jade'], ->
-    outputDir = 'dist/partials'
-    gulp.src('views/partials/*.jade')
+    gulp.src(jadeSrcPath)
         .pipe(jade())
-        .pipe(gulp.dest(outputDir))
+        .pipe(gulp.dest(partialsDestPath))
 
 
-gulp.task 'clean:images', -> del('dist/images')
+gulp.task 'clean:images', -> del(imagesDestPath)
 gulp.task 'images', ['clean:images'], ->
-    outputDir = 'dist/images'
-    gulp.src(['./src/images/**/*.*'])
-        .pipe(gulp.dest(outputDir))
+    gulp.src(imagesSrcPath)
+        .pipe(gulp.dest(imagesDestPath))
 
-# todo: cleanup all paths
 
-allTasks = ['vendorCss', 'css', 'vendorScripts', 'scripts', 'jade', 'images']
+allTasks = ['vendorCss', 'clientCss', 'vendorScripts', 'clientScripts', 'jade', 'images']
+
 
 gulp.task 'dev', allTasks, ->
-    gulp.watch('./src/scripts/*.coffee', ['scripts'])
-    gulp.watch(['./vendor.coffee', './package.json'], ['vendorScripts', 'vendorCss'])
-    gulp.watch(['./package.json', './src/styles/*.sass'], ['css'])
-    gulp.watch('views/partials/*.jade', ['jade'])
-    gulp.watch('./src/images/**/*.*', ['images'])
+    gulp.watch(allCoffeeSrc, ['clientScripts'])
+    gulp.watch([vendorScriptsSrcFile, 'package.json'], ['vendorScripts', 'vendorCss'])
+    gulp.watch(['package.json', clientStylesSrcPath], ['clientCss'])
+    gulp.watch(jadeSrcPath, ['jade'])
+    gulp.watch(imagesSrcPath, ['images'])
     nodemon({
         script: 'server.coffee'
     })
+
 
 gulp.task 'release', allTasks
