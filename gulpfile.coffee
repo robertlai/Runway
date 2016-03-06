@@ -17,9 +17,9 @@ gulp.task 'coffeelint', ->
         .pipe(coffeelint.reporter())
 
 
-gulp.task 'clean:scripts', -> del('public/scripts/scripts.min.js')
+gulp.task 'clean:scripts', -> del('dist/scripts/scripts.min.js')
 gulp.task 'scripts', ['coffeelint', 'clean:scripts'], ->
-    outputDir = 'public/scripts/'
+    outputDir = 'dist/scripts/'
     outputFile = 'scripts.min.js'
     gulp.src('./src/scripts/index.coffee', read: false)
         .pipe(browserify({transform: ['coffeeify'], extensions: ['.coffee']}))
@@ -28,9 +28,9 @@ gulp.task 'scripts', ['coffeelint', 'clean:scripts'], ->
         .pipe(gulp.dest(outputDir))
 
 
-gulp.task 'clean:vendorScripts', -> del('public/scripts/vendor.min.js')
+gulp.task 'clean:vendorScripts', -> del('dist/scripts/vendor.min.js')
 gulp.task 'vendorScripts', ['clean:vendorScripts'], ->
-    outputDir = 'public/scripts/'
+    outputDir = 'dist/scripts/'
     outputFile = 'vendor.min.js'
     gulp.src('./vendor.coffee', read: false)
         .pipe(browserify({}))
@@ -39,9 +39,9 @@ gulp.task 'vendorScripts', ['clean:vendorScripts'], ->
         .pipe(gulp.dest(outputDir))
 
 
-gulp.task 'clean:css', -> del('public/styles/styles.min.css')
+gulp.task 'clean:css', -> del('dist/styles/styles.min.css')
 gulp.task 'css', ['clean:css'], ->
-    outputDir = 'public/styles/'
+    outputDir = 'dist/styles/'
     outputFile = 'styles.min.css'
     gulp.src('src/styles/*.sass')
         .pipe(sass().on('error', sass.logError))
@@ -51,9 +51,9 @@ gulp.task 'css', ['clean:css'], ->
         .pipe(gulp.dest(outputDir))
 
 
-gulp.task 'clean:vendorCss', -> del('public/styles/vendor.min.css')
+gulp.task 'clean:vendorCss', -> del('dist/styles/vendor.min.css')
 gulp.task 'vendorCss', ['clean:vendorCss'], ->
-    outputDir = 'public/styles/'
+    outputDir = 'dist/styles/'
     outputFile = 'vendor.min.css'
     gulp.src([
         './node_modules/jquery-ui-bundle/jquery-ui.min.css'
@@ -64,17 +64,17 @@ gulp.task 'vendorCss', ['clean:vendorCss'], ->
         .pipe(gulp.dest(outputDir))
 
 
-gulp.task 'clean:jade', -> del('public/partials')
+gulp.task 'clean:jade', -> del('dist/partials')
 gulp.task 'jade', ['clean:jade'], ->
-    outputDir = 'public/partials'
+    outputDir = 'dist/partials'
     gulp.src('views/partials/*.jade')
         .pipe(jade())
         .pipe(gulp.dest(outputDir))
 
 
-gulp.task 'clean:images', -> del('public/images')
+gulp.task 'clean:images', -> del('dist/images')
 gulp.task 'images', ['clean:images'], ->
-    outputDir = 'public/images'
+    outputDir = 'dist/images'
     gulp.src(['./src/images/**/*.*'])
         .pipe(gulp.dest(outputDir))
 

@@ -1,6 +1,7 @@
 node_modules
+npm-debug.log
 *.sublime-workspace
 dbcredentials.json
 *.js
 !server.js
-public
+dist

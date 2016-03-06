@@ -28,10 +28,10 @@ app.use(logger('dev'))
 app.use(cookieParser())
 app.use(bodyParser.json())
 
-app.use(express.static(__dirname + '/public'))
+app.use(express.static(__dirname + '/dist'))
 app.use('/node_modules', express.static(__dirname + '/node_modules'))
 
-app.use(favicon(__dirname + '/public/images/favicon.ico'))
+app.use(favicon(__dirname + '/dist/images/favicon.ico'))
 
 app.use(session({
     secret: 'ilovescotchscotchyscotchscotch'
