@@ -5,14 +5,22 @@ require('./controllers.coffee')
 require('./constants.coffee')
 
 runwayApp
-.config ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'Constants', (stateProvider, urlRouterProvider, locationProvider, Constants) ->
+.config ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'Constants',
+(stateProvider, urlRouterProvider, locationProvider, Constants) ->
     locationProvider.html5Mode({ enabled: true })
     urlRouterProvider.otherwise('/home/groups/' + Constants.OWNED_GROUP)
 
     stateProvider
     .state('login',
-        url: '/login?stateName&stateParams'
-        resolve: $title: -> 'Login'
+        url: '/login?returnStateName&returnStateParams'
+        resolve:
+            $title: -> 'Login'
+            returnStateName: ['$stateParams', (stateParams) ->
+                stateParams.returnStateName
+            ]
+            returnStateParams: ['$stateParams', (stateParams) ->
+                stateParams.returnStateParams
+            ]
         authenticated: false
         views: {
             'content@': {
@@ -58,12 +66,12 @@ runwayApp
             .state('home.settings.general',
                 url: '/general'
                 authenticated: true
-                templateUrl: '/views/settings-general.html'
+                templateUrl: '/partials/settings-general.html'
             )
             .state('home.settings.security',
                 url: '/security'
                 authenticated: true
-                templateUrl: '/views/settings-security.html'
+                templateUrl: '/partials/settings-security.html'
             )
         .state('home.groups',
             url: '/groups/:groupType'
@@ -94,7 +102,7 @@ runwayApp
             AuthService.loggedIn()
                 .catch (error) ->
                     state.go('login', {
-                        stateName: nextState.name
-                        stateParams: JSON.stringify(nextParams)
+                        returnStateName: nextState.name
+                        returnStateParams: JSON.stringify(nextParams)
                     })
 ]

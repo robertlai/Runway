@@ -2,6 +2,8 @@ angular.module('runwayApp')
 
 .constant 'Constants', {
 
+    DEFAULT_ROUTE: 'home.groups'
+
     # todo: test that these match other constants file
     OWNED_GROUP: 'owned'
     JOINED_GROUP: 'joined'

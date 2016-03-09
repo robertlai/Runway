@@ -3,19 +3,20 @@ angular.module('runwayApp')
 .controller 'loginController', [
     '$scope'
     '$state'
-    '$stateParams'
+    'returnStateName'
+    'returnStateParams'
     'AuthService'
-    (scope, state, stateParams, AuthService) ->
-        AuthService.logout()
+    'Constants'
+    (scope, state, returnStateName, returnStateParams, AuthService, Constants) ->
         scope.login = ->
             scope.disableLogin = true
             scope.error = false
             AuthService.login(scope.loginForm.username, scope.loginForm.password)
                 .then ->
-                    if stateParams.stateName
-                        state.go(stateParams.stateName, JSON.parse(stateParams.stateParams))
+                    if returnStateName
+                        state.go(returnStateName, JSON.parse(returnStateParams))
                     else
-                        state.go('home.groups')
+                        state.go(Constants.DEFAULT_ROUTE)
                     scope.loginForm = {}
                 .catch (errorMessage) ->
                     scope.disableLogin = false
@@ -49,7 +50,6 @@ angular.module('runwayApp')
     'AuthService'
     (scope, state, AuthService) ->
         # todo: check for duplicate usernames when adding and editing users
-        AuthService.logout()
         scope.register = ->
             scope.disableRegister = true
             scope.error = false
@@ -103,7 +103,6 @@ angular.module('runwayApp')
             controller: 'editGroupMembersModalController'
         )
         modalInstance.result.then (editedGroup) ->
-            console.log editedGroup
             for group, index in scope.groups
                 if group._id is editedGroup._id
                     scope.groups[index] = editedGroup
@@ -212,7 +211,8 @@ angular.module('runwayApp')
         uibModalInstance.close(scope.editingGroup)
 ]
 
-.controller 'workspaceController', ['$scope', '$state', '$stateParams', 'AuthService', (scope, state, stateParams, AuthService) ->
+.controller 'workspaceController', ['$scope', '$state', '$stateParams', 'AuthService', 'Constants',
+(scope, state, stateParams, AuthService, Constants) ->
 
     $dropzone = $('#dropzone')
 
@@ -245,7 +245,7 @@ angular.module('runwayApp')
         scope.group = group
 
     socket.on 'notAllowed', ->
-        state.go('home.groups')
+        state.go(Constants.DEFAULT_ROUTE)
 
     addMessageContent = (addFunction, all) ->
         scope.$apply()

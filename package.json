@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "gulp release && node ./server.js",
+    "test": "karma start karma.conf.coffee",
     "dev": "gulp dev"
   },
   "dependencies": {
@@ -36,6 +37,7 @@
     "tinycolor2": "^1.0.0"
   },
   "devDependencies": {
+    "angular-mocks": "^1.5.0",
     "coffeeify": "^2.0.1",
     "coffeelint": "^1.14.2",
     "del": "^2.2.0",
@@ -49,6 +51,17 @@
     "gulp-nodemon": "^2.0.6",
     "gulp-sass": "^2.2.0",
     "gulp-uglify": "^1.5.3",
-    "path": "^0.12.7"
+    "jasmine": "^2.4.1",
+    "jasmine-core": "^2.4.1",
+    "karma": "^0.13.21",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-coffee-preprocessor": "^0.3.0",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-ie-launcher": "^0.2.0",
+    "karma-jasmine": "^0.3.7",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "path": "^0.12.7",
+    "phantomjs-prebuilt": "^2.1.4",
+    "supertest": "^1.2.0"
   }
 }
