@@ -1,125 +1,237 @@
-describe 'loginController', ->
+describe 'controllers', ->
 
-    beforeEach(module('runwayApp'))
+    beforeEach(module('runwayAppControllers'))
 
-    Constants = $controller = scope = $httpBackend = undefined
+    Constants = AuthService = $controller = $q = $state = $rootScope = scope = undefined
 
-    setupControllerWithReturnInfo = (returnStateName, returnStateParams) ->
-        $controller('loginController', {
-            $scope: scope
-            returnStateName: returnStateName
-            returnStateParams: JSON.stringify(returnStateParams)
-        })
-
-
-    beforeEach inject (_$controller_, _$httpBackend_, $templateCache, _Constants_) ->
+    beforeEach inject (_$q_, _Constants_, _$controller_, _$rootScope_) ->
+        $q = _$q_
         Constants = _Constants_
         $controller = _$controller_
-        $httpBackend = _$httpBackend_
+        $rootScope = _$rootScope_
         scope = {}
-        $httpBackend.when('POST', '/getUserStatus').respond({})
-        $templateCache.put('/partials/navBar.html', '')
-        $templateCache.put('/partials/login.html', '')
-        $templateCache.put('/partials/groups.html', '')
-        $templateCache.put('/partials/settings.html', '')
-        $templateCache.put('/partials/settings-general.html', '')
+        AuthService = {
+            getUser: ->
+                { username: 'Justin' }
+            loggedIn: ->
+                deferred = $q.defer()
+                deferred.resolve()
+                deferred.promise
+        }
+        $state = {
+            go: ->
+        }
 
-    it 'should define the login function', ->
-        setupControllerWithReturnInfo()
-        expect(scope.login).toBeDefined()
+    describe 'loginController', ->
 
-    describe 'call scope.login', ->
+        it 'should define the login function', ->
+            $controller('loginController', {
+                $scope: scope
+                returnStateName: undefined
+                returnStateParams: undefined
+            })
+            expect(scope.login).toBeDefined()
 
-        loginPromise = AuthService = undefined
+        describe 'call scope.login', ->
 
-        beforeEach inject (_AuthService_, _$state_) ->
-            setupControllerWithReturnInfo()
-            AuthService = _AuthService_
-            scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
-            loginPromise = scope.login()
+            beforeEach ->
+                angular.extend AuthService, {
+                    login: ->
+                        deferred = $q.defer()
+                        deferred.resolve()
+                        deferred.promise
+                }
+                $controller('loginController', {
+                    $scope: scope
+                    returnStateName: undefined
+                    returnStateParams: undefined
+                    AuthService: AuthService
+                    $state: $state
+                })
+                scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
 
-        it 'should set disable the login controls', ->
-            expect(scope.disableLogin).toEqual(true)
+            it 'should set disable the login controls', (done) ->
+                scope.login().then ->
+                    expect(scope.disableLogin).toEqual(true)
+                    done()
+                $rootScope.$digest()
 
-        it 'should clean all errors', ->
-            expect(scope.error).toEqual(false)
+            it 'should clean all errors', (done) ->
+                scope.login().then ->
+                    expect(scope.error).toEqual(false)
+                    done()
+                $rootScope.$digest()
 
-        it 'should call AuthService.login', (done) ->
-            $httpBackend.expect('POST', '/login').respond(200, {status: 'testSTatus'})
-
-            spyOn(AuthService, 'login')
-
-            loginPromise.then (data) -> done()
-
-            $httpBackend.flush()
-            expect(AuthService.login).toHaveBeenCalled()
-
-
-    describe 'successful login with params', ->
-
-        loginPromise = $state = undefined
-
-        beforeEach inject (_$state_) ->
-            setupControllerWithReturnInfo('home.settings.general', {param: 'testParam'})
-            $state = _$state_
-            scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
-            loginPromise = scope.login()
-            $httpBackend.expect('POST', '/login').respond(200, {status: 'testStatus'})
-
-        it 'should clear the login form', ->
-            $httpBackend.flush()
-            expect(scope.loginForm).toEqual({})
-
-        it 'should go to the given return state when a return state is given', (done) ->
-            spyOn($state, 'go')
-            loginPromise.then (data) ->
-                expect($state.go).toHaveBeenCalledWith('home.settings.general', {param: 'testParam'})
-                done()
-            $httpBackend.flush()
-
-
-    describe 'successful login with no params', ->
-
-        loginPromise = $state = undefined
-
-        beforeEach inject (_$state_) ->
-            setupControllerWithReturnInfo()
-            $state = _$state_
-            scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
-            loginPromise = scope.login()
-            $httpBackend.expect('POST', '/login').respond(200, {status: 'testStatus'})
-
-        it 'should clear the login form', ->
-            $httpBackend.flush()
-            expect(scope.loginForm).toEqual({})
-
-        it 'should go to the given return state when a return state is given', (done) ->
-            spyOn($state, 'go')
-            loginPromise.then (data) ->
-                expect($state.go).toHaveBeenCalledWith(Constants.DEFAULT_ROUTE)
-                done()
-            $httpBackend.flush()
+            it 'should call AuthService.login', (done) ->
+                spyOn(AuthService, 'login').and.callThrough()
+                scope.login().then ->
+                    expect(AuthService.login).toHaveBeenCalled()
+                    done()
+                $rootScope.$digest()
 
 
-    describe 'failed login', ->
+        describe 'successful login with params', ->
 
-        loginPromise = $state = undefined
+            beforeEach ->
+                angular.extend AuthService, {
+                    login: ->
+                        deferred = $q.defer()
+                        deferred.resolve()
+                        deferred.promise
+                }
+                $controller('loginController', {
+                    $scope: scope
+                    returnStateName: 'home.settings.general'
+                    returnStateParams: JSON.stringify({param: 'testParam'})
+                    AuthService: AuthService
+                    $state: $state
+                })
+                scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
 
-        beforeEach inject (_$state_) ->
-            setupControllerWithReturnInfo('home.settings.general', {param: 'testParam'})
-            $state = _$state_
-            scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
-            loginPromise = scope.login()
-            $httpBackend.expect('POST', '/login').respond(500, {error: 'test error message'})
+            it 'should clear the login form', (done) ->
+                scope.login().then ->
+                    expect(scope.loginForm).toEqual({})
+                    done()
+                $rootScope.$digest()
 
-        it 'should clear the login form', ->
-            $httpBackend.flush()
-            expect(scope.loginForm).toEqual({})
+            it 'should go to the given return state when a return state is given', (done) ->
+                spyOn($state, 'go')
+                scope.login().then ->
+                    expect($state.go).toHaveBeenCalledWith('home.settings.general', {param: 'testParam'})
+                    done()
+                $rootScope.$digest()
 
-        it 'should re-enable the login form', ->
-            $httpBackend.flush()
-            expect(scope.disableLogin).toEqual(false)
 
-        it 'should ', ->
-            $httpBackend.flush()
-            expect(scope.error).toEqual('test error message')
+        describe 'successful login with no params', ->
+
+            beforeEach ->
+                angular.extend AuthService, {
+                    login: ->
+                        deferred = $q.defer()
+                        deferred.resolve()
+                        deferred.promise
+                }
+                $controller('loginController', {
+                    $scope: scope
+                    returnStateName: undefined
+                    returnStateParams: undefined
+                    AuthService: AuthService
+                    $state: $state
+                })
+                scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
+
+            it 'should clear the login form', (done) ->
+                scope.login().then ->
+                    expect(scope.loginForm).toEqual({})
+                    done()
+                $rootScope.$digest()
+
+            it 'should go to the given return state when a return state is given', (done) ->
+                spyOn($state, 'go')
+                scope.login().then ->
+                    expect($state.go).toHaveBeenCalledWith(Constants.DEFAULT_ROUTE)
+                    done()
+                $rootScope.$digest()
+
+
+        describe 'failed login', ->
+
+            beforeEach ->
+                angular.extend AuthService, {
+                    login: ->
+                        deferred = $q.defer()
+                        deferred.reject('test error message')
+                        deferred.promise
+                }
+                $controller('loginController', {
+                    $scope: scope
+                    returnStateName: undefined
+                    returnStateParams: undefined
+                    AuthService: AuthService
+                    $state: $state
+                })
+                scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
+
+            it 'should clear the login form', (done) ->
+                scope.login().catch ->
+                    expect(scope.loginForm).toEqual({})
+                    done()
+                $rootScope.$digest()
+
+            it 'should re-enable the login form', (done) ->
+                scope.login().catch ->
+                    expect(scope.disableLogin).toEqual(false)
+                    done()
+                $rootScope.$digest()
+
+            it 'should set the scope.error to the error message passed back by the AuthService', (done) ->
+                scope.login().catch ->
+                    expect(scope.error).toEqual('test error message')
+                    done()
+                $rootScope.$digest()
+
+
+    describe 'navBarController', ->
+
+        it 'should set scope.username to the username of the user obtained from AuthService.getUser().username', ->
+            spyOn(AuthService, 'getUser').and.callThrough()
+            $controller('navBarController', {
+                $scope: scope
+                AuthService: AuthService
+            })
+            expect(scope.username).toEqual('Justin')
+            expect(AuthService.getUser).toHaveBeenCalled()
+
+
+        describe 'call scope.logout, logout successful', ->
+
+            beforeEach ->
+                angular.extend AuthService,  {
+                    logout: ->
+                        deferred = $q.defer()
+                        deferred.resolve()
+                        deferred.promise
+                }
+                spyOn(AuthService, 'logout').and.callThrough()
+                $controller('navBarController', {
+                    $scope: scope
+                    AuthService: AuthService
+                    $state: $state
+                })
+
+            it 'should call AuthService.logout', (done) ->
+                scope.logout().then ->
+                    expect(AuthService.logout).toHaveBeenCalled()
+                    done()
+                $rootScope.$digest()
+
+            it 'should go to the login state', (done) ->
+                spyOn($state, 'go')
+                scope.logout().then ->
+                    expect($state.go).toHaveBeenCalledWith('login')
+                    done()
+                $rootScope.$digest()
+
+
+        describe 'call scope.logout, logout failed', ->
+
+            beforeEach ->
+                angular.extend AuthService, {
+                    logout: ->
+                        deferred = $q.defer()
+                        deferred.reject()
+                        deferred.promise
+                }
+                spyOn(AuthService, 'logout').and.callThrough()
+                $controller('navBarController', {
+                    $scope: scope
+                    AuthService: AuthService
+                    $state: $state
+                })
+
+            it 'should go to the login state', (done) ->
+                spyOn($state, 'go')
+                scope.logout().catch ->
+                    expect($state.go).toHaveBeenCalledWith('login')
+                    done()
+                $rootScope.$digest()

@@ -1,14 +1,17 @@
-angular.module('runwayApp')
+angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices', 'ui.router'])
 
 .controller 'loginController', [
     '$scope'
     '$state'
+    '$q'
     'returnStateName'
     'returnStateParams'
     'AuthService'
     'Constants'
-    (scope, state, returnStateName, returnStateParams, AuthService, Constants) ->
+    (scope, state, q, returnStateName, returnStateParams, AuthService, Constants) ->
         scope.login = ->
+            deferred = q.defer()
+
             scope.disableLogin = true
             scope.error = false
             AuthService.login(scope.loginForm.username, scope.loginForm.password)
@@ -18,22 +21,36 @@ angular.module('runwayApp')
                     else
                         state.go(Constants.DEFAULT_ROUTE)
                     scope.loginForm = {}
+                    deferred.resolve()
                 .catch (errorMessage) ->
                     scope.disableLogin = false
                     scope.error = errorMessage
                     scope.loginForm = {}
+                    deferred.reject()
+
+            return deferred.promise
 ]
 
 .controller 'navBarController', [
     '$scope'
+    '$q'
     '$state'
     'AuthService'
-    (scope, state, AuthService) ->
+    (scope, q, state, AuthService) ->
         scope.username = AuthService.getUser().username
 
         scope.logout = ->
-            AuthService.logout().then ->
-                state.go('login')
+            deferred = q.defer()
+
+            AuthService.logout()
+                .then ->
+                    state.go('login')
+                    deferred.resolve()
+                .catch ->
+                    state.go('login')
+                    deferred.reject()
+
+            return deferred.promise
 ]
 
 .controller 'settingsController', [

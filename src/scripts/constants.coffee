@@ -1,4 +1,4 @@
-angular.module('runwayApp')
+angular.module('runwayAppConstants', [])
 
 .constant 'Constants', {
 

@@ -1,8 +1,9 @@
-runwayApp = angular.module('runwayApp', ['ui.router', 'ui.router.title', 'ui.bootstrap', 'color.picker'])
-
 require('./services.coffee')
 require('./controllers.coffee')
 require('./constants.coffee')
+
+runwayApp = angular.module('runwayApp',
+    ['runwayAppControllers', 'runwayAppServices', 'runwayAppConstants', 'ui.router', 'ui.router.title', 'ui.bootstrap', 'color.picker'])
 
 runwayApp
 .config ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'Constants',

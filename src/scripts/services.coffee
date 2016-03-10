@@ -1,4 +1,4 @@
-angular.module('runwayApp')
+angular.module('runwayAppServices', ['runwayAppConstants'])
 
 .factory 'AuthService', [
     '$q'
@@ -69,7 +69,6 @@ angular.module('runwayApp')
 
             return deferred.promise
 
-        loggedIn()
         {
             getUser: getUser
             loggedIn: loggedIn

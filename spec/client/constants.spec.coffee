@@ -1,6 +1,6 @@
 describe 'Constants', ->
 
-    beforeEach(module('runwayApp'))
+    beforeEach(module('runwayAppConstants'))
 
     Constants = undefined
 
