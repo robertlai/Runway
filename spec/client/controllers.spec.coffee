@@ -235,3 +235,15 @@ describe 'controllers', ->
                     expect($state.go).toHaveBeenCalledWith('login')
                     done()
                 $rootScope.$digest()
+
+
+    describe 'settingsController', ->
+
+        it 'should set scope.user to the user obtained from AuthService.getUser()', ->
+            spyOn(AuthService, 'getUser').and.callThrough()
+            $controller('settingsController', {
+                $scope: scope
+                AuthService: AuthService
+            })
+            expect(scope.user).toEqual({username: 'Justin'})
+            expect(AuthService.getUser).toHaveBeenCalled()
