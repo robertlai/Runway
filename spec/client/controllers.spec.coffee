@@ -62,10 +62,10 @@ describe 'controllers', ->
                     done()
                 $rootScope.$digest()
 
-            it 'should call AuthService.login', (done) ->
+            it 'should call AuthService.login with login credentials', (done) ->
                 spyOn(AuthService, 'login').and.callThrough()
                 scope.login().then ->
-                    expect(AuthService.login).toHaveBeenCalled()
+                    expect(AuthService.login).toHaveBeenCalledWith('Justin', 'superSecretPassword')
                     done()
                 $rootScope.$digest()
 
@@ -247,3 +247,112 @@ describe 'controllers', ->
             })
             expect(scope.user).toEqual({username: 'Justin'})
             expect(AuthService.getUser).toHaveBeenCalled()
+
+
+    describe 'registerController', ->
+
+        it 'should define the register function', ->
+            $controller('registerController', {
+                $scope: scope
+            })
+            expect(scope.register).toBeDefined()
+
+        describe 'call scope.register', ->
+
+            beforeEach ->
+                angular.extend AuthService, {
+                    register: ->
+                        deferred = $q.defer()
+                        deferred.resolve()
+                        deferred.promise
+                }
+                $controller('registerController', {
+                    $scope: scope
+                    AuthService: AuthService
+                    $state: $state
+                })
+                scope.registerForm = { username: 'Justin', password: 'superSecretPassword' }
+
+            it 'should set disable the register controls', (done) ->
+                scope.register().then ->
+                    expect(scope.disableRegister).toEqual(true)
+                    done()
+                $rootScope.$digest()
+
+            it 'should clean all errors', (done) ->
+                scope.register().then ->
+                    expect(scope.error).toEqual(false)
+                    done()
+                $rootScope.$digest()
+
+            it 'should call AuthService.register with register form information', (done) ->
+                spyOn(AuthService, 'register').and.callThrough()
+                scope.register().then ->
+                    expect(AuthService.register).toHaveBeenCalledWith({ username: 'Justin', password: 'superSecretPassword' })
+                    done()
+                $rootScope.$digest()
+
+
+        describe 'successful register', ->
+
+            beforeEach ->
+                angular.extend AuthService, {
+                    register: ->
+                        deferred = $q.defer()
+                        deferred.resolve()
+                        deferred.promise
+                }
+                $controller('registerController', {
+                    $scope: scope
+                    AuthService: AuthService
+                    $state: $state
+                })
+                scope.registerForm = { username: 'Justin', password: 'superSecretPassword' }
+
+            it 'should clear the register form', (done) ->
+                scope.register().then ->
+                    expect(scope.registerForm).toEqual({})
+                    done()
+                $rootScope.$digest()
+
+            it 'should go to the login state', (done) ->
+                spyOn($state, 'go')
+                scope.register().then ->
+                    expect($state.go).toHaveBeenCalledWith('login')
+                    done()
+                $rootScope.$digest()
+
+
+        describe 'failed register', ->
+
+            beforeEach ->
+                angular.extend AuthService, {
+                    register: ->
+                        deferred = $q.defer()
+                        deferred.reject('test error message')
+                        deferred.promise
+                }
+                $controller('registerController', {
+                    $scope: scope
+                    AuthService: AuthService
+                    $state: $state
+                })
+                scope.registerForm = { username: 'Justin', password: 'superSecretPassword' }
+
+            it 'should clear the register form', (done) ->
+                scope.register().catch ->
+                    expect(scope.registerForm).toEqual({})
+                    done()
+                $rootScope.$digest()
+
+            it 'should re-enable the register form', (done) ->
+                scope.register().catch ->
+                    expect(scope.disableRegister).toEqual(false)
+                    done()
+                $rootScope.$digest()
+
+            it 'should set the scope.error to the error message passed back by the AuthService', (done) ->
+                scope.register().catch ->
+                    expect(scope.error).toEqual('test error message')
+                    done()
+                $rootScope.$digest()
