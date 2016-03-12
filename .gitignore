@@ -6,3 +6,4 @@ dbcredentials.json
 !server.js
 dist
 uploads
+spec/coverage

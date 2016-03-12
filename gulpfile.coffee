@@ -15,7 +15,8 @@ nodemon = require('gulp-nodemon')
 allCoffeeSrc = path.join('src', 'scripts', '*.coffee')
 clientScriptsSrcFile = path.join('src', 'scripts', 'index.coffee')
 scriptsDestPath = path.join('dist', 'scripts')
-clientScriptsDestFile = 'client.min.js'
+clientScriptsMinDestFile = 'client.min.js'
+clientScriptsNonMinDestFile = 'client.js'
 
 vendorScriptsSrcFile = 'vendor.coffee'
 vendorScriptsDestFile = 'vendor.min.js'
@@ -42,12 +43,14 @@ gulp.task 'coffeelint', ->
         .pipe(coffeelint.reporter())
 
 
-gulp.task 'clean:clientScripts', -> del(scriptsDestPath + clientScriptsDestFile)
+gulp.task 'clean:clientScripts', -> del(scriptsDestPath + clientScriptsMinDestFile)
 gulp.task 'clientScripts', ['coffeelint', 'clean:clientScripts'], ->
     gulp.src(clientScriptsSrcFile, read: false)
         .pipe(browserify({transform: ['coffeeify'], extensions: ['.coffee']}))
+        .pipe(concat(clientScriptsNonMinDestFile))
+        .pipe(gulp.dest(scriptsDestPath))
         .pipe(uglify())
-        .pipe(concat(clientScriptsDestFile))
+        .pipe(concat(clientScriptsMinDestFile))
         .pipe(gulp.dest(scriptsDestPath))
 
 # todo: add sourcemaps

@@ -47,7 +47,7 @@ describe 'controllers', ->
             $controller('loginController', loginControllerParams)
             expect(scope.login).toBeDefined()
 
-        describe 'call scope.login', ->
+        describe 'scope.login', ->
 
             beforeEach ->
                 angular.extend AuthService, {
@@ -166,7 +166,7 @@ describe 'controllers', ->
             expect(AuthService.getUser).toHaveBeenCalled()
 
 
-        describe 'call scope.logout, logout successful', ->
+        describe 'scope.logout, logout successful', ->
 
             beforeEach ->
                 angular.extend AuthService,  {
@@ -193,7 +193,7 @@ describe 'controllers', ->
                 $rootScope.$digest()
 
 
-        describe 'call scope.logout, logout failed', ->
+        describe 'scope.logout, logout failed', ->
 
             beforeEach ->
                 angular.extend AuthService, {
@@ -234,7 +234,7 @@ describe 'controllers', ->
             })
             expect(scope.register).toBeDefined()
 
-        describe 'call scope.register', ->
+        describe 'scope.register', ->
 
             beforeEach ->
                 angular.extend AuthService, {
@@ -455,7 +455,7 @@ describe 'controllers', ->
                 })
 
 
-            describe 'call scope.openEditGroupPropertiesModal', ->
+            describe 'scope.openEditGroupPropertiesModal', ->
 
                 it 'should call event.stopPropagation on the event passed in', ->
                     spyOn(event, 'stopPropagation').and.callThrough()
@@ -472,6 +472,21 @@ describe 'controllers', ->
                         templateUrl: '/partials/editGroupPropertiesModal.html'
                         controller: 'editGroupPropertiesModalController'
                     })
+
+
+                describe 'close modal successfully with editedGroup and no deleteGroup specified', ->
+
+                    it 'should clear all errors', ->
+                        scope.openEditGroupPropertiesModal(event, groupToEdit)
+                        scope.groups = [{_id: 5}, {_id: 36}, {_id: 6}]
+                        modalInstance.close({_id: 5})
+                        expect(scope.error).toEqual(null)
+
+                    it 'should replace the groups being edited in the groups list', ->
+                        scope.openEditGroupPropertiesModal(event, groupToEdit)
+                        scope.groups = [{_id: 5}, {_id: 36}, {_id: 6}]
+                        modalInstance.close({_id: 5, name: 'test'})
+                        expect(scope.groups).toEqual([{_id: 5, name: 'test'}, {_id: 36}, {_id: 6}])
 
 
                 describe 'close modal successfully with editedGroup and deleteGroup = true', ->
@@ -527,7 +542,7 @@ describe 'controllers', ->
                     expect(scope.error).toEqual('test error message')
 
 
-            describe 'call scope.openEditGroupMembersModal', ->
+            describe 'scope.openEditGroupMembersModal', ->
 
                 it 'should call event.stopPropagation on the event passed in', ->
                     spyOn(event, 'stopPropagation').and.callThrough()
@@ -605,7 +620,7 @@ describe 'controllers', ->
                 expect(scope.cancel).toBeDefined()
 
 
-        describe 'call scope.addGroup adds successfully', ->
+        describe 'scope.addGroup adds successfully', ->
 
             scope = groupService = uibModalInstance = undefined
 
@@ -624,17 +639,18 @@ describe 'controllers', ->
                 })
 
             it 'should disable the modal input fields', ->
-                scope.addGroup()
-                expect(scope.disableModal).toEqual(true)
+                scope.addGroup().then ->
+                    expect(scope.disableModal).toEqual(true)
+                $rootScope.$digest()
 
             it 'should close the modal with the addedGroup', ->
-                spyOn(uibModalInstance, 'close').and.callThrough()
+                spyOn(uibModalInstance, 'close')
                 scope.newGroup = {name: 'testGroup'}
                 scope.addGroup().then ->
                     expect(uibModalInstance.close).toHaveBeenCalledWith({name: 'testGroup'})
 
 
-        describe "call scope.addGroup doesn't add successfully", ->
+        describe "scope.addGroup doesn't add successfully", ->
 
             scope = groupService = uibModalInstance = undefined
 
@@ -663,7 +679,7 @@ describe 'controllers', ->
                     expect(scope.error).toEqual('test error message')
                 $rootScope.$digest()
 
-        describe 'call scope.cancel', ->
+        describe 'scope.cancel', ->
 
             it 'should dismiss the modal', ->
                 scope = {}
@@ -708,7 +724,7 @@ describe 'controllers', ->
                 expect(scope.cancel).toBeDefined()
 
 
-        describe 'call scope.editGroup edits successfully', ->
+        describe 'scope.editGroup edits successfully', ->
 
             scope = editingGroup = groupService = uibModalInstance = undefined
 
@@ -734,7 +750,7 @@ describe 'controllers', ->
                 $rootScope.$digest()
 
 
-        describe "call scope.editGroup doesn't edit successfully", ->
+        describe "scope.editGroup doesn't edit successfully", ->
 
             scope = editingGroup = groupService = uibModalInstance = undefined
 
@@ -768,7 +784,7 @@ describe 'controllers', ->
 
 
 
-        describe 'call scope.cancel', ->
+        describe 'scope.cancel', ->
 
             it 'should dismiss the modal', ->
                 scope = {}

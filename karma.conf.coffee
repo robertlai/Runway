@@ -4,11 +4,20 @@ module.exports = (config) ->
         frameworks: ['jasmine']
         files: ['dist/scripts/vendor.min.js',
         'node_modules/angular-mocks/angular-mocks.js'
-        'dist/scripts/client.min.js',
+        'dist/scripts/client.js',
         'spec/client/**/*.spec.coffee']
         exclude: []
-        preprocessors: 'spec/**/*.spec.coffee': ['coffee']
-        reporters: ['progress', 'kjhtml']
+        preprocessors: {
+            'dist/scripts/client.js': 'coverage'
+            'spec/**/*.spec.coffee': 'coffee'
+        }
+        reporters: ['progress', 'kjhtml', 'coverage']
+        coverageReporter: {
+            dir: 'spec/coverage',
+            reporters: [
+                { type: 'html', subdir: 'report-html' },
+            ]
+        }
         port: 9872
         colors: true
         logLevel: config.LOG_WARN
