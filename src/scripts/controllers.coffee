@@ -220,8 +220,9 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         uibModalInstance.dismiss()
 ]
 
-.controller 'editGroupMembersModalController', ['$scope', '$http', '$uibModalInstance', 'AuthService', 'groupService', 'userService', 'editingGroup',
-(scope, http, uibModalInstance, AuthService, groupService, userService, editingGroup) ->
+.controller 'editGroupMembersModalController',
+['$scope', '$q', '$http', '$uibModalInstance', 'AuthService', 'groupService', 'userService', 'editingGroup',
+(scope, q, http, uibModalInstance, AuthService, groupService, userService, editingGroup) ->
     # todo: this should be passed an id / resolve the id of the group and populate everything before getting here
     # then all info will be present and the info doesn't have to be retuned from the modal and it becomes state free
     scope.owner = AuthService.getUser()
@@ -229,11 +230,16 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
     scope.editingGroup = angular.copy(editingGroup)
 
     scope.getUsers = (query) ->
+        deferred = q.defer()
+
         userService.getUsers(query)
             .then (members) ->
-                members
+                deferred.resolve(members)
             .catch (message) ->
                 scope.error = message
+                deferred.reject()
+
+        return deferred.promise
 
     scope.addMember = ->
         scope.disableModal = true

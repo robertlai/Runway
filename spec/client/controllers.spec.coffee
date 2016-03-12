@@ -5,6 +5,7 @@ describe 'controllers', ->
     Constants = undefined
     AuthService = undefined
     groupService = undefined
+    userService = undefined
     $controller = undefined
     mockCredentials = undefined
     resolvedPromiseFunc = undefined
@@ -49,6 +50,10 @@ describe 'controllers', ->
             addGroup: -> resolvedPromiseFunc()
             editGroup: (editingGroup) -> resolvedPromiseFunc(editingGroup)
             deleteGroup: -> resolvedPromiseFunc()
+        }
+
+        userService = {
+            getUsers: (query) -> resolvedPromiseFunc(query)
         }
 
         uibModalInstance = {
@@ -791,42 +796,94 @@ describe 'controllers', ->
                 expect(uibModalInstance.dismiss).toHaveBeenCalled()
 
 
-    # describe 'editGroupMembersModalController', ->
+    describe 'editGroupMembersModalController', ->
+
+        editingGroup = editGroupMembersModalControllerParams = undefined
+
+        beforeEach ->
+            editingGroup = {name: 'test name'}
+            editGroupMembersModalControllerParams = {
+                $scope: scope
+                $uibModalInstance: uibModalInstance
+                editingGroup: editingGroup
+                AuthService: AuthService
+                groupService: groupService
+                userService: userService
+            }
+
+        describe 'setup', ->
+
+            beforeEach  ->
+                spyOn(AuthService, 'getUser').and.callThrough()
+                $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
+
+            it 'should set scope.editingGroup to a deep copy of the resolved editingGroup parameter', ->
+                expect(scope.editingGroup).toEqual(editingGroup)
+                editingGroup = 'thing'
+                expect(scope.editingGroup).not.toEqual(editingGroup)
+
+            it 'should initialize scope.owner to the user obtained from AuthService.getUser()', ->
+                expect(AuthService.getUser).toHaveBeenCalled()
+                expect(scope.owner).toEqual({username: 'Justin'})
+
+            it 'should define the scope.getUsers function', ->
+                expect(scope.getUsers).toBeDefined()
+
+            it 'should define the scope.addMember function', ->
+                expect(scope.addMember).toBeDefined()
+
+            it 'should define the scope.deleteMember function', ->
+                expect(scope.deleteMember).toBeDefined()
+
+            it 'should define the scope.getMemberDisplay function', ->
+                expect(scope.getMemberDisplay).toBeDefined()
+
+            it 'should define the scope.close function', ->
+                expect(scope.close).toBeDefined()
 
 
-    #     describe 'setup', ->
+        describe 'scope.getUsers, get users successfully', ->
 
-    #         editingGroup = undefined
+            beforeEach ->
+                $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
 
-    #         beforeEach  ->
-    #             editingGroup = {name: 'test name'}
-    #             $controller('editGroupMembersModalController', {
-    #                 $scope: scope
-    #                 $uibModalInstance: uibModalInstance
-    #                 editingGroup: editingGroup
-    #             })
-    # scope.owner = AuthService.getUser()
+            it 'should call userService.getUsers with the given query to get the list of users', (done) ->
+                spyOn(userService, 'getUsers').and.callThrough()
+                scope.getUsers('query').then ->
+                    expect(userService.getUsers).toHaveBeenCalledWith('query')
+                    done()
+                $rootScope.$digest()
 
-    # scope.editingGroup = angular.copy(editingGroup)
-
-    # beforeEach ->
-
-
-    # it 'should define the scope.getUsers function', ->
-    #     expect(scope.getUsers).toBeDefined()
-
-    # it 'should define the scope.addMember function', ->
-    #     expect(scope.addMember).toBeDefined()
-
-    # it 'should define the scope.deleteMember function', ->
-    #     expect(scope.deleteMember).toBeDefined()
-
-    # it 'should define the scope.getMemberDisplay function', ->
-    #     expect(scope.getMemberDisplay).toBeDefined()
-
-    # it 'should define the scope.close function', ->
-    #     expect(scope.close).toBeDefined()
+            it 'should return the list of message users found', ->
+                scope.getUsers('query').then (users) ->
+                    expect(users).toEqual('query')
+                $rootScope.$digest()
 
 
+        describe 'scope.getUsers, get users failed', ->
 
-    # describe 'workspaceController', ->
+            beforeEach ->
+                angular.extend userService, {
+                    getUsers: -> rejectedPromiseFunc('test error message')
+                }
+                $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
+
+
+            it 'should set scope.error to the error message returned from the userService.getUsers', (done) ->
+                scope.getUsers('query').catch ->
+                    expect(scope.error).toEqual('test error message')
+                    done()
+                $rootScope.$digest()
+
+
+        describe 'scope.addMember', ->
+
+        describe 'scope.deleteMember', ->
+
+        describe 'scope.getMemberDisplay', ->
+
+        describe 'scope.close', ->
+
+
+
+    describe 'workspaceController', ->
