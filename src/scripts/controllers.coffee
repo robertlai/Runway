@@ -70,6 +70,7 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         # todo: check for duplicate usernames when adding and editing users
         scope.register = ->
             deferred = q.defer()
+
             scope.disableRegister = true
             scope.error = false
             AuthService.register(scope.registerForm)
@@ -143,8 +144,8 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
             scope.groups.push(groupToAdd)
 ]
 
-.controller 'addGroupModalController', ['$scope', '$uibModalInstance', 'groupService', 'Constants',
-(scope, uibModalInstance, groupService, Constants) ->
+.controller 'addGroupModalController', ['$scope', '$q', '$uibModalInstance', 'groupService', 'Constants',
+(scope, q, uibModalInstance, groupService, Constants) ->
 
     scope.newGroup = {
         name: ''
@@ -153,13 +154,19 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
     }
 
     scope.addGroup = ->
+        deferred = q.defer()
+
         scope.disableModal = true
         groupService.addGroup(scope.newGroup)
             .then (addedGroup) ->
                 uibModalInstance.close(addedGroup)
+                deferred.resolve()
             .catch (message) ->
                 scope.disableModal = false
                 scope.error = message
+                deferred.reject()
+
+        return deferred.promise
 
     scope.cancel = ->
         uibModalInstance.dismiss()

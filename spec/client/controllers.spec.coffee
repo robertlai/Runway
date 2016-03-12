@@ -619,3 +619,106 @@ describe 'controllers', ->
                         scope.groups = [{_id: 5}, {_id: 36}, {_id: 6}]
                         modalInstance.close({_id: 27})
                         expect(scope.groups).toEqual([{_id: 5}, {_id: 36}, {_id: 6}, {_id: 27}])
+
+
+    describe 'addGroupModalController', ->
+
+        describe 'setup', ->
+
+            scope = Constants = uibModalInstance = undefined
+
+            beforeEach inject (_Constants_) ->
+                Constants = _Constants_
+                $controller('addGroupModalController', {
+                    $scope: scope
+                    $uibModalInstance: uibModalInstance
+                })
+
+            it 'should initialize scope.newGroup"s name to an empty string', ->
+                expect(scope.newGroup.name).toEqual('')
+
+            it 'should initialize scope.newGroup"s description to an empty string', ->
+                expect(scope.newGroup.description).toEqual('')
+
+            it 'should initialize scope.newGroup"s colour to the default group colour', ->
+                expect(scope.newGroup.colour).toEqual(Constants.DEFAULT_GROUP_COLOUR)
+
+
+        describe 'call scope.addGroup adds successfully', ->
+
+            scope = groupService = uibModalInstance = undefined
+
+            beforeEach inject ($q) ->
+                groupService = {
+                    addGroup: ->
+                        deferred = $q.defer()
+                        deferred.resolve()
+                        deferred.promise
+                }
+                scope = {}
+                uibModalInstance = {
+                    close: (addedGroup) ->
+                }
+                $controller('addGroupModalController', {
+                    $scope: scope
+                    $uibModalInstance: uibModalInstance
+                    groupService: groupService
+                })
+
+            it 'should disable the modal input fields', ->
+                scope.addGroup()
+                expect(scope.disableModal).toEqual(true)
+
+            it 'should close the modal with the addedGroup', ->
+                spyOn(uibModalInstance, 'close').and.callThrough()
+                scope.newGroup = {name: 'testGroup'}
+                scope.addGroup().then ->
+                    expect(uibModalInstance.close).toHaveBeenCalledWith({name: 'testGroup'})
+
+
+        describe 'call scope.addGroup adds successfully', ->
+
+            scope = groupService = uibModalInstance = undefined
+
+            beforeEach inject ($q) ->
+                groupService = {
+                    addGroup: ->
+                        deferred = $q.defer()
+                        deferred.reject('test error message')
+                        deferred.promise
+                }
+                scope = {}
+                $controller('addGroupModalController', {
+                    $scope: scope
+                    $uibModalInstance: null
+                    groupService: groupService
+                })
+
+            it 'should disable the modal input fields', ->
+                scope.addGroup()
+                expect(scope.disableModal).toEqual(true)
+
+            it 'should re-enable modal input fields', ->
+                scope.addGroup().catch ->
+                    expect(scope.disableModal).toEqual(false)
+                $rootScope.$digest()
+
+            it 'should set the scope.error to the error passed back from the groupService.addGroup catch', ->
+                scope.addGroup().catch ->
+                    expect(scope.error).toEqual('test error message')
+                $rootScope.$digest()
+
+        describe 'call scope.cancel', ->
+
+            it 'should dismiss the modal', ->
+                scope = {}
+                uibModalInstance = {
+                    dismiss: ->
+                }
+                $controller('addGroupModalController', {
+                    $scope: scope
+                    $uibModalInstance: uibModalInstance
+                })
+                spyOn(uibModalInstance, 'dismiss').and.callThrough()
+                scope.cancel()
+                expect(uibModalInstance.dismiss).toHaveBeenCalled()
