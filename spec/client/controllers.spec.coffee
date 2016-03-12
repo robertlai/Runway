@@ -2,21 +2,27 @@ describe 'controllers', ->
 
     beforeEach(module('runwayAppControllers'))
 
-    Constants = AuthService = $controller = $q = $state = $rootScope = scope = undefined
+    Constants = AuthService = $controller = resolvedPromiseFunc = rejectedPromiseFunc = $state = $rootScope = scope = undefined
 
-    beforeEach inject (_$q_, _Constants_, _$controller_, _$rootScope_) ->
-        $q = _$q_
+
+    beforeEach inject ($q, _Constants_, _$controller_, _$rootScope_) ->
         Constants = _Constants_
         $controller = _$controller_
         $rootScope = _$rootScope_
         scope = {}
+
+        resolvedPromiseFunc = (value) ->
+            deferred = $q.defer()
+            deferred.resolve(value)
+            deferred.promise
+
+        rejectedPromiseFunc = (value) ->
+            deferred = $q.defer()
+            deferred.reject(value)
+            deferred.promise
+
         AuthService = {
-            getUser: ->
-                { username: 'Justin' }
-            loggedIn: ->
-                deferred = $q.defer()
-                deferred.resolve()
-                deferred.promise
+            getUser: -> { username: 'Justin' }
         }
         $state = {
             go: ->
@@ -36,10 +42,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend AuthService, {
-                    login: ->
-                        deferred = $q.defer()
-                        deferred.resolve()
-                        deferred.promise
+                    login: -> resolvedPromiseFunc()
                 }
                 $controller('loginController', {
                     $scope: scope
@@ -74,10 +77,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend AuthService, {
-                    login: ->
-                        deferred = $q.defer()
-                        deferred.resolve()
-                        deferred.promise
+                    login: -> resolvedPromiseFunc()
                 }
                 $controller('loginController', {
                     $scope: scope
@@ -106,10 +106,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend AuthService, {
-                    login: ->
-                        deferred = $q.defer()
-                        deferred.resolve()
-                        deferred.promise
+                    login: -> resolvedPromiseFunc()
                 }
                 $controller('loginController', {
                     $scope: scope
@@ -138,10 +135,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend AuthService, {
-                    login: ->
-                        deferred = $q.defer()
-                        deferred.reject('test error message')
-                        deferred.promise
+                    login: -> rejectedPromiseFunc('test error message')
                 }
                 $controller('loginController', {
                     $scope: scope
@@ -187,10 +181,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend AuthService,  {
-                    logout: ->
-                        deferred = $q.defer()
-                        deferred.resolve()
-                        deferred.promise
+                    logout: -> resolvedPromiseFunc()
                 }
                 spyOn(AuthService, 'logout').and.callThrough()
                 $controller('navBarController', {
@@ -217,10 +208,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend AuthService, {
-                    logout: ->
-                        deferred = $q.defer()
-                        deferred.reject()
-                        deferred.promise
+                    logout: -> rejectedPromiseFunc('test error message')
                 }
                 spyOn(AuthService, 'logout').and.callThrough()
                 $controller('navBarController', {
@@ -261,10 +249,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend AuthService, {
-                    register: ->
-                        deferred = $q.defer()
-                        deferred.resolve()
-                        deferred.promise
+                    register: -> resolvedPromiseFunc()
                 }
                 $controller('registerController', {
                     $scope: scope
@@ -297,10 +282,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend AuthService, {
-                    register: ->
-                        deferred = $q.defer()
-                        deferred.resolve()
-                        deferred.promise
+                    register: -> resolvedPromiseFunc()
                 }
                 $controller('registerController', {
                     $scope: scope
@@ -327,10 +309,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend AuthService, {
-                    register: ->
-                        deferred = $q.defer()
-                        deferred.reject('test error message')
-                        deferred.promise
+                    register: -> rejectedPromiseFunc('test error message')
                 }
                 $controller('registerController', {
                     $scope: scope
@@ -414,10 +393,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend groupService, {
-                    getGroups: ->
-                        deferred = $q.defer()
-                        deferred.resolve(['a', 'b', 'c'])
-                        deferred.promise
+                    getGroups: -> resolvedPromiseFunc(['a', 'b', 'c'])
                 }
                 spyOn(groupService, 'getGroups').and.callThrough()
                 $controller('groupsController', {
@@ -440,10 +416,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend groupService, {
-                    getGroups: ->
-                        deferred = $q.defer()
-                        deferred.reject('test error message')
-                        deferred.promise
+                    getGroups: -> rejectedPromiseFunc('test error message')
                 }
                 spyOn(groupService, 'getGroups').and.callThrough()
                 $controller('groupsController', {
@@ -468,10 +441,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend groupService, {
-                    getGroups: ->
-                        deferred = $q.defer()
-                        deferred.resolve()
-                        deferred.promise
+                    getGroups: -> resolvedPromiseFunc()
                 }
                 event = {
                     stopPropagation: ->
@@ -549,10 +519,7 @@ describe 'controllers', ->
 
                 beforeEach ->
                     angular.extend groupService, {
-                        getGroups: ->
-                            deferred = $q.defer()
-                            deferred.reject('test error message')
-                            deferred.promise
+                        getGroups: -> rejectedPromiseFunc('test error message')
                     }
                     spyOn(groupService, 'getGroups').and.callThrough()
                     $controller('groupsController', {
@@ -625,10 +592,9 @@ describe 'controllers', ->
 
         describe 'setup', ->
 
-            scope = Constants = uibModalInstance = undefined
+            scope = uibModalInstance = undefined
 
-            beforeEach inject (_Constants_) ->
-                Constants = _Constants_
+            beforeEach  ->
                 $controller('addGroupModalController', {
                     $scope: scope
                     $uibModalInstance: uibModalInstance
@@ -643,17 +609,20 @@ describe 'controllers', ->
             it 'should initialize scope.newGroup"s colour to the default group colour', ->
                 expect(scope.newGroup.colour).toEqual(Constants.DEFAULT_GROUP_COLOUR)
 
+            it 'should define the addGroup function', ->
+                expect(scope.addGroup).toBeDefined()
+
+            it 'should define the cancel function', ->
+                expect(scope.cancel).toBeDefined()
+
 
         describe 'call scope.addGroup adds successfully', ->
 
             scope = groupService = uibModalInstance = undefined
 
-            beforeEach inject ($q) ->
+            beforeEach ->
                 groupService = {
-                    addGroup: ->
-                        deferred = $q.defer()
-                        deferred.resolve()
-                        deferred.promise
+                    addGroup: -> resolvedPromiseFunc()
                 }
                 scope = {}
                 uibModalInstance = {
@@ -676,16 +645,13 @@ describe 'controllers', ->
                     expect(uibModalInstance.close).toHaveBeenCalledWith({name: 'testGroup'})
 
 
-        describe 'call scope.addGroup adds successfully', ->
+        describe "call scope.addGroup doesn't add successfully", ->
 
             scope = groupService = uibModalInstance = undefined
 
-            beforeEach inject ($q) ->
+            beforeEach ->
                 groupService = {
-                    addGroup: ->
-                        deferred = $q.defer()
-                        deferred.reject('test error message')
-                        deferred.promise
+                    addGroup: -> rejectedPromiseFunc('test error message')
                 }
                 scope = {}
                 $controller('addGroupModalController', {
@@ -722,3 +688,115 @@ describe 'controllers', ->
                 spyOn(uibModalInstance, 'dismiss').and.callThrough()
                 scope.cancel()
                 expect(uibModalInstance.dismiss).toHaveBeenCalled()
+
+
+    describe 'editGroupPropertiesModalController', ->
+
+        describe 'setup', ->
+
+            scope = editingGroup = uibModalInstance = undefined
+
+            beforeEach  ->
+                editingGroup = 'test editing group'
+                $controller('editGroupPropertiesModalController', {
+                    $scope: scope
+                    $uibModalInstance: uibModalInstance
+                    editingGroup: editingGroup
+                })
+
+            it 'should set scope.editingGroup to a deep copy of the resolved editingGroup parameter', ->
+                expect(scope.editingGroup).toEqual(editingGroup)
+                editingGroup = 'thing'
+                expect(scope.editingGroup).not.toEqual(editingGroup)
+
+            it 'should define the editGroup function', ->
+                expect(scope.editGroup).toBeDefined()
+
+            it 'should define the delete function', ->
+                expect(scope.delete).toBeDefined()
+
+            it 'should define the cancel function', ->
+                expect(scope.cancel).toBeDefined()
+
+
+        describe 'call scope.editGroup edits successfully', ->
+
+            scope = editingGroup = groupService = uibModalInstance = undefined
+
+            beforeEach ->
+                groupService = {
+                    editGroup: -> resolvedPromiseFunc()
+                }
+                scope = {}
+                uibModalInstance = {
+                    close: (addedGroup) ->
+                }
+                $controller('editGroupPropertiesModalController', {
+                    $scope: scope
+                    $uibModalInstance: uibModalInstance
+                    groupService: groupService
+                    editingGroup: editingGroup
+                })
+
+            it 'should close the modal with the editingGroup', ->
+                spyOn(uibModalInstance, 'close').and.callThrough()
+                scope.editGroup().then ->
+                    expect(uibModalInstance.close).toHaveBeenCalledWith(editingGroup)
+                $rootScope.$digest()
+
+
+        describe "call scope.editGroup doesn't edit successfully", ->
+
+            scope = editingGroup = groupService = uibModalInstance = undefined
+
+            beforeEach ->
+                groupService = {
+                    editGroup: -> rejectedPromiseFunc('test error message')
+                }
+                scope = {}
+                uibModalInstance = {
+                    close: (addedGroup) ->
+                }
+                $controller('editGroupPropertiesModalController', {
+                    $scope: scope
+                    $uibModalInstance: uibModalInstance
+                    groupService: groupService
+                    editingGroup: editingGroup
+                })
+
+            it 'should re-enable modal input fields', ->
+                scope.editGroup().catch ->
+                    expect(scope.disableModal).toEqual(false)
+                $rootScope.$digest()
+
+            it 'should set the scope.error to the error passed back from the groupService.editGroup catch', ->
+                scope.editGroup().catch ->
+                    expect(scope.error).toEqual('test error message')
+                $rootScope.$digest()
+
+        describe 'call delete', ->
+
+
+
+
+        describe 'call scope.cancel', ->
+
+            it 'should dismiss the modal', ->
+                scope = {}
+                uibModalInstance = {
+                    dismiss: ->
+                }
+                $controller('editGroupPropertiesModalController', {
+                    $scope: scope
+                    $uibModalInstance: uibModalInstance
+                    editingGroup: null
+                })
+                spyOn(uibModalInstance, 'dismiss').and.callThrough()
+                scope.cancel()
+                expect(uibModalInstance.dismiss).toHaveBeenCalled()
+
+
+    describe 'editGroupMembersModalController', ->
+
+
+    describe 'workspaceController', ->

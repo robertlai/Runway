@@ -172,34 +172,49 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         uibModalInstance.dismiss()
 ]
 
-.controller 'editGroupPropertiesModalController', ['$scope', '$uibModalInstance', 'groupService', 'editingGroup', 'Constants'
-(scope, uibModalInstance, groupService, editingGroup, Constants) ->
+.controller 'editGroupPropertiesModalController', ['$window', '$scope', '$q', '$uibModalInstance', 'groupService', 'editingGroup', 'Constants'
+($window, scope, q, uibModalInstance, groupService, editingGroup, Constants) ->
 
     scope.editingGroup = angular.copy(editingGroup)
 
     scope.editGroup = ->
+        deferred = q.defer()
+
         scope.disableModal = true
         groupService.editGroup(scope.editingGroup)
             .then (editedGroup) ->
                 uibModalInstance.close(editedGroup)
+                deferred.resolve()
             .catch (message) ->
                 scope.disableModal = false
                 scope.error = message
+                deferred.reject()
+
+        return deferred.promise
 
     scope.delete = ->
         scope.disableModal = true
-        if confirm(Constants.Messages.CONFIRM_GROUP_DELETE_1)
-            if confirm(Constants.Messages.CONFIRM_GROUP_DELETE_2)
+        if $window.confirm(Constants.Messages.CONFIRM_GROUP_DELETE_1)
+            if $window.confirm(Constants.Messages.CONFIRM_GROUP_DELETE_2)
+
+                deferred = q.defer()
+
                 groupService.deleteGroup(scope.editingGroup)
                     .then ->
                         uibModalInstance.close(scope.editingGroup, true)
+                        deferred.resolve()
                     .catch (message) ->
                         scope.disableModal = false
                         scope.error = message
+                        deferred.reject()
+
+                return deferred.promise
+
             else
                 scope.disableModal = false
         else
             scope.disableModal = false
+
 
     scope.cancel = ->
         uibModalInstance.dismiss()
