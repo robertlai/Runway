@@ -100,6 +100,7 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         $event.stopPropagation()
         modalInstance = uibModal.open(
             animation: true
+            backdrop: 'static'
             resolve:
                 editingGroup: groupToEdit
             templateUrl: '/partials/editGroupPropertiesModal.html'
@@ -120,6 +121,7 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         $event.stopPropagation()
         modalInstance = uibModal.open(
             animation: true
+            backdrop: 'static'
             size: 'lg'
             resolve:
                 editingGroup: groupToEdit
@@ -136,6 +138,7 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
     scope.openAddGroupModal = ->
         modalInstance = uibModal.open(
             animation: true
+            backdrop: 'static'
             templateUrl: '/partials/addGroupModal.html'
             controller: 'addGroupModalController'
         )
@@ -193,12 +196,10 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         return deferred.promise
 
     scope.delete = ->
-        scope.disableModal = true
+        deferred = q.defer()
         if $window.confirm(Constants.Messages.CONFIRM_GROUP_DELETE_1)
             if $window.confirm(Constants.Messages.CONFIRM_GROUP_DELETE_2)
-
-                deferred = q.defer()
-
+                scope.disableModal = true
                 groupService.deleteGroup(scope.editingGroup)
                     .then ->
                         uibModalInstance.close(scope.editingGroup, true)
@@ -207,13 +208,12 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
                         scope.disableModal = false
                         scope.error = message
                         deferred.reject()
-
-                return deferred.promise
-
             else
-                scope.disableModal = false
+                deferred.reject()
         else
-            scope.disableModal = false
+            deferred.reject()
+
+        return deferred.promise
 
 
     scope.cancel = ->

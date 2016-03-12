@@ -43,7 +43,9 @@ gulp.task 'coffeelint', ->
         .pipe(coffeelint.reporter())
 
 
-gulp.task 'clean:clientScripts', -> del(scriptsDestPath + clientScriptsMinDestFile)
+gulp.task 'clean:clientScripts', ->
+    del(scriptsDestPath + clientScriptsMinDestFile)
+    del(scriptsDestPath + clientScriptsNonMinDestFile)
 gulp.task 'clientScripts', ['coffeelint', 'clean:clientScripts'], ->
     gulp.src(clientScriptsSrcFile, read: false)
         .pipe(browserify({transform: ['coffeeify'], extensions: ['.coffee']}))
