@@ -50,6 +50,7 @@ describe 'controllers', ->
             addGroup: -> resolvedPromiseFunc()
             editGroup: (editingGroup) -> resolvedPromiseFunc(editingGroup)
             deleteGroup: -> resolvedPromiseFunc()
+            addMember: -> resolvedPromiseFunc()
         }
 
         userService = {
@@ -59,6 +60,7 @@ describe 'controllers', ->
         uibModalInstance = {
             result: then: (confirmCallback) -> @confirmCallBack = confirmCallback
             close: (params...) -> @result.confirmCallBack(params...)
+            dismiss: ->
         }
 
         $state = {
@@ -565,7 +567,6 @@ describe 'controllers', ->
         beforeEach ->
             angular.extend uibModalInstance, {
                 close: (addedGroup) ->
-                dismiss: ->
             }
             addGroupModalControllerParams = {
                 $scope: scope
@@ -648,9 +649,8 @@ describe 'controllers', ->
 
         beforeEach ->
             editingGroup = {name: 'test name'}
-            uibModalInstance = {
+            angular.extend uibModalInstance, {
                 close: (addedGroup) ->
-                dismiss: ->
             }
             editGroupPropertiesModalControllerParams = {
                 $scope: scope
@@ -801,7 +801,11 @@ describe 'controllers', ->
         editingGroup = editGroupMembersModalControllerParams = undefined
 
         beforeEach ->
-            editingGroup = {name: 'test name'}
+            editingGroup = {
+                _id: 5
+                name: 'test group name'
+                _members: []
+            }
             editGroupMembersModalControllerParams = {
                 $scope: scope
                 $uibModalInstance: uibModalInstance
@@ -876,14 +880,101 @@ describe 'controllers', ->
                 $rootScope.$digest()
 
 
-        describe 'scope.addMember', ->
+        describe 'scope.addMember, member adds successfully', ->
+
+            beforeEach ->
+                scope.memberToAdd = {name: 'Justin'}
+                $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
+
+            it 'should set scope.disableModal to true', ->
+                scope.addMember()
+                expect(scope.disableModal).toEqual(true)
+
+            it 'should call groupService.addMember with the member to add', (done) ->
+                spyOn(groupService, 'addMember').and.callThrough()
+                scope.addMember().then ->
+                    expect(groupService.addMember).toHaveBeenCalledWith(editingGroup._id, {name: 'Justin'})
+                    done()
+                $rootScope.$digest()
+
+            it 'should set scope.disableModal to false', (done) ->
+                scope.addMember().then ->
+                    expect(scope.disableModal).toEqual(false)
+                    done()
+                $rootScope.$digest()
+
+            it 'should push the newly aded member onto the scope.editingGroup._members list', (done) ->
+                scope.addMember().then ->
+                    expect(scope.editingGroup._members).toEqual([{name: 'Justin'}])
+                    done()
+                $rootScope.$digest()
+
+            it 'should clear scope.memberToAdd', (done) ->
+                scope.addMember().then ->
+                    expect(scope.memberToAdd).toEqual(null)
+                    done()
+                $rootScope.$digest()
+
+
+        describe 'scope.addMember, member add fails', ->
+
+            beforeEach ->
+                scope.memberToAdd = {name: 'Justin'}
+                angular.extend groupService, {
+                    addMember: -> rejectedPromiseFunc('test error message')
+                }
+                $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
+
+            it 'should set the scope.disableModal to false', (done) ->
+                scope.addMember().catch (message) ->
+                    expect(scope.disableModal).toEqual(false)
+                    done()
+                $rootScope.$digest()
+
+            it 'should set the scope.error to the error passed back from the groupService.addMember', (done) ->
+                scope.addMember().catch (message) ->
+                    expect(scope.error).toEqual('test error message')
+                    done()
+                $rootScope.$digest()
+
 
         describe 'scope.deleteMember', ->
 
+            beforeEach ->
+                $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
+
+            it 'should not be implemented yet', ->
+                expect(scope.deleteMember()).toEqual('not implemented yet')
+
         describe 'scope.getMemberDisplay', ->
+
+            beforeEach ->
+                $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
+
+            it 'should return an empty string if the member passed to the function is undefined', ->
+                expect(scope.getMemberDisplay()).toEqual('')
+
+            it "should return the member in 'username (firstname lastname) format' is a member us passed", ->
+                member = {
+                    username: 'JustinStribling'
+                    firstName: 'Justin'
+                    lastName: 'Stribling'
+                }
+                expect(scope.getMemberDisplay(member)).toEqual('JustinStribling (Justin Stribling)')
+
 
         describe 'scope.close', ->
 
+            beforeEach ->
+                angular.extend uibModalInstance, {
+                    close: (addedGroup) ->
+                }
+                $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
+
+            it 'should close the modal with the editingGroup', ->
+                spyOn(uibModalInstance, 'close').and.callThrough()
+                scope.close()
+                expect(uibModalInstance.close).toHaveBeenCalledWith(editingGroup)
 
 
     describe 'workspaceController', ->

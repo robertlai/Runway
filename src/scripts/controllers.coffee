@@ -242,18 +242,25 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         return deferred.promise
 
     scope.addMember = ->
+        deferred = q.defer()
+
         scope.disableModal = true
         groupService.addMember(scope.editingGroup._id, scope.memberToAdd)
             .then ->
                 scope.disableModal = false
                 scope.editingGroup._members.push(scope.memberToAdd)
                 scope.memberToAdd = null
+                deferred.resolve()
             .catch (message) ->
                 scope.disableModal = false
                 scope.error = message
+                deferred.reject()
+
+        return deferred.promise
+
 
     scope.deleteMember = (member) ->
-        console.log 'deleting', member
+        'not implemented yet'
 
     scope.getMemberDisplay = (member) ->
         if member then member.username + ' (' + member.firstName + ' ' + member.lastName + ')' else ''
