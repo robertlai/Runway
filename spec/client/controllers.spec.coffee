@@ -4,8 +4,8 @@ describe 'controllers', ->
 
     Constants = undefined
     AuthService = undefined
-    groupService = undefined
-    userService = undefined
+    GroupService = undefined
+    UserService = undefined
     $controller = undefined
     mockCredentials = undefined
     resolvedPromiseFunc = undefined
@@ -45,7 +45,7 @@ describe 'controllers', ->
             register: -> resolvedPromiseFunc()
         }
 
-        groupService = {
+        GroupService = {
             getGroups: -> resolvedPromiseFunc(['a', 'b', 'c'])
             addGroup: -> resolvedPromiseFunc()
             editGroup: (editingGroup) -> resolvedPromiseFunc(editingGroup)
@@ -53,7 +53,7 @@ describe 'controllers', ->
             addMember: -> resolvedPromiseFunc()
         }
 
-        userService = {
+        UserService = {
             getUsers: (query) -> resolvedPromiseFunc(query)
         }
 
@@ -61,6 +61,10 @@ describe 'controllers', ->
             result: then: (confirmCallback) -> @confirmCallBack = confirmCallback
             close: (params...) -> @result.confirmCallBack(params...)
             dismiss: ->
+        }
+
+        uibModal = {
+            open: (options) -> uibModalInstance
         }
 
         $state = {
@@ -352,16 +356,12 @@ describe 'controllers', ->
             event = {
                 stopPropagation: ->
             }
-            uibModal = {
-                open: (options) -> uibModalInstance
-            }
-
             groupsControllerParams = {
                 $scope: scope
                 $stateParams: {
                     groupType: 'testGroupType'
                 }
-                groupService: groupService
+                GroupService: GroupService
                 $uibModal: uibModal
             }
 
@@ -392,13 +392,13 @@ describe 'controllers', ->
         describe 'successfully get groups', ->
 
             beforeEach ->
-                spyOn(groupService, 'getGroups').and.callThrough()
+                spyOn(GroupService, 'getGroups').and.callThrough()
                 $controller('groupsController', groupsControllerParams)
 
-            it 'should call groupService.getGroups with stateParams.groupType', ->
-                expect(groupService.getGroups).toHaveBeenCalledWith('testGroupType')
+            it 'should call GroupService.getGroups with stateParams.groupType', ->
+                expect(GroupService.getGroups).toHaveBeenCalledWith('testGroupType')
 
-            it 'should set scope.groups to the returned result of groupService.getGroups on success', ->
+            it 'should set scope.groups to the returned result of GroupService.getGroups on success', ->
                 $rootScope.$digest()
                 expect(scope.groups).toEqual(['a', 'b', 'c'])
 
@@ -406,16 +406,16 @@ describe 'controllers', ->
         describe 'fail getting groups', ->
 
             beforeEach ->
-                angular.extend groupService, {
+                angular.extend GroupService, {
                     getGroups: -> rejectedPromiseFunc('test error message')
                 }
-                spyOn(groupService, 'getGroups').and.callThrough()
+                spyOn(GroupService, 'getGroups').and.callThrough()
                 $controller('groupsController', groupsControllerParams)
 
-            it 'should call groupService.getGroups with stateParams.groupType', ->
-                expect(groupService.getGroups).toHaveBeenCalledWith('testGroupType')
+            it 'should call GroupService.getGroups with stateParams.groupType', ->
+                expect(GroupService.getGroups).toHaveBeenCalledWith('testGroupType')
 
-            it 'should set scope.error to the returned error of groupService.getGroups on error', ->
+            it 'should set scope.error to the returned error of GroupService.getGroups on error', ->
                 $rootScope.$digest()
                 expect(scope.error).toEqual('test error message')
 
@@ -488,16 +488,16 @@ describe 'controllers', ->
         describe 'fail getting groups', ->
 
             beforeEach ->
-                angular.extend groupService, {
+                angular.extend GroupService, {
                     getGroups: -> rejectedPromiseFunc('test error message')
                 }
-                spyOn(groupService, 'getGroups').and.callThrough()
+                spyOn(GroupService, 'getGroups').and.callThrough()
                 $controller('groupsController', groupsControllerParams)
 
-            it 'should call groupService.getGroups with stateParams.groupType', ->
-                expect(groupService.getGroups).toHaveBeenCalledWith('testGroupType')
+            it 'should call GroupService.getGroups with stateParams.groupType', ->
+                expect(GroupService.getGroups).toHaveBeenCalledWith('testGroupType')
 
-            it 'should set scope.error to the returned error of groupService.getGroups on error', ->
+            it 'should set scope.error to the returned error of GroupService.getGroups on error', ->
                 $rootScope.$digest()
                 expect(scope.error).toEqual('test error message')
 
@@ -571,7 +571,7 @@ describe 'controllers', ->
             addGroupModalControllerParams = {
                 $scope: scope
                 $uibModalInstance: uibModalInstance
-                groupService: groupService
+                GroupService: GroupService
             }
 
         describe 'setup', ->
@@ -615,7 +615,7 @@ describe 'controllers', ->
         describe "scope.addGroup doesn't add successfully", ->
 
             beforeEach ->
-                angular.extend groupService, {
+                angular.extend GroupService, {
                     addGroup: -> rejectedPromiseFunc('test error message')
                 }
                 $controller('addGroupModalController', addGroupModalControllerParams)
@@ -629,7 +629,7 @@ describe 'controllers', ->
                     expect(scope.disableModal).toEqual(false)
                 $rootScope.$digest()
 
-            it 'should set the scope.error to the error passed back from the groupService.addGroup catch', ->
+            it 'should set the scope.error to the error passed back from the GroupService.addGroup catch', ->
                 scope.addGroup().catch ->
                     expect(scope.error).toEqual('test error message')
                 $rootScope.$digest()
@@ -655,7 +655,7 @@ describe 'controllers', ->
             editGroupPropertiesModalControllerParams = {
                 $scope: scope
                 $uibModalInstance: uibModalInstance
-                groupService: groupService
+                GroupService: GroupService
                 editingGroup: editingGroup
             }
 
@@ -692,7 +692,7 @@ describe 'controllers', ->
         describe "scope.editGroup doesn't edit successfully", ->
 
             beforeEach ->
-                angular.extend groupService, {
+                angular.extend GroupService, {
                     editGroup: -> rejectedPromiseFunc('test error message')
                 }
                 $controller('editGroupPropertiesModalController', editGroupPropertiesModalControllerParams)
@@ -702,7 +702,7 @@ describe 'controllers', ->
                     expect(scope.disableModal).toEqual(false)
                 $rootScope.$digest()
 
-            it 'should set the scope.error to the error passed back from the groupService.editGroup catch', ->
+            it 'should set the scope.error to the error passed back from the GroupService.editGroup catch', ->
                 scope.editGroup().catch ->
                     expect(scope.error).toEqual('test error message')
                 $rootScope.$digest()
@@ -730,25 +730,25 @@ describe 'controllers', ->
 
                 it 'should no nothing if the first dialog is rejected', (done) ->
                     spyOn($window, 'confirm').and.callFake (message) -> message != Constants.Messages.CONFIRM_GROUP_DELETE_1
-                    spyOn(groupService, 'deleteGroup').and.callThrough()
+                    spyOn(GroupService, 'deleteGroup').and.callThrough()
                     scope.delete().catch ->
-                        expect(groupService.deleteGroup).not.toHaveBeenCalled()
+                        expect(GroupService.deleteGroup).not.toHaveBeenCalled()
                         done()
                     $rootScope.$digest()
 
                 it 'should no nothing if the second dialog is rejected', (done) ->
                     spyOn($window, 'confirm').and.callFake (message) -> message != Constants.Messages.CONFIRM_GROUP_DELETE_2
-                    spyOn(groupService, 'deleteGroup').and.callThrough()
+                    spyOn(GroupService, 'deleteGroup').and.callThrough()
                     scope.delete().catch ->
-                        expect(groupService.deleteGroup).not.toHaveBeenCalled()
+                        expect(GroupService.deleteGroup).not.toHaveBeenCalled()
                         done()
                     $rootScope.$digest()
 
-                it 'should call groupService.deleteGroup with editingGroup', (done) ->
+                it 'should call GroupService.deleteGroup with editingGroup', (done) ->
                     spyOn($window, 'confirm').and.callFake -> true
-                    spyOn(groupService, 'deleteGroup').and.callThrough()
+                    spyOn(GroupService, 'deleteGroup').and.callThrough()
                     scope.delete().then ->
-                        expect(groupService.deleteGroup).toHaveBeenCalledWith(editingGroup)
+                        expect(GroupService.deleteGroup).toHaveBeenCalledWith(editingGroup)
                         done()
                     $rootScope.$digest()
 
@@ -769,7 +769,7 @@ describe 'controllers', ->
             describe 'delete failed', ->
 
                 beforeEach ->
-                    angular.extend groupService, {
+                    angular.extend GroupService, {
                         deleteGroup: -> rejectedPromiseFunc('test error message')
                     }
                     $controller('editGroupPropertiesModalController', editGroupPropertiesModalControllerParams)
@@ -780,7 +780,7 @@ describe 'controllers', ->
                         done()
                     $rootScope.$digest()
 
-                it 'should set scope.error to the error returned from groupService.deleteGroup', (done) ->
+                it 'should set scope.error to the error returned from GroupService.deleteGroup', (done) ->
                     scope.delete().catch ->
                         expect(scope.error).toEqual('test error message')
                         done()
@@ -811,8 +811,8 @@ describe 'controllers', ->
                 $uibModalInstance: uibModalInstance
                 editingGroup: editingGroup
                 AuthService: AuthService
-                groupService: groupService
-                userService: userService
+                GroupService: GroupService
+                UserService: UserService
             }
 
         describe 'setup', ->
@@ -851,10 +851,10 @@ describe 'controllers', ->
             beforeEach ->
                 $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
 
-            it 'should call userService.getUsers with the given query to get the list of users', (done) ->
-                spyOn(userService, 'getUsers').and.callThrough()
+            it 'should call UserService.getUsers with the given query to get the list of users', (done) ->
+                spyOn(UserService, 'getUsers').and.callThrough()
                 scope.getUsers('query').then ->
-                    expect(userService.getUsers).toHaveBeenCalledWith('query')
+                    expect(UserService.getUsers).toHaveBeenCalledWith('query')
                     done()
                 $rootScope.$digest()
 
@@ -867,13 +867,13 @@ describe 'controllers', ->
         describe 'scope.getUsers, get users failed', ->
 
             beforeEach ->
-                angular.extend userService, {
+                angular.extend UserService, {
                     getUsers: -> rejectedPromiseFunc('test error message')
                 }
                 $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
 
 
-            it 'should set scope.error to the error message returned from the userService.getUsers', (done) ->
+            it 'should set scope.error to the error message returned from the UserService.getUsers', (done) ->
                 scope.getUsers('query').catch ->
                     expect(scope.error).toEqual('test error message')
                     done()
@@ -890,10 +890,10 @@ describe 'controllers', ->
                 scope.addMember()
                 expect(scope.disableModal).toEqual(true)
 
-            it 'should call groupService.addMember with the member to add', (done) ->
-                spyOn(groupService, 'addMember').and.callThrough()
+            it 'should call GroupService.addMember with the member to add', (done) ->
+                spyOn(GroupService, 'addMember').and.callThrough()
                 scope.addMember().then ->
-                    expect(groupService.addMember).toHaveBeenCalledWith(editingGroup._id, {name: 'Justin'})
+                    expect(GroupService.addMember).toHaveBeenCalledWith(editingGroup._id, {name: 'Justin'})
                     done()
                 $rootScope.$digest()
 
@@ -920,7 +920,7 @@ describe 'controllers', ->
 
             beforeEach ->
                 scope.memberToAdd = {name: 'Justin'}
-                angular.extend groupService, {
+                angular.extend GroupService, {
                     addMember: -> rejectedPromiseFunc('test error message')
                 }
                 $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
@@ -931,7 +931,7 @@ describe 'controllers', ->
                     done()
                 $rootScope.$digest()
 
-            it 'should set the scope.error to the error passed back from the groupService.addMember', (done) ->
+            it 'should set the scope.error to the error passed back from the GroupService.addMember', (done) ->
                 scope.addMember().catch (message) ->
                     expect(scope.error).toEqual('test error message')
                     done()
@@ -978,3 +978,4 @@ describe 'controllers', ->
 
 
     describe 'workspaceController', ->
+        # todo: this

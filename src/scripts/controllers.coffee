@@ -87,10 +87,10 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
             return deferred.promise
 ]
 
-.controller 'groupsController', ['$scope', '$uibModal', '$stateParams', 'groupService', (scope, uibModal, stateParams, groupService) ->
+.controller 'groupsController', ['$scope', '$uibModal', '$stateParams', 'GroupService', (scope, uibModal, stateParams, GroupService) ->
     scope.groups = []
     scope.groupType = stateParams.groupType
-    groupService.getGroups(stateParams.groupType)
+    GroupService.getGroups(stateParams.groupType)
         .then (groups) ->
             scope.groups = groups
         .catch (error) ->
@@ -147,8 +147,8 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
             scope.groups.push(groupToAdd)
 ]
 
-.controller 'addGroupModalController', ['$scope', '$q', '$uibModalInstance', 'groupService', 'Constants',
-(scope, q, uibModalInstance, groupService, Constants) ->
+.controller 'addGroupModalController', ['$scope', '$q', '$uibModalInstance', 'GroupService', 'Constants',
+(scope, q, uibModalInstance, GroupService, Constants) ->
 
     scope.newGroup = {
         name: ''
@@ -160,7 +160,7 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         deferred = q.defer()
 
         scope.disableModal = true
-        groupService.addGroup(scope.newGroup)
+        GroupService.addGroup(scope.newGroup)
             .then (addedGroup) ->
                 uibModalInstance.close(addedGroup)
                 deferred.resolve()
@@ -175,8 +175,8 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         uibModalInstance.dismiss()
 ]
 
-.controller 'editGroupPropertiesModalController', ['$window', '$scope', '$q', '$uibModalInstance', 'groupService', 'editingGroup', 'Constants'
-($window, scope, q, uibModalInstance, groupService, editingGroup, Constants) ->
+.controller 'editGroupPropertiesModalController', ['$window', '$scope', '$q', '$uibModalInstance', 'GroupService', 'editingGroup', 'Constants'
+($window, scope, q, uibModalInstance, GroupService, editingGroup, Constants) ->
 
     scope.editingGroup = angular.copy(editingGroup)
 
@@ -184,7 +184,7 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         deferred = q.defer()
 
         scope.disableModal = true
-        groupService.editGroup(scope.editingGroup)
+        GroupService.editGroup(scope.editingGroup)
             .then (editedGroup) ->
                 uibModalInstance.close(editedGroup)
                 deferred.resolve()
@@ -200,7 +200,7 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         if $window.confirm(Constants.Messages.CONFIRM_GROUP_DELETE_1)
             if $window.confirm(Constants.Messages.CONFIRM_GROUP_DELETE_2)
                 scope.disableModal = true
-                groupService.deleteGroup(scope.editingGroup)
+                GroupService.deleteGroup(scope.editingGroup)
                     .then ->
                         uibModalInstance.close(scope.editingGroup, true)
                         deferred.resolve()
@@ -221,8 +221,8 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
 ]
 
 .controller 'editGroupMembersModalController',
-['$scope', '$q', '$http', '$uibModalInstance', 'AuthService', 'groupService', 'userService', 'editingGroup',
-(scope, q, http, uibModalInstance, AuthService, groupService, userService, editingGroup) ->
+['$scope', '$q', '$http', '$uibModalInstance', 'AuthService', 'GroupService', 'UserService', 'editingGroup',
+(scope, q, http, uibModalInstance, AuthService, GroupService, UserService, editingGroup) ->
     # todo: this should be passed an id / resolve the id of the group and populate everything before getting here
     # then all info will be present and the info doesn't have to be retuned from the modal and it becomes state free
     scope.owner = AuthService.getUser()
@@ -232,7 +232,7 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
     scope.getUsers = (query) ->
         deferred = q.defer()
 
-        userService.getUsers(query)
+        UserService.getUsers(query)
             .then (members) ->
                 deferred.resolve(members)
             .catch (message) ->
@@ -245,7 +245,7 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         deferred = q.defer()
 
         scope.disableModal = true
-        groupService.addMember(scope.editingGroup._id, scope.memberToAdd)
+        GroupService.addMember(scope.editingGroup._id, scope.memberToAdd)
             .then ->
                 scope.disableModal = false
                 scope.editingGroup._members.push(scope.memberToAdd)

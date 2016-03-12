@@ -13,7 +13,8 @@
 				"public",
 				"testFiles",
 				"uploads",
-				"dist"
+				"dist",
+				"spec/coverage"
 			],
 			"path": "."
 		}
