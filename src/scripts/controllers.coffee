@@ -1,4 +1,4 @@
-angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices', 'ui.router'])
+angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices', 'ui.router', 'ui.bootstrap'])
 
 .controller 'loginController', [
     '$scope'
@@ -58,26 +58,32 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
     '$state'
     'AuthService'
     (scope, state, AuthService) ->
-        user = AuthService.getUser()
+        scope.user = AuthService.getUser()
 ]
 
 .controller 'registerController', [
     '$scope'
+    '$q'
     '$state'
     'AuthService'
-    (scope, state, AuthService) ->
+    (scope, q, state, AuthService) ->
         # todo: check for duplicate usernames when adding and editing users
         scope.register = ->
+            deferred = q.defer()
             scope.disableRegister = true
             scope.error = false
             AuthService.register(scope.registerForm)
                 .then ->
                     state.go('login')
                     scope.registerForm = {}
+                    deferred.resolve()
                 .catch (errorMessage) ->
                     scope.disableRegister = false
                     scope.error = errorMessage
                     scope.registerForm = {}
+                    deferred.reject()
+
+            return deferred.promise
 ]
 
 .controller 'groupsController', ['$scope', '$uibModal', '$stateParams', 'groupService', (scope, uibModal, stateParams, groupService) ->

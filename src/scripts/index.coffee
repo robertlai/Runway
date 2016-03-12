@@ -2,8 +2,12 @@ require('./services.coffee')
 require('./controllers.coffee')
 require('./constants.coffee')
 
+#todo: look into moving these deps into other modules (colour,picker may be able to be mooved into runwayAppControllers)
 runwayApp = angular.module('runwayApp',
-    ['runwayAppControllers', 'runwayAppServices', 'runwayAppConstants', 'ui.router', 'ui.router.title', 'ui.bootstrap', 'color.picker'])
+    ['runwayAppControllers', 'runwayAppServices', 'runwayAppConstants', 'ui.router', 'ui.router.title'])
+
+runwayApp = angular.module('runwayApp',
+    ['runwayAppControllers', 'runwayAppServices', 'runwayAppConstants', 'ui.router', 'ui.router.title', 'color.picker'])
 
 runwayApp
 .config ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'Constants',

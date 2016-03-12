@@ -169,8 +169,8 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
             getGroups: getGroups
             addGroup: addGroup
             editGroup: editGroup
-            deleteGroup: deleteGroup
             addMember: addMember
+            deleteGroup: deleteGroup
         }
 ]
 
