@@ -2,7 +2,7 @@ describe 'controllers', ->
 
     beforeEach(module('runwayAppControllers'))
 
-    Constants = AuthService = $controller = resolvedPromiseFunc = rejectedPromiseFunc = $state = $rootScope = scope = undefined
+    Constants = AuthService = $controller = mockCredentials = resolvedPromiseFunc = rejectedPromiseFunc = $state = $rootScope = scope = undefined
 
 
     beforeEach inject ($q, _Constants_, _$controller_, _$rootScope_) ->
@@ -10,6 +10,8 @@ describe 'controllers', ->
         $controller = _$controller_
         $rootScope = _$rootScope_
         scope = {}
+
+        mockCredentials = { username: 'Justin', password: 'superSecretPassword' }
 
         resolvedPromiseFunc = (value) ->
             deferred = $q.defer()
@@ -52,7 +54,7 @@ describe 'controllers', ->
                     login: -> resolvedPromiseFunc()
                 }
                 $controller('loginController', loginControllerParams)
-                scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
+                scope.loginForm = mockCredentials
 
             it 'should set disable the login controls', (done) ->
                 scope.login().then ->
@@ -69,7 +71,7 @@ describe 'controllers', ->
             it 'should call AuthService.login with login credentials', (done) ->
                 spyOn(AuthService, 'login').and.callThrough()
                 scope.login().then ->
-                    expect(AuthService.login).toHaveBeenCalledWith('Justin', 'superSecretPassword')
+                    expect(AuthService.login).toHaveBeenCalledWith(mockCredentials.username, mockCredentials.password)
                     done()
                 $rootScope.$digest()
 
@@ -85,7 +87,7 @@ describe 'controllers', ->
                     returnStateParams: JSON.stringify({param: 'testParam'})
                 }
                 $controller('loginController', loginControllerParams)
-                scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
+                scope.loginForm = mockCredentials
 
             it 'should clear the login form', (done) ->
                 scope.login().then ->
@@ -108,7 +110,7 @@ describe 'controllers', ->
                     login: -> resolvedPromiseFunc()
                 }
                 $controller('loginController', loginControllerParams)
-                scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
+                scope.loginForm = mockCredentials
 
             it 'should clear the login form', (done) ->
                 scope.login().then ->
@@ -131,7 +133,7 @@ describe 'controllers', ->
                     login: -> rejectedPromiseFunc('test error message')
                 }
                 $controller('loginController', loginControllerParams)
-                scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
+                scope.loginForm = mockCredentials
 
             it 'should clear the login form', (done) ->
                 scope.login().catch ->
@@ -243,7 +245,7 @@ describe 'controllers', ->
                     AuthService: AuthService
                     $state: $state
                 })
-                scope.registerForm = { username: 'Justin', password: 'superSecretPassword' }
+                scope.registerForm = mockCredentials
 
             it 'should set disable the register controls', (done) ->
                 scope.register().then ->
@@ -260,7 +262,7 @@ describe 'controllers', ->
             it 'should call AuthService.register with register form information', (done) ->
                 spyOn(AuthService, 'register').and.callThrough()
                 scope.register().then ->
-                    expect(AuthService.register).toHaveBeenCalledWith({ username: 'Justin', password: 'superSecretPassword' })
+                    expect(AuthService.register).toHaveBeenCalledWith(mockCredentials)
                     done()
                 $rootScope.$digest()
 
@@ -276,7 +278,7 @@ describe 'controllers', ->
                     AuthService: AuthService
                     $state: $state
                 })
-                scope.registerForm = { username: 'Justin', password: 'superSecretPassword' }
+                scope.registerForm = mockCredentials
 
             it 'should clear the register form', (done) ->
                 scope.register().then ->
@@ -303,7 +305,7 @@ describe 'controllers', ->
                     AuthService: AuthService
                     $state: $state
                 })
-                scope.registerForm = { username: 'Justin', password: 'superSecretPassword' }
+                scope.registerForm = mockCredentials
 
             it 'should clear the register form', (done) ->
                 scope.register().catch ->

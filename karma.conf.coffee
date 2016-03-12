@@ -8,7 +8,7 @@ module.exports = (config) ->
         'spec/client/**/*.spec.coffee']
         exclude: []
         preprocessors: 'spec/**/*.spec.coffee': ['coffee']
-        reporters: ['progress']
+        reporters: ['progress', 'kjhtml']
         port: 9872
         colors: true
         logLevel: config.LOG_WARN
