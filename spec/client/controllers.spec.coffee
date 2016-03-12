@@ -30,12 +30,19 @@ describe 'controllers', ->
 
     describe 'loginController', ->
 
-        it 'should define the login function', ->
-            $controller('loginController', {
+        loginControllerParams = undefined
+
+        beforeEach ->
+            loginControllerParams = {
                 $scope: scope
                 returnStateName: undefined
                 returnStateParams: undefined
-            })
+                AuthService: AuthService
+                $state: $state
+            }
+
+        it 'should define the login function', ->
+            $controller('loginController', loginControllerParams)
             expect(scope.login).toBeDefined()
 
         describe 'call scope.login', ->
@@ -44,13 +51,7 @@ describe 'controllers', ->
                 angular.extend AuthService, {
                     login: -> resolvedPromiseFunc()
                 }
-                $controller('loginController', {
-                    $scope: scope
-                    returnStateName: undefined
-                    returnStateParams: undefined
-                    AuthService: AuthService
-                    $state: $state
-                })
+                $controller('loginController', loginControllerParams)
                 scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
 
             it 'should set disable the login controls', (done) ->
@@ -79,13 +80,11 @@ describe 'controllers', ->
                 angular.extend AuthService, {
                     login: -> resolvedPromiseFunc()
                 }
-                $controller('loginController', {
-                    $scope: scope
+                angular.extend loginControllerParams, {
                     returnStateName: 'home.settings.general'
                     returnStateParams: JSON.stringify({param: 'testParam'})
-                    AuthService: AuthService
-                    $state: $state
-                })
+                }
+                $controller('loginController', loginControllerParams)
                 scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
 
             it 'should clear the login form', (done) ->
@@ -108,13 +107,7 @@ describe 'controllers', ->
                 angular.extend AuthService, {
                     login: -> resolvedPromiseFunc()
                 }
-                $controller('loginController', {
-                    $scope: scope
-                    returnStateName: undefined
-                    returnStateParams: undefined
-                    AuthService: AuthService
-                    $state: $state
-                })
+                $controller('loginController', loginControllerParams)
                 scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
 
             it 'should clear the login form', (done) ->
@@ -137,13 +130,7 @@ describe 'controllers', ->
                 angular.extend AuthService, {
                     login: -> rejectedPromiseFunc('test error message')
                 }
-                $controller('loginController', {
-                    $scope: scope
-                    returnStateName: undefined
-                    returnStateParams: undefined
-                    AuthService: AuthService
-                    $state: $state
-                })
+                $controller('loginController', loginControllerParams)
                 scope.loginForm = { username: 'Justin', password: 'superSecretPassword' }
 
             it 'should clear the login form', (done) ->
