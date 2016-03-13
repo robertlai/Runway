@@ -279,13 +279,13 @@ describe 'Services', ->
                     GroupService.addGroup().catch (message) ->
                         expect(message).toEqual(Constants.Messages.NO_GROUP_NAME_PROVIDED)
                         done()
-                    httpBackend.flush()
+                    $rootScope.$digest()
 
                 it 'should reject with NO_GROUP_NAME_PROVIDED when group name zero characters', (done) ->
                     GroupService.addGroup({name: ''}).catch (message) ->
                         expect(message).toEqual(Constants.Messages.NO_GROUP_NAME_PROVIDED)
                         done()
-                    httpBackend.flush()
+                    $rootScope.$digest()
 
             describe 'successful', ->
 
@@ -335,13 +335,13 @@ describe 'Services', ->
                     GroupService.editGroup().catch (message) ->
                         expect(message).toEqual(Constants.Messages.NO_GROUP_NAME_PROVIDED)
                         done()
-                    httpBackend.flush()
+                    $rootScope.$digest()
 
                 it 'should reject with NO_GROUP_NAME_PROVIDED when group name zero characters', (done) ->
                     GroupService.editGroup({name: ''}).catch (message) ->
                         expect(message).toEqual(Constants.Messages.NO_GROUP_NAME_PROVIDED)
                         done()
-                    httpBackend.flush()
+                    $rootScope.$digest()
 
 
             describe 'successful', ->

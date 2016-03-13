@@ -1,4 +1,4 @@
-angular.module('runwayAppRoutes', ['runwayAppConstants', 'ui.router', 'ui.router.title'])
+angular.module('runwayAppRoutes', ['runwayAppConstants', 'runwayAppServices', 'ui.router', 'ui.router.title'])
 
 .config ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'Constants',
 (stateProvider, urlRouterProvider, locationProvider, Constants) ->
@@ -54,7 +54,7 @@ angular.module('runwayAppRoutes', ['runwayAppConstants', 'ui.router', 'ui.router
             abstract: true
             url: '/settings'
             replace: true
-            resolve: $title: -> 'Account Setting'
+            resolve: $title: -> 'Account Settings'
             templateUrl: '/partials/settings.html'
             controller: 'settingsController'
         )
