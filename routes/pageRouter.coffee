@@ -28,7 +28,7 @@ pageRouter.post '/login', (req, res, next) ->
                     res.sendStatus(500).json({error: error})
                 else
                     user.password = undefined
-                    res.sendStatus(200).json({status: 'Login successful!', user: user})
+                    res.sendStatus(200).json({user: user})
     )(req, res, next)
 
 pageRouter.post '/register', (req, res, next) ->
@@ -38,12 +38,12 @@ pageRouter.post '/register', (req, res, next) ->
         else if !user
             res.sendStatus(409).json({error: message})
         else
-            res.sendStatus(200).json({status: 'Registration successful!'})
+            res.sendStatus(200).json({})
     )(req, res, next)
 
 pageRouter.get '/logout', (req, res) ->
     req.logout()
-    res.sendStatus(200).json({status: 'Bye!'})
+    res.sendStatus(200).json({})
 
 pageRouter.get '/*', (req, res) ->
     res.render('index')

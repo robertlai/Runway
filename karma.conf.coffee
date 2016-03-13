@@ -3,12 +3,12 @@ module.exports = (config) ->
         basePath: ''
         frameworks: ['jasmine']
         files: ['dist/scripts/vendor.min.js',
-        'node_modules/angular-mocks/angular-mocks.js'
-        'dist/scripts/client.js',
-        'spec/client/**/*.spec.coffee']
+            'node_modules/angular-mocks/angular-mocks.js'
+            'src/scripts/!(app).coffee',
+            'spec/client/**/*.spec.coffee']
         exclude: []
         preprocessors: {
-            'dist/scripts/client.js': 'coverage'
+            'src/scripts/!(app).coffee': ['coffee', 'coverage']
             'spec/**/*.spec.coffee': 'coffee'
         }
         reporters: ['progress', 'kjhtml', 'coverage']

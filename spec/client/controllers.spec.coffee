@@ -447,7 +447,7 @@ describe 'controllers', ->
                 beforeEach ->
                     $controller('groupsController', groupsControllerParams)
                     scope.openEditGroupPropertiesModal(event, groupToEdit)
-                    scope.groups = [{_id: 5}, {_id: 36}, {_id: 6}]
+                    scope.groups = [{_id: 36}, {_id: 5}, {_id: 6}]
 
 
                 describe 'with editedGroup and no deleteGroup specified', ->
@@ -458,7 +458,7 @@ describe 'controllers', ->
 
                     it 'should replace the groups being edited in the groups list', ->
                         uibModalInstance.close({_id: 5, name: 'test'})
-                        expect(scope.groups).toEqual([{_id: 5, name: 'test'}, {_id: 36}, {_id: 6}])
+                        expect(scope.groups).toEqual([{_id: 36}, {_id: 5, name: 'test'}, {_id: 6}])
 
 
                 describe 'with editedGroup and deleteGroup = true', ->
@@ -482,7 +482,7 @@ describe 'controllers', ->
                         expect(scope.error).toEqual(null)
 
                     it 'should replace the groups being edited in the groups list', ->
-                        expect(scope.groups).toEqual([{_id: 5, name: 'test'}, {_id: 36}, {_id: 6}])
+                        expect(scope.groups).toEqual([{_id: 36}, {_id: 5, name: 'test'}, {_id: 6}])
 
 
         describe 'fail getting groups', ->
@@ -530,9 +530,9 @@ describe 'controllers', ->
 
                 it 'should replace the groups being edited in the groups list', ->
                     scope.openEditGroupMembersModal(event, groupToEdit)
-                    scope.groups = [{_id: 5}, {_id: 36}, {_id: 6}]
+                    scope.groups = [{_id: 36}, {_id: 5}, {_id: 6}]
                     uibModalInstance.close({_id: 5, name: 'test'}, false)
-                    expect(scope.groups).toEqual([{_id: 5, name: 'test'}, {_id: 36}, {_id: 6}])
+                    expect(scope.groups).toEqual([{_id: 36}, {_id: 5, name: 'test'}, {_id: 6}])
 
 
         describe 'scope.openAddGroupModal', ->

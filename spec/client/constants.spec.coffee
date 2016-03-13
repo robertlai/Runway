@@ -33,6 +33,9 @@ describe 'Constants', ->
         it 'should have the correct NO_JOINED_GROUPS', ->
             expect(Constants.Messages.NO_JOINED_GROUPS).toEqual('You have not been added to any groups.')
 
+        it 'should have the correct UNSUPPORTED_GROUP_TYPE', ->
+            expect(Constants.Messages.UNSUPPORTED_GROUP_TYPE).toEqual('This group type is unsupported.')
+
         it 'should have the correct NO_GROUP_NAME_PROVIDED', ->
             expect(Constants.Messages.NO_GROUP_NAME_PROVIDED).toEqual('Please provide a group name.')
 

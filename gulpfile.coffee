@@ -13,7 +13,7 @@ nodemon = require('gulp-nodemon')
 
 
 allCoffeeSrc = path.join('src', 'scripts', '*.coffee')
-clientScriptsSrcFile = path.join('src', 'scripts', 'index.coffee')
+clientScriptsSrcFile = path.join('src', 'scripts', 'app.coffee')
 scriptsDestPath = path.join('dist', 'scripts')
 clientScriptsMinDestFile = 'client.min.js'
 clientScriptsNonMinDestFile = 'client.js'

@@ -16,6 +16,7 @@ angular.module('runwayAppConstants', [])
         GROUP_ALREADY_EXISTS: 'This group already exists.'
         NO_OWNED_GROUPS: 'You have no groups. Create one!'
         NO_JOINED_GROUPS: 'You have not been added to any groups.'
+        UNSUPPORTED_GROUP_TYPE: 'This group type is unsupported.'
         NO_GROUP_NAME_PROVIDED: 'Please provide a group name.'
         USER_ALREADY_IN_GROUP: 'This user has already been added to this group.'
         MUST_BE_OWNER_TO_DELETE: 'You must be the owner of a group in order to delte it.'

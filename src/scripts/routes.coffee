@@ -1,15 +1,5 @@
-require('./services.coffee')
-require('./controllers.coffee')
-require('./constants.coffee')
+angular.module('runwayAppRoutes', ['runwayAppConstants', 'ui.router', 'ui.router.title'])
 
-#todo: look into moving these deps into other modules (colour,picker may be able to be mooved into runwayAppControllers)
-runwayApp = angular.module('runwayApp',
-    ['runwayAppControllers', 'runwayAppServices', 'runwayAppConstants', 'ui.router', 'ui.router.title'])
-
-runwayApp = angular.module('runwayApp',
-    ['runwayAppControllers', 'runwayAppServices', 'runwayAppConstants', 'ui.router', 'ui.router.title', 'color.picker'])
-
-runwayApp
 .config ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'Constants',
 (stateProvider, urlRouterProvider, locationProvider, Constants) ->
     locationProvider.html5Mode({ enabled: true })

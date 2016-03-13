@@ -4,7 +4,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
     '$q'
     '$http'
     class AuthService
-        constructor: (@q, @http, @user = null) ->
+        constructor: (@q, @http) -> @user = null
 
         getUser: => @user
 
@@ -13,8 +13,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
 
             @http.post '/getUserStatus'
                 .success (data) =>
-                    loggedIn = data.loggedIn
-                    if loggedIn
+                    if data.loggedIn
                         @user = data.user
                         deferred.resolve()
                     else
@@ -31,7 +30,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
 
             @http.post '/login', { username: username, password: password }
                 .success (data, status) =>
-                    if status is 200 and data.status
+                    if status is 200
                         @user = data.user
                         deferred.resolve()
                     else
@@ -60,7 +59,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
 
             @http.post '/register', registerForm
                 .success (data, status) ->
-                    if status is 200 and data.status
+                    if status is 200
                         deferred.resolve()
                     else
                         deferred.reject(data.error)
@@ -90,8 +89,10 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
                             deferred.reject(@Constants.Messages.NO_OWNED_GROUPS)
                         else if groupType is @Constants.JOINED_GROUP
                             deferred.reject(@Constants.Messages.NO_JOINED_GROUPS)
+                        else
+                            deferred.reject(@Constants.Messages.UNSUPPORTED_GROUP_TYPE)
 
-                .error (error) =>
+                .error =>
                     deferred.reject(@Constants.Messages.SERVER_ERROR)
 
             return deferred.promise
@@ -173,7 +174,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
             @http.post('/api/getUsers', {query: query})
                 .success (members) ->
                     deferred.resolve(members)
-                .error (error) =>
+                .error =>
                     deferred.reject(@Constants.Messages.SERVER_ERROR)
 
             return deferred.promise

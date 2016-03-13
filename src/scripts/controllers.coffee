@@ -1,4 +1,4 @@
-angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices', 'ui.router', 'ui.bootstrap'])
+angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices', 'ui.router', 'ui.bootstrap', 'color.picker'])
 
 .controller 'loginController', [
     '$scope'
