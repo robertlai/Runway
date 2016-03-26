@@ -984,24 +984,26 @@ describe 'controllers', ->
 
         workspaceControllerParams = undefined
         Socket = undefined
-        testUser = {username: 'Justin'}
+        testUser = undefined
         stateParams = undefined
 
-        beforeEach ->
-            stateParams = {groupId: 'test groupId'}
-            Socket = {
-                emit: -> 'test emit'
-            }
-            workspaceControllerParams = {
-                $scope: scope
-                $stateParams: stateParams
-                User: testUser
-                socket: Socket
-            }
-            spyOn(Socket, 'emit').and.callThrough()
-            $controller('workspaceController', workspaceControllerParams)
-
         describe 'setup', ->
+
+            beforeEach ->
+                testUser = {username: 'Justin'}
+                stateParams = {groupId: 'test groupId'}
+                Socket = {
+                    on: ->
+                    emit: -> 'test emit'
+                }
+                workspaceControllerParams = {
+                    $scope: scope
+                    $stateParams: stateParams
+                    User: testUser
+                    socket: Socket
+                }
+                spyOn(Socket, 'emit').and.callThrough()
+                $controller('workspaceController', workspaceControllerParams)
 
             it 'should initialize scope.chatVisible to true', ->
                 expect(scope.chatVisible).toEqual(true)
@@ -1011,3 +1013,65 @@ describe 'controllers', ->
 
             it "should emit 'groupConnect' with the username and groupId tot he soket", ->
                 expect(scope.socket.emit).toHaveBeenCalledWith('groupConnect', testUser, stateParams.groupId)
+
+
+        describe 'server emits setGroup', ->
+
+            beforeEach ->
+                testUser = {username: 'Justin'}
+                stateParams = {groupId: 'test groupId'}
+                Socket = {
+                    on: (name, callback) ->
+                        if name is 'setGroup'
+                            callback('testGroupName')
+                    emit: -> 'test emit'
+                }
+                workspaceControllerParams = {
+                    $scope: scope
+                    $stateParams: stateParams
+                    User: testUser
+                    socket: Socket
+                }
+                $controller('workspaceController', workspaceControllerParams)
+
+            it 'should initialize scope.chatVisible to true', (done) ->
+                scope.socket.group.then (group) ->
+                    expect(group).toEqual('testGroupName')
+                    done()
+                $rootScope.$digest()
+
+
+        describe 'server emits notAllowed', ->
+
+            state = undefined
+            Constants = undefined
+
+            beforeEach ->
+                Constants = {
+                    DEFAULT_ROUTE: 'test default group'
+                }
+                state = {
+                    go: ->
+                }
+                testUser = {username: 'Justin'}
+                stateParams = {groupId: 'test groupId'}
+                Socket = {
+                    on: (name, callback) ->
+                        if name is 'notAllowed'
+                            callback('testGroupName')
+                    emit: -> 'test emit'
+                }
+                workspaceControllerParams = {
+                    $scope: scope
+                    $state: state
+                    $stateParams: stateParams
+                    User: testUser
+                    socket: Socket
+                    Constants: Constants
+                }
+                spyOn(state, 'go').and.callThrough()
+                $controller('workspaceController', workspaceControllerParams)
+
+            it 'should call state.go with the Constants.DEFAULT_ROUTE', ->
+                $rootScope.$digest()
+                expect(state.go).toHaveBeenCalledWith(Constants.DEFAULT_ROUTE)

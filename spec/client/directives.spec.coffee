@@ -16,16 +16,24 @@ describe 'Directives', ->
 
     describe 'runwayDropzone', ->
 
+        deferredGroup = undefined
+        q = undefined
+
+        beforeEach inject ($q) ->
+            q = $q
+            deferredGroup = q.defer()
+
         describe 'setup', ->
 
             beforeEach ->
                 $rootScope.socket = {
                     on: ->
+                    group: deferredGroup.promise
+                    emit: ->
                 }
                 element = $compile('<div runway-dropzone="testRunway" socket="socket" style="width: 250px; height: 500px;"></div>')($rootScope)
                 $rootScope.$digest()
                 scope = element.isolateScope()
-
 
             it 'should add the d&d text to the dom', ->
                 expect(element.html()).toEqual('<h1 class="dndText noselect">Drag and drop files here</h1>')
@@ -128,6 +136,7 @@ describe 'Directives', ->
                     }
                 $rootScope.socket = {
                     on: ->
+                    group: deferredGroup.promise
                 }
                 element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
@@ -152,6 +161,7 @@ describe 'Directives', ->
             beforeEach ->
                 $rootScope.socket = {
                     on: ->
+                    group: deferredGroup.promise
                 }
                 element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
@@ -228,24 +238,23 @@ describe 'Directives', ->
                     expect(scope.myDropzone.removeFile).toHaveBeenCalledWith('fake file')
 
 
-        describe 'socket.on setGroup', ->
-
-            testGroup = { name: 'test group name' }
+        describe 'resolve scoket.group', ->
 
             beforeEach ->
                 $rootScope.socket = {
-                    on: (callName, callback) ->
-                        if callName is 'setGroup'
-                            callback(testGroup)
-                    emit: (params...) ->
+                    on: ->
+                    group: deferredGroup.promise
+                    emit: ->
                 }
-                spyOn($rootScope.socket, 'emit').and.callThrough()
                 element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
                 scope = element.isolateScope()
+                deferredGroup.resolve('testResolvedGroup')
+                spyOn($rootScope.socket, 'emit')
+                $rootScope.$digest()
 
-            it 'should set scope.group to the returned group', ->
-                expect(scope.group).toEqual(testGroup)
+            it 'should set scope.group to the resolved scoket.group', ->
+                expect(scope.group).toEqual('testResolvedGroup')
 
             it "should emit 'getInitialItems'", ->
                 expect($rootScope.socket.emit).toHaveBeenCalledWith('getInitialItems')
@@ -261,6 +270,7 @@ describe 'Directives', ->
                         on: (callName, callback) ->
                             if callName is 'newItem'
                                 callback(newItem)
+                        group: deferredGroup.promise
                     }
                     element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
                     $rootScope.$digest()
@@ -280,6 +290,7 @@ describe 'Directives', ->
                         on: (callName, callback) ->
                             if callName is 'newItem'
                                 callback(newItem)
+                        group: deferredGroup.promise
                     }
                     element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
                     $rootScope.$digest()
@@ -298,6 +309,7 @@ describe 'Directives', ->
                         on: (callName, callback) ->
                             if callName is 'newItem'
                                 callback(newItem)
+                        group: deferredGroup.promise
                     }
                     element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
                     $rootScope.$digest()
@@ -316,6 +328,7 @@ describe 'Directives', ->
                         on: (callName, callback) ->
                             if callName is 'newItem'
                                 callback(newItem)
+                        group: deferredGroup.promise
                     }
                     element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
                     $rootScope.$digest()

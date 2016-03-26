@@ -12,7 +12,7 @@ angular.module('runwayAppDirectives', ['runwayAppConstants'])
         element.attr('id', scope.runwayDropzone)
         element.css('position', 'relative')
 
-        socket.on 'setGroup', (group) ->
+        socket.group.then (group) ->
             scope.group = group
             socket.emit('getInitialItems')
 
@@ -111,8 +111,7 @@ angular.module('runwayAppDirectives', ['runwayAppConstants'])
             socket.emit('updateItemLocation', itemsInfo._id, ui.offset.left * 100.0 / scope.maxx(), ui.offset.top * 100.0 / scope.maxy())
 ]
 
-.directive 'chatPanel', ['$http', '$state', 'Constants'
-(http, state, Constants) ->
+.directive 'chatPanel', ['$http', (http) ->
     restrict: 'A'
     scope:
         socket: '='
@@ -121,16 +120,12 @@ angular.module('runwayAppDirectives', ['runwayAppConstants'])
     replace: true
     link: (scope, element, attrs) ->
         socket = scope.socket
-        console.log socket
 
         scope.messagesLoading = true
 
-        socket.on 'setGroup', (group) ->
+        socket.group.then (group) ->
             scope.group = group
             socket.emit('getInitialMessages')
-
-        socket.on 'notAllowed', ->
-            state.go(Constants.DEFAULT_ROUTE)
 
         addMessageContent = (addFunction, all) ->
             scope.$digest()

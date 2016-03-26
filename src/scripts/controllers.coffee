@@ -272,8 +272,8 @@ angular.module('runwayAppControllers',
         uibModalInstance.close(scope.editingGroup)
 ]
 
-.controller 'workspaceController', ['$scope', '$stateParams', 'socket', 'User'
-(scope, stateParams, socket, User) ->
+.controller 'workspaceController', ['$scope', '$q', '$state', '$stateParams', 'socket', 'User', 'Constants'
+(scope, q, state, stateParams, socket, User, Constants) ->
 
     #expose for directives
     scope.socket = socket
@@ -281,4 +281,14 @@ angular.module('runwayAppControllers',
     scope.user =  User
 
     socket.emit('groupConnect', scope.user, stateParams.groupId)
+
+    deferredGroup = q.defer()
+
+    socket.group = deferredGroup.promise
+
+    socket.on 'setGroup', (group) ->
+        deferredGroup.resolve(group)
+
+    socket.on 'notAllowed', ->
+        state.go(Constants.DEFAULT_ROUTE)
 ]

@@ -186,6 +186,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
     class Socket
         constructor: ->
             @socket = io()
+
         on: (eventName, callback) =>
             @socket.on eventName, =>
                 callback.apply(@socket, arguments)
