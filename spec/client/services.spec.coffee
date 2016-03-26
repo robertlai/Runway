@@ -34,20 +34,20 @@ describe 'Services', ->
             mockUser = {
                 username: 'Justin'
             }
-            AuthService.user = mockUser
 
 
         describe 'getUser', ->
 
-            it 'should return the user', ->
-                expect(AuthService.getUser()).toEqual(mockUser)
+            it 'should return the user if the user exists', (done) ->
+                AuthService.user = mockUser
+                AuthService.getUser().then (user) ->
+                    expect(user).toEqual(mockUser)
+                    done()
+                $rootScope.$digest()
 
-
-        describe 'loggedIn', ->
-
-            it 'should POST to /getUserStatus', ->
+            it 'should POST to /getUserStatus when no user exits', ->
                 httpBackend.expectPOST('/getUserStatus').respond(200, {loggedIn: true, user: mockUser})
-                AuthService.loggedIn()
+                AuthService.getUser()
                 httpBackend.flush()
 
 
@@ -58,7 +58,7 @@ describe 'Services', ->
                         groups: ['thing1', 'thing2']
                     }
                     httpBackend.expectPOST('/getUserStatus').respond(200, {loggedIn: true, user: mockUser2})
-                    AuthService.loggedIn().then ->
+                    AuthService.getUser().then ->
                         expect(AuthService.user).toEqual(mockUser2)
                         done()
                     httpBackend.flush()
@@ -68,7 +68,7 @@ describe 'Services', ->
                         groups: ['thing1', 'thing2']
                     }
                     httpBackend.expectPOST('/getUserStatus').respond(200, {loggedIn: false, user: mockUser2})
-                    AuthService.loggedIn().catch ->
+                    AuthService.getUser().catch ->
                         expect(AuthService.user).toEqual(null)
                         done()
                     httpBackend.flush()
@@ -78,7 +78,7 @@ describe 'Services', ->
 
                 it 'should clear the user', (done) ->
                     httpBackend.expectPOST('/getUserStatus').respond(500)
-                    AuthService.loggedIn().catch ->
+                    AuthService.getUser().catch ->
                         expect(AuthService.user).toEqual(null)
                         done()
                     httpBackend.flush()
@@ -492,3 +492,59 @@ describe 'Services', ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
+
+
+
+    describe 'Socket', ->
+
+
+        Socket = undefined
+        io = undefined
+
+        beforeEach inject (_Socket_) ->
+            io = {
+                on: (eventName, callback) ->
+                    callback('param1', 'param2')
+
+                emit: ->
+
+            }
+            window.io = -> io
+            Socket = _Socket_
+
+        describe 'setup', ->
+
+            it 'it should call io() to initialize the socket', ->
+                spyOn(window, 'io')
+                socket = new Socket()
+                expect(window.io).toHaveBeenCalled()
+
+        describe 'on', ->
+
+            socket = undefined
+
+            beforeEach ->
+                socket = new Socket()
+
+            it 'should apply the params to the callback', ->
+                socket.on 'testEvent', (param1, param2) ->
+                    expect(param1).toEqual('param1')
+                    expect(param2).toEqual('param2')
+
+        describe 'emit', ->
+
+            socket = undefined
+
+            beforeEach ->
+                socket = new Socket()
+
+            it 'should emit only a name when given not other params', ->
+                spyOn(io, 'emit')
+                socket.emit('testEvent')
+                expect(io.emit).toHaveBeenCalledWith('testEvent')
+
+
+            it 'should emit a name and all params when given a name and params', ->
+                spyOn(io, 'emit')
+                socket.emit('testEvent', 'param1', 'param2', 'param3')
+                expect(io.emit).toHaveBeenCalledWith('testEvent', 'param1', 'param2', 'param3')

@@ -1,4 +1,5 @@
-angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices', 'ui.router', 'ui.bootstrap', 'color.picker'])
+angular.module('runwayAppControllers',
+    ['runwayAppConstants', 'runwayAppServices', 'runwayAppDirectives', 'ui.router', 'ui.bootstrap', 'color.picker'])
 
 .controller 'loginController', [
     '$scope'
@@ -36,8 +37,9 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
     '$q'
     '$state'
     'AuthService'
-    (scope, q, state, AuthService) ->
-        scope.username = AuthService.getUser().username
+    'User'
+    (scope, q, state, AuthService, User) ->
+        scope.username = User.username
 
         scope.logout = ->
             deferred = q.defer()
@@ -55,10 +57,9 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
 
 .controller 'settingsController', [
     '$scope'
-    '$state'
-    'AuthService'
-    (scope, state, AuthService) ->
-        scope.user = AuthService.getUser()
+    'User'
+    (scope, User) ->
+        scope.user = User
 ]
 
 .controller 'registerController', [
@@ -87,7 +88,8 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
             return deferred.promise
 ]
 
-.controller 'groupsController', ['$scope', '$uibModal', '$stateParams', 'GroupService', (scope, uibModal, stateParams, GroupService) ->
+.controller 'groupsController', ['$scope', '$uibModal', '$stateParams', 'GroupService', 'AuthService',
+(scope, uibModal, stateParams, GroupService, AuthService) ->
     scope.groups = []
     scope.groupType = stateParams.groupType
     GroupService.getGroups(stateParams.groupType)
@@ -125,6 +127,7 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
             size: 'lg'
             resolve:
                 editingGroup: groupToEdit
+                User: AuthService.getUser()
             templateUrl: '/partials/editGroupMembersModal.html'
             controller: 'editGroupMembersModalController'
         )
@@ -221,11 +224,11 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
 ]
 
 .controller 'editGroupMembersModalController',
-['$scope', '$q', '$http', '$uibModalInstance', 'AuthService', 'GroupService', 'UserService', 'editingGroup',
-(scope, q, http, uibModalInstance, AuthService, GroupService, UserService, editingGroup) ->
+['$scope', '$q', '$http', '$uibModalInstance', 'GroupService', 'UserService', 'editingGroup', 'User',
+(scope, q, http, uibModalInstance, GroupService, UserService, editingGroup, User) ->
     # todo: this should be passed an id / resolve the id of the group and populate everything before getting here
     # then all info will be present and the info doesn't have to be retuned from the modal and it becomes state free
-    scope.owner = AuthService.getUser()
+    scope.owner = User
 
     scope.editingGroup = angular.copy(editingGroup)
 
@@ -269,154 +272,13 @@ angular.module('runwayAppControllers', ['runwayAppConstants', 'runwayAppServices
         uibModalInstance.close(scope.editingGroup)
 ]
 
-.controller 'workspaceController', ['$scope', '$state', '$stateParams', 'AuthService', 'Constants',
-(scope, state, stateParams, AuthService, Constants) ->
+.controller 'workspaceController', ['$scope', '$stateParams', 'socket', 'User'
+(scope, stateParams, socket, User) ->
 
-    $dropzone = $('#dropzone')
-
-    mouseX = undefined
-    mouseY = undefined
-    maxx = -> $dropzone.outerWidth()
-    maxy = -> $dropzone.outerHeight()
-
-    myDropzone = new Dropzone '#dropzone', {
-        url: '/api/fileUpload'
-        method: 'post'
-        uploadMultiple: false
-        maxFilesize: 9
-        clickable: false
-        createImageThumbnails: false
-        autoProcessQueue: true
-        acceptedFiles: 'image/*, application/pdf'
-        accept: (file, done) ->
-            @options.url = '/api/fileUpload?_group=' + scope.group._id + '&x=' + mouseX * 100.0 / maxx() + '&y=' + mouseY * 100.0 / maxy()
-            hoverTextOff()
-            done()
-    }
-
-    myDropzone.on 'complete', (file) ->
-        myDropzone.removeFile(file)
-
-    socket = io()
-
-    socket.on 'setGroup', (group) ->
-        scope.group = group
-
-    socket.on 'notAllowed', ->
-        state.go(Constants.DEFAULT_ROUTE)
-
-    addMessageContent = (addFunction, all) ->
-        scope.$apply()
-        chatBody = document.getElementById('chatBody')
-        scrollAtBottom = all || Math.abs(chatBody.scrollTop - chatBody.scrollHeight + chatBody.offsetHeight) < 50
-        addFunction()
-        scope.messagesLoading = false
-        scope.$apply()
-        chatBody.scrollTop = chatBody.scrollHeight if scrollAtBottom
-
-    socket.on 'initialMessages', (messages) ->
-        addMessageContent ->
-            scope.messages = messages
-        , true
-
-    socket.on 'moreMessages', (moreMessages) ->
-        scope.allMessagesLoaded = moreMessages.length is 0
-        chatBody = document.getElementById('chatBody')
-        chatBody.scrollTop = 1
-        addMessageContent ->
-            scope.messages = scope.messages.concat(moreMessages)
-        chatBody.scrollTop = chatBody.scrollHeight - scope.preLoadScrollHeight
-
-    socket.on 'newMessage', (message) ->
-        addMessageContent ->
-            scope.messages.push(message)
-
-    socket.on 'removeMessage', (_message) ->
-        for message, index in scope.messages
-            if message._id is _message
-                scope.messages.splice(index, 1)
-                break
-        scope.$apply()
-
-    socket.on 'updateItem', (itemInfo) ->
-        $('#' + itemInfo._id).offset ({
-            top: itemInfo.y / 100.0 * maxy()
-            left: itemInfo.x / 100.0 * maxx()
-        })
-
-    socket.on 'newItem', (itemInfo) ->
-        innerContent = undefined
-        if itemInfo.type is 'text'
-            innerContent = $('<p/>', class: 'noselect').text(itemInfo.text)
-        else if itemInfo.type.substring(0, 5) is 'image'
-            innerContent = $('<img/>', src: '/api/file?_file=' + itemInfo._id)
-        else if itemInfo.type is 'application/pdf'
-            innerContent = $('<div style="padding-top:25px; background-color:black;"><object data="/api/file?_file=' +
-                itemInfo._id + "'/></div>")
-
-        if innerContent
-            innerContent.css('position', 'absolute')
-            .attr('id', itemInfo._id)
-            .offset(
-                top: itemInfo.y / 100.0 * maxy()
-                left: itemInfo.x / 100.0 * maxx()
-            )
-            .appendTo($dropzone).draggable(
-                containment: 'parent'
-                stop: (event, ui) ->
-                    socket.emit('updateItemLocation', itemInfo._id, ui.offset.left * 100.0 / maxx(), ui.offset.top * 100.0 / maxy())
-            )
-
-    scope.addMessageToWorkspace = (string) ->
-        data = {'text': string}
-        $.ajax ({
-            method: 'POST'
-            url: '/api/text?_group=' + scope.group._id
-            data: JSON.stringify(data)
-            processData: false
-            contentType: 'application/json; charset=utf-8'
-        })
-
-    hoverTextOn = ->
-        $('#dropzone').addClass('dropzoneHover')
-        $('#dndText').text('Drop to upload')
-
-    hoverTextOff = ->
-        $('#dropzone').removeClass('dropzoneHover')
-        $('#dndText').text('Drag and drop files here')
-
-    $dropzone.on 'dragover', (e) ->
-        mouseX = e.originalEvent.offsetX
-        mouseY = e.originalEvent.offsetY
-        hoverTextOn()
-
-    $dropzone.on 'dragleave', (e) ->
-        hoverTextOff()
-
+    #expose for directives
+    scope.socket = socket
     scope.chatVisible = true
+    scope.user =  User
 
-    scope.messages = []
-
-    scope.sendMessage = ->
-        if scope.newMessage and scope.newMessage.trim().length > 0
-            socket.emit('postNewMessage', scope.newMessage)
-            scope.newMessage = ''
-
-    scope.removeMessage = (_message) ->
-        socket.emit('postRemoveMessage', _message)
-
-    $('#chatBody').on 'scroll', (event) ->
-        chatBody = document.getElementById('chatBody')
-        if !scope.allMessagesLoaded and chatBody.scrollTop is 0
-            scope.messagesLoading = true
-            scope.$apply()
-            scope.preLoadScrollHeight = chatBody.scrollHeight
-            socket.emit('getMoreMessages', scope.messages[scope.messages.length - 1].date)
-
-    init = ->
-        scope.messagesLoading = true
-        scope.user = AuthService.getUser()
-        socket.emit('groupConnect', scope.user, stateParams.groupId)
-
-    init()
+    socket.emit('groupConnect', scope.user, stateParams.groupId)
 ]

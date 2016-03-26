@@ -3,6 +3,7 @@ express = require('express')
 fs = require('fs')
 multer  = require('multer')
 upload = multer({ dest: 'uploads/' })
+sizeOf = require('image-size')
 
 Constants = require('../Constants')
 
@@ -165,22 +166,18 @@ module.exports = (io) ->
             res.sendStatus(500)
 
     apiRouter.post '/text', (req, res) ->
-        date = new Date()
-        _group = req.query._group
-        _owner = req.user._id
-        type = 'text'
-        x = 1
-        y = 1
-        text = req.body.text
+        _group = req.body._group
         try
             item = new Item {
-                date: date
+                date: new Date()
                 _group: _group
-                _owner: _owner
-                type: type
-                x: x
-                y: y
-                text: text
+                _owner: req.user._id
+                type: 'text'
+                x: 0
+                y: 0
+                width: null
+                height: null
+                text: req.body.text
             }
             item.save (err, newItem) ->
                 throw err if err
@@ -191,12 +188,19 @@ module.exports = (io) ->
 
     apiRouter.post '/fileUpload', upload.single('file'), (req, res) ->
         date = new Date()
-        _group = req.query._group
+        _group = req.headers._group
         _owner = req.user._id
         type = req.file.mimetype
-        x = req.query.x
-        y = req.query.y
+        x = parseInt(req.headers.x) * 100.0 / parseInt(req.headers.screenwidth)
+        y = parseInt(req.headers.y) * 100.0 / parseInt(req.headers.screenheight)
+        width = null
+        height = null
         fullFilePath = req.file.path
+        try
+            dimensions = sizeOf(fullFilePath)
+            width = dimensions.width * 100.0 / 1280
+            height = dimensions.height * 100.0 / 800
+
         item = new Item {
             date: date
             _group: _group
@@ -204,6 +208,8 @@ module.exports = (io) ->
             type: type
             x: x
             y: y
+            width: width
+            height: height
             file: fs.readFileSync(fullFilePath)
         }
         item.save (err, newItem) ->
@@ -214,9 +220,11 @@ module.exports = (io) ->
                     type: type
                     x: x
                     y: y
+                    width: width
+                    height: height
                 }
                 io.sockets.in(_group).emit('newItem', itemToSendBack)
-            res.redirect 'back'
+            res.redirect('back')
             fs.unlinkSync(fullFilePath)
 
     apiRouter.get '/file', (req, res) ->

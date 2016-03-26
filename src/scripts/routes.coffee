@@ -44,6 +44,7 @@ angular.module('runwayAppRoutes', ['runwayAppConstants', 'runwayAppServices', 'u
                 replace: true
                 templateUrl: '/partials/navBar.html'
                 controller: 'navBarController'
+                resolve: User: (AuthService) -> AuthService.getUser()
             }
             'content@': {
                 template: '<div ui-view class="homeUiView"></div>'
@@ -54,7 +55,9 @@ angular.module('runwayAppRoutes', ['runwayAppConstants', 'runwayAppServices', 'u
             abstract: true
             url: '/settings'
             replace: true
-            resolve: $title: -> 'Account Settings'
+            resolve:
+                $title: -> 'Account Settings'
+                User: (AuthService) -> AuthService.getUser()
             templateUrl: '/partials/settings.html'
             controller: 'settingsController'
         )
@@ -79,7 +82,10 @@ angular.module('runwayAppRoutes', ['runwayAppConstants', 'runwayAppServices', 'u
     .state('workspace',
         url: '/workspace/:groupId'
         params: groupId: 'groupId'
-        resolve: $title: -> 'Workspace'
+        resolve:
+            $title: -> 'Workspace'
+            User: (AuthService) -> AuthService.getUser()
+            socket: (Socket) -> new Socket()
         authenticated: true
         views: {
             'content@': {
@@ -94,7 +100,7 @@ angular.module('runwayAppRoutes', ['runwayAppConstants', 'runwayAppServices', 'u
 .run ['$rootScope', '$state', 'AuthService', (rootScope, state, AuthService) ->
     rootScope.$on '$stateChangeStart', (event, nextState, nextParams) ->
         if nextState.authenticated
-            AuthService.loggedIn()
+            AuthService.getUser()
                 .catch (error) ->
                     state.go('login', {
                         returnStateName: nextState.name

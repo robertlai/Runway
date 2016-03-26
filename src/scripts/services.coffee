@@ -6,22 +6,23 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
     class AuthService
         constructor: (@q, @http) -> @user = null
 
-        getUser: => @user
-
-        loggedIn: =>
+        getUser: =>
             deferred = @q.defer()
 
-            @http.post '/getUserStatus'
-                .success (data) =>
-                    if data.loggedIn
-                        @user = data.user
-                        deferred.resolve()
-                    else
+            if @user
+                deferred.resolve(@user)
+            else
+                @http.post '/getUserStatus'
+                    .success (data) =>
+                        if data.loggedIn
+                            @user = data.user
+                            deferred.resolve(@user)
+                        else
+                            @user = null
+                            deferred.reject()
+                    .error (data) =>
                         @user = null
                         deferred.reject()
-                .error (data) =>
-                    @user = null
-                    deferred.reject()
 
             return deferred.promise
 
@@ -67,8 +68,8 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
                     deferred.reject(data.error)
 
             return deferred.promise
-]
 
+]
 
 .service 'GroupService', [
     '$http'
@@ -158,8 +159,8 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
                         deferred.reject(@Constants.Messages.SERVER_ERROR)
 
             return deferred.promise
-]
 
+]
 
 .service 'UserService', [
     '$http'
@@ -178,4 +179,16 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
                     deferred.reject(@Constants.Messages.SERVER_ERROR)
 
             return deferred.promise
+
 ]
+
+.service 'Socket', ->
+    class Socket
+        constructor: ->
+            @socket = io()
+        on: (eventName, callback) =>
+            @socket.on eventName, =>
+                callback.apply(@socket, arguments)
+
+        emit: (eventName, data...) =>
+            @socket.emit(eventName, data...)

@@ -1,0 +1,14 @@
+.chatPanel
+    .chatHeader
+        button.actionButton.homeButton.glyphicon.glyphicon-home(ui-sref='home.groups')
+    #chatBody.chatBody
+        .messageRow(ng-show='messagesLoading')
+            .loadingDiv loading...
+        .messageRow(ng-repeat='message in messages | orderBy: "date" track by $index')
+            .userBubble.noselect(uib-tooltip='{{message._user.username}}' tooltip-placement='right' tooltip-trigger='mouseenter') {{message._user.username.substring(0, 1).toUpperCase()}}
+            .chatMessage(ng-bind='message.content')
+            button.btn.btn-primary.messageButton(ng-click='addMessageToWorkspace(message.content)') +
+            button.btn.btn-primary.messageButton(ng-if='message._user._id === user._id' ng-click='removeMessage(message._id)') x
+    .chatFooter
+        form(ng-submit='sendMessage()')
+            input.messageInputBox(type='text' ng-model='newMessage' placeholder='Type a message...' autofocus)

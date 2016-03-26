@@ -1,7 +1,9 @@
 gulp = require('gulp')
 path = require('path')
 del = require('del')
-browserify = require('gulp-browserify')
+browserify = require('browserify')
+source = require('vinyl-source-stream')
+buffer = require('vinyl-buffer')
 coffeelint = require('gulp-coffeelint')
 uglify = require('gulp-uglify')
 concat = require('gulp-concat')
@@ -47,10 +49,12 @@ gulp.task 'clean:clientScripts', ->
     del(scriptsDestPath + clientScriptsMinDestFile)
     del(scriptsDestPath + clientScriptsNonMinDestFile)
 gulp.task 'clientScripts', ['coffeelint', 'clean:clientScripts'], ->
-    gulp.src(clientScriptsSrcFile, read: false)
-        .pipe(browserify({transform: ['coffeeify'], extensions: ['.coffee']}))
-        .pipe(concat(clientScriptsNonMinDestFile))
+    browserify(clientScriptsSrcFile, {transform: ['coffeeify'], extensions: ['.coffee']})
+        .bundle()
+        .on 'error', (error) -> this.emit('end')
+        .pipe(source(clientScriptsNonMinDestFile))
         .pipe(gulp.dest(scriptsDestPath))
+        .pipe(buffer())
         .pipe(uglify())
         .pipe(concat(clientScriptsMinDestFile))
         .pipe(gulp.dest(scriptsDestPath))
@@ -58,10 +62,12 @@ gulp.task 'clientScripts', ['coffeelint', 'clean:clientScripts'], ->
 # todo: add sourcemaps
 gulp.task 'clean:vendorScripts', -> del(scriptsDestPath + vendorScriptsDestFile)
 gulp.task 'vendorScripts', ['clean:vendorScripts'], ->
-    gulp.src(vendorScriptsSrcFile, read: false)
-        .pipe(browserify({}))
+    browserify(vendorScriptsSrcFile)
+        .bundle()
+        .on 'error', (error) -> this.emit('end')
+        .pipe(source(vendorScriptsDestFile))
+        .pipe(buffer())
         .pipe(uglify())
-        .pipe(concat(vendorScriptsDestFile))
         .pipe(gulp.dest(scriptsDestPath))
 
 

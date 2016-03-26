@@ -189,19 +189,20 @@ describe 'controllers', ->
     describe 'navBarController', ->
 
         navBarControllerParams = undefined
+        User = undefined
 
         beforeEach ->
+            User = {username: 'Justin'}
             navBarControllerParams = {
                 $scope: scope
                 AuthService: AuthService
                 $state: $state
+                User: User
             }
 
         it 'should initialize scope.username to the username of the user obtained from AuthService.getUser().username', ->
-            spyOn(AuthService, 'getUser').and.callThrough()
             $controller('navBarController', navBarControllerParams)
-            expect(scope.username).toEqual('Justin')
-            expect(AuthService.getUser).toHaveBeenCalled()
+            expect(scope.username).toEqual(User.username)
 
 
         describe 'scope.logout, logout successful', ->
@@ -244,18 +245,18 @@ describe 'controllers', ->
     describe 'settingsController', ->
 
         settingsControllerParams = undefined
+        User = undefined
 
         beforeEach ->
+            User = {username: 'Justin'}
             settingsControllerParams = {
                 $scope: scope
-                AuthService: AuthService
+                User: User
             }
 
-        it 'should initialize scope.user to the user obtained from AuthService.getUser()', ->
-            spyOn(AuthService, 'getUser').and.callThrough()
+        it 'should initialize scope.user to the user obtained the resolved User', ->
             $controller('settingsController', settingsControllerParams)
-            expect(scope.user).toEqual({username: 'Justin'})
-            expect(AuthService.getUser).toHaveBeenCalled()
+            expect(scope.user).toEqual(User)
 
 
     describe 'registerController', ->
@@ -363,6 +364,7 @@ describe 'controllers', ->
                 }
                 GroupService: GroupService
                 $uibModal: uibModal
+                AuthService: AuthService
             }
 
         describe 'setup', ->
@@ -521,6 +523,7 @@ describe 'controllers', ->
                     size: 'lg'
                     resolve:
                         editingGroup: groupToEdit
+                        User: {username: 'Justin'}
                     templateUrl: '/partials/editGroupMembersModal.html'
                     controller: 'editGroupMembersModalController'
                 })
@@ -806,13 +809,14 @@ describe 'controllers', ->
                 name: 'test group name'
                 _members: []
             }
+            User = {username: 'Justin'}
             editGroupMembersModalControllerParams = {
                 $scope: scope
                 $uibModalInstance: uibModalInstance
                 editingGroup: editingGroup
-                AuthService: AuthService
                 GroupService: GroupService
                 UserService: UserService
+                User: User
             }
 
         describe 'setup', ->
@@ -826,8 +830,7 @@ describe 'controllers', ->
                 editingGroup = 'thing'
                 expect(scope.editingGroup).not.toEqual(editingGroup)
 
-            it 'should initialize scope.owner to the user obtained from AuthService.getUser()', ->
-                expect(AuthService.getUser).toHaveBeenCalled()
+            it 'should initialize scope.owner to the User reolved for the controller', ->
                 expect(scope.owner).toEqual({username: 'Justin'})
 
             it 'should define the scope.getUsers function', ->
@@ -978,4 +981,33 @@ describe 'controllers', ->
 
 
     describe 'workspaceController', ->
-        # todo: this
+
+        workspaceControllerParams = undefined
+        Socket = undefined
+        testUser = {username: 'Justin'}
+        stateParams = undefined
+
+        beforeEach ->
+            stateParams = {groupId: 'test groupId'}
+            Socket = {
+                emit: -> 'test emit'
+            }
+            workspaceControllerParams = {
+                $scope: scope
+                $stateParams: stateParams
+                User: testUser
+                socket: Socket
+            }
+            spyOn(Socket, 'emit').and.callThrough()
+            $controller('workspaceController', workspaceControllerParams)
+
+        describe 'setup', ->
+
+            it 'should initialize scope.chatVisible to true', ->
+                expect(scope.chatVisible).toEqual(true)
+
+            it 'should into scope.user to the given User', ->
+                expect(scope.user).toEqual(testUser)
+
+            it "should emit 'groupConnect' with the username and groupId tot he soket", ->
+                expect(scope.socket.emit).toHaveBeenCalledWith('groupConnect', testUser, stateParams.groupId)

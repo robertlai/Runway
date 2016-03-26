@@ -12,6 +12,10 @@ $chat-footer-height: 48px
     align-content: stretch
     height: 100%
 
+    [js-draggable]:before
+        height: 10px
+        background-color: black
+
     .dropzone
         display: flex
         justify-content: center
@@ -35,15 +39,19 @@ $chat-footer-height: 48px
         position: absolute
         top: 0
         right: 0
+        width: 75px
+
+    .homeButton
+        margin-bottom: 1px
+        width: 75px
 
     .actionButton
         border: none
-        border-right: solid black 1px
         background-color: $workspace-button-background
         color: gray
         font-size: 14px
         font-weight: bold
-        height: $chat-footer-height
+        height: $chat-footer-height - 1px
         line-height: 16px
         padding: 16px
         &:hover

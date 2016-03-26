@@ -1,5 +1,7 @@
 describe 'Routes', ->
 
+    resolvedPromiseFunc = undefined
+    rejectedPromiseFunc = undefined
     Constants = undefined
     httpBackend = undefined
     $locationProvider = undefined
@@ -7,6 +9,7 @@ describe 'Routes', ->
     $state = undefined
     $stateParams = undefined
     $injector = undefined
+    $rootScope = undefined
 
     beforeEach ->
         angular.module('preTestConfig', ['ui.router']).config (_$urlRouterProvider_, _$locationProvider_) ->
@@ -21,11 +24,22 @@ describe 'Routes', ->
         module('preTestConfig')
         module('runwayAppRoutes')
 
-        inject (_Constants_, _$state_, _$httpBackend_, _$injector_) ->
+        inject (_Constants_, _$state_, _$httpBackend_, _$injector_, _$rootScope_, $q) ->
             Constants = _Constants_
             $state = _$state_
             httpBackend = _$httpBackend_
             $injector = _$injector_
+            $rootScope = _$rootScope_
+
+            resolvedPromiseFunc = (value) ->
+                deferred = $q.defer()
+                deferred.resolve(value)
+                deferred.promise
+
+            rejectedPromiseFunc = (value) ->
+                deferred = $q.defer()
+                deferred.reject(value)
+                deferred.promise
 
 
     describe 'setup', ->
@@ -106,6 +120,15 @@ describe 'Routes', ->
         it 'should be set to replace', ->
             expect($state.get('home').replace).toEqual(true)
 
+        it 'should resolve the User', (done) ->
+            AuthService = {
+                getUser: -> resolvedPromiseFunc({username: 'Justin'})
+            }
+            $state.get('home').views['navBar@'].resolve.User(AuthService).then (user) ->
+                expect(user).toEqual({username: 'Justin'})
+                done()
+            $rootScope.$digest()
+
         it 'should set the view', ->
             expect($state.get('home').views['content@'].template).toContain('ui-view')
 
@@ -118,6 +141,7 @@ describe 'Routes', ->
         it 'should set the navBar controller', ->
             expect($state.get('home').views['navBar@'].controller).toEqual('navBarController')
 
+
     describe 'home.settings', ->
 
         it 'should set the url', ->
@@ -129,8 +153,17 @@ describe 'Routes', ->
         it 'should be set to replace', ->
             expect($state.get('home.settings').replace).toEqual(true)
 
-        it 'should set the title', ->
+        it 'should resolve the title', ->
             expect($state.get('home.settings').resolve.$title()).toEqual('Account Settings')
+
+        it 'should resolve the User', (done) ->
+            AuthService = {
+                getUser: -> resolvedPromiseFunc({username: 'Justin'})
+            }
+            $state.get('home.settings').resolve.User(AuthService).then (user) ->
+                expect(user).toEqual({username: 'Justin'})
+                done()
+            $rootScope.$digest()
 
         it 'should set the view', ->
             expect($state.get('home.settings').templateUrl).toEqual('/partials/settings.html')
@@ -192,6 +225,22 @@ describe 'Routes', ->
         it 'should set the params', ->
             expect($state.get('workspace').params).toEqual(groupId: 'groupId')
 
+        it 'should resolve the User', (done) ->
+            AuthService = {
+                getUser: -> resolvedPromiseFunc({username: 'Justin'})
+            }
+            $state.get('workspace').resolve.User(AuthService).then (user) ->
+                expect(user).toEqual({username: 'Justin'})
+                done()
+            $rootScope.$digest()
+
+        it 'should resolve the socket', ->
+            Socket = ->
+                @emit = ->
+                @test = -> 'testing property'
+                return
+            expect($state.get('workspace').resolve.socket(Socket).test()).toEqual('testing property')
+
         it 'should resolve the title', ->
             expect($state.get('workspace').resolve.$title()).toEqual('Workspace')
 
@@ -228,7 +277,7 @@ describe 'Routes Authentication', ->
 
         module 'runwayAppRoutes', ($provide) ->
             $provide.service 'AuthService', -> {
-                loggedIn: -> resolvedPromiseFunc()
+                getUser: -> resolvedPromiseFunc()
             }
             return
 
@@ -241,23 +290,23 @@ describe 'Routes Authentication', ->
         httpBackend = _$httpBackend_
 
     it 'should do nothing when the state is not authenicated', ->
-        spyOn(AuthService, 'loggedIn').and.callThrough()
+        spyOn(AuthService, 'getUser').and.callThrough()
         nextState = {
             authenticated: false
         }
         $rootScope.$broadcast('$stateChangeStart', nextState)
-        expect(AuthService.loggedIn).not.toHaveBeenCalled()
+        expect(AuthService.getUser).not.toHaveBeenCalled()
 
-    it 'should call AuthService.loggedIn when the state is authenicated', ->
+    it 'should call AuthService.getUser when the state is authenicated', ->
         angular.extend AuthService, {
-            loggedIn: -> rejectedPromiseFunc()
+            getUser: -> rejectedPromiseFunc()
         }
-        spyOn(AuthService, 'loggedIn').and.callThrough()
+        spyOn(AuthService, 'getUser').and.callThrough()
         nextState = {
             authenticated: true
         }
         $rootScope.$broadcast('$stateChangeStart', nextState)
-        expect(AuthService.loggedIn).toHaveBeenCalled()
+        expect(AuthService.getUser).toHaveBeenCalled()
 
 
     describe 'authenticated', ->
@@ -275,7 +324,7 @@ describe 'Routes Authentication', ->
 
         it 'should go to the login state', ->
             angular.extend AuthService, {
-                loggedIn: -> rejectedPromiseFunc()
+                getUser: -> rejectedPromiseFunc()
             }
             spyOn($state, 'go').and.callThrough()
             nextState = {
