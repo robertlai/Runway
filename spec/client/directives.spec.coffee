@@ -17,19 +17,17 @@ describe 'Directives', ->
     describe 'runwayDropzone', ->
 
         deferredGroup = undefined
-        q = undefined
 
         beforeEach inject ($q) ->
-            q = $q
-            deferredGroup = q.defer()
+            deferredGroup = $q.defer()
 
         describe 'setup', ->
 
             beforeEach ->
                 $rootScope.socket = {
                     on: ->
-                    group: deferredGroup.promise
                     emit: ->
+                    group: deferredGroup.promise
                 }
                 element = $compile('<div runway-dropzone="testRunway" socket="socket" style="width: 250px; height: 500px;"></div>')($rootScope)
                 $rootScope.$digest()
@@ -243,8 +241,8 @@ describe 'Directives', ->
             beforeEach ->
                 $rootScope.socket = {
                     on: ->
-                    group: deferredGroup.promise
                     emit: ->
+                    group: deferredGroup.promise
                 }
                 element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
@@ -259,81 +257,67 @@ describe 'Directives', ->
             it "should emit 'getInitialItems'", ->
                 expect($rootScope.socket.emit).toHaveBeenCalledWith('getInitialItems')
 
+        describe 'socket.on', ->
 
-        describe 'socket.on newItem', ->
+            socketCallbacksByName = {}
 
-            describe 'type: text', ->
+            beforeEach ->
+                $rootScope.socket = {
+                    on: (callName, callback) ->
+                        socketCallbacksByName[callName] = callback
+                    group: deferredGroup.promise
+                }
 
-                it 'should create a runway-draggable item of type text', ->
-                    newItem = { type: 'text', text: 'test text' }
-                    $rootScope.socket = {
-                        on: (callName, callback) ->
-                            if callName is 'newItem'
-                                callback(newItem)
-                        group: deferredGroup.promise
-                    }
-                    element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
-                    $rootScope.$digest()
-                    scope = element.isolateScope()
-                    expect(element.html()).toContain('test text')
-                    expect(element.html()).toContain('<p')
-                    expect(element.html()).toContain('</p>')
-                    expect(element.html()).toContain('ui-draggable')
-                    expect(element.html()).toContain('runway-draggable=')
+            describe 'newItem', ->
 
+                describe 'type: text', ->
 
-            describe 'type: image', ->
-
-                it 'should create a runway-draggable item of type image', ->
-                    newItem = { type: 'image/anything', _id: 'imageId' }
-                    $rootScope.socket = {
-                        on: (callName, callback) ->
-                            if callName is 'newItem'
-                                callback(newItem)
-                        group: deferredGroup.promise
-                    }
-                    element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
-                    $rootScope.$digest()
-                    scope = element.isolateScope()
-                    expect(element.html()).toContain('<img')
-                    expect(element.html()).toContain('src="/api/file?_file=imageId"')
-                    expect(element.html()).toContain('ui-draggable')
-                    expect(element.html()).toContain('runway-draggable=')
+                    it 'should create a runway-draggable item of type text', ->
+                        element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
+                        $rootScope.$digest()
+                        scope = element.isolateScope()
+                        socketCallbacksByName['newItem']({ type: 'text', text: 'test text' })
+                        expect(element.html()).toContain('test text')
+                        expect(element.html()).toContain('<p')
+                        expect(element.html()).toContain('</p>')
+                        expect(element.html()).toContain('ui-draggable')
+                        expect(element.html()).toContain('runway-draggable=')
 
 
-            describe 'type: image', ->
+                describe 'type: image', ->
 
-                it 'should create a runway-draggable item of type image', ->
-                    newItem = { type: 'application/pdf', _id: 'pdfId' }
-                    $rootScope.socket = {
-                        on: (callName, callback) ->
-                            if callName is 'newItem'
-                                callback(newItem)
-                        group: deferredGroup.promise
-                    }
-                    element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
-                    $rootScope.$digest()
-                    scope = element.isolateScope()
-                    expect(element.html()).toContain('<object')
-                    expect(element.html()).toContain('data="/api/file?_file=pdfId"')
-                    expect(element.html()).toContain('runway-draggable=')
-                    expect(element.html()).toContain('ui-draggable')
-                    expect(element.html()).toContain('</object>')
+                    it 'should create a runway-draggable item of type image', ->
+                        element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
+                        $rootScope.$digest()
+                        scope = element.isolateScope()
+                        socketCallbacksByName['newItem']({ type: 'image/anything', _id: 'imageId' })
+                        expect(element.html()).toContain('<img')
+                        expect(element.html()).toContain('src="/api/file?_file=imageId"')
+                        expect(element.html()).toContain('ui-draggable')
+                        expect(element.html()).toContain('runway-draggable=')
 
-            describe 'type: other', ->
 
-                it 'should not add anything to the DOM', ->
-                    newItem = { type: 'other', _id: 'otherId', text: 'some text' }
-                    $rootScope.socket = {
-                        on: (callName, callback) ->
-                            if callName is 'newItem'
-                                callback(newItem)
-                        group: deferredGroup.promise
-                    }
-                    element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
-                    $rootScope.$digest()
-                    scope = element.isolateScope()
-                    expect(element.html()).toEqual('<h1 class="dndText noselect">Drag and drop files here</h1>')
+                describe 'type: image', ->
+
+                    it 'should create a runway-draggable item of type image', ->
+                        element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
+                        $rootScope.$digest()
+                        scope = element.isolateScope()
+                        socketCallbacksByName['newItem']({ type: 'application/pdf', _id: 'pdfId' })
+                        expect(element.html()).toContain('<object')
+                        expect(element.html()).toContain('data="/api/file?_file=pdfId"')
+                        expect(element.html()).toContain('runway-draggable=')
+                        expect(element.html()).toContain('ui-draggable')
+                        expect(element.html()).toContain('</object>')
+
+                describe 'type: other', ->
+
+                    it 'should not add anything to the DOM', ->
+                        element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
+                        $rootScope.$digest()
+                        scope = element.isolateScope()
+                        socketCallbacksByName['newItem']({ type: 'other', _id: 'otherId', text: 'some text' })
+                        expect(element.html()).toEqual('<h1 class="dndText noselect">Drag and drop files here</h1>')
 
 
     describe 'runwayDraggable', ->
@@ -398,59 +382,52 @@ describe 'Directives', ->
             it 'should set the height css to the given height', ->
                 expect(element.css('height')).toEqual('')
 
+        describe 'socket.on', ->
 
-        describe 'socket.on updateItem', ->
+            socketCallbacksByName = {}
 
-            describe 'with this item', ->
+            beforeEach ->
+                $rootScope.socket = {
+                    on: (callName, callback) ->
+                        socketCallbacksByName[callName] = callback
+                }
 
-                beforeEach ->
-                    itemInfo = { _id: 321123, x: 789, y: 987 }
-                    $rootScope.socket = {
-                        on: (callName, callback) ->
-                            if callName is 'updateItem'
-                                callback(itemInfo)
-                    }
-                    itemsInfo = {
-                        _id: 321123
-                        width: 68
-                        height: 27
-                        x: 14
-                        y: 55
-                    }
+            describe 'updateItem', ->
 
-                    element = $compile('<div runway-draggable=' + JSON.stringify(itemsInfo) + '></div>')($rootScope)
-                    $rootScope.$digest()
-                    scope = element.isolateScope()
+                describe 'with this item', ->
 
-                it 'adjust the position of this item', ->
-                    expect(element.css('top')).toEqual('987%')
-                    expect(element.css('left')).toEqual('789%')
+                    it 'adjust the position of this item', ->
+                        itemsInfo = {
+                            _id: 321123
+                            width: 68
+                            height: 27
+                            x: 14
+                            y: 55
+                        }
+                        element = $compile('<div runway-draggable=' + JSON.stringify(itemsInfo) + '></div>')($rootScope)
+                        $rootScope.$digest()
+                        scope = element.isolateScope()
+                        socketCallbacksByName['updateItem']({ _id: 321123, x: 789, y: 987 })
+                        expect(element.css('top')).toEqual('987%')
+                        expect(element.css('left')).toEqual('789%')
 
 
-            describe 'with another item', ->
+                describe 'with another item', ->
 
-                beforeEach ->
-                    itemInfo = { _id: 123321, x: 789, y: 987 }
-                    $rootScope.socket = {
-                        on: (callName, callback) ->
-                            if callName is 'updateItem'
-                                callback(itemInfo)
-                    }
-                    itemsInfo = {
-                        _id: 321123
-                        width: 68
-                        height: 27
-                        x: 14
-                        y: 55
-                    }
-
-                    element = $compile('<div runway-draggable=' + JSON.stringify(itemsInfo) + '></div>')($rootScope)
-                    $rootScope.$digest()
-                    scope = element.isolateScope()
-
-                it 'should do nothing', ->
-                    expect(element.css('top')).toEqual('55%')
-                    expect(element.css('left')).toEqual('14%')
+                    it 'should do nothing', ->
+                        itemsInfo = {
+                            _id: 321123
+                            width: 68
+                            height: 27
+                            x: 14
+                            y: 55
+                        }
+                        element = $compile('<div runway-draggable=' + JSON.stringify(itemsInfo) + '></div>')($rootScope)
+                        $rootScope.$digest()
+                        scope = element.isolateScope()
+                        socketCallbacksByName['updateItem']({ _id: 123321, x: 789, y: 987 })
+                        expect(element.css('top')).toEqual('55%')
+                        expect(element.css('left')).toEqual('14%')
 
 
         describe 'drag the element', ->
@@ -489,3 +466,377 @@ describe 'Directives', ->
                 }
                 $(element).triggerHandler(mockEvent, ui)
                 expect($rootScope.socket.emit).toHaveBeenCalledWith('updateItemLocation', 321123, 100000.0 / 102, 20000 / 703)
+
+
+    describe 'chatPanel', ->
+
+        deferredGroup = undefined
+
+        beforeEach inject ($q, $templateCache) ->
+            deferredGroup = $q.defer()
+            $templateCache.put('/partials/chatPanel.html', '<div></div>')
+
+        describe 'setup', ->
+
+            beforeEach inject ->
+                $rootScope.socket = {
+                    on: ->
+                    emit: ->
+                    group: deferredGroup.promise
+                }
+                element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
+                $rootScope.$digest()
+                scope = element.isolateScope()
+
+            it 'should set scope.messagesLoading to true', ->
+                expect(scope.messagesLoading).toEqual(true)
+
+            it 'should initialize scope.messages to []', ->
+                expect(scope.messages).toEqual([])
+
+            it 'should define scope.addMessageContent', ->
+                expect(scope.addMessageContent).toEqual(jasmine.any(Function))
+
+            it 'should define scope.addMessageToWorkspace', ->
+                expect(scope.addMessageToWorkspace).toEqual(jasmine.any(Function))
+
+            it 'should define scope.sendMessage', ->
+                expect(scope.sendMessage).toEqual(jasmine.any(Function))
+
+            it 'should define scope.removeMessage', ->
+                expect(scope.removeMessage).toEqual(jasmine.any(Function))
+
+
+        describe 'resolve scoket.group', ->
+
+            beforeEach ->
+                $rootScope.socket = {
+                    on: ->
+                    emit: ->
+                    group: deferredGroup.promise
+                }
+                element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
+                $rootScope.$digest()
+                scope = element.isolateScope()
+                deferredGroup.resolve('testResolvedGroup')
+                spyOn($rootScope.socket, 'emit')
+                $rootScope.$digest()
+
+            it 'should set scope.group to the resolved scoket.group', ->
+                expect(scope.group).toEqual('testResolvedGroup')
+
+            it "should emit 'getInitialItems'", ->
+                expect($rootScope.socket.emit).toHaveBeenCalledWith('getInitialMessages')
+
+
+        describe 'scope.getDomAttribute', ->
+
+            beforeEach inject ($templateCache) ->
+                $templateCache.put('/partials/chatPanel.html', "<div></div>")
+                $rootScope.socket = {
+                    on: ->
+                    emit: ->
+                    group: deferredGroup.promise
+                }
+                element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
+                $rootScope.$digest()
+                scope = element.isolateScope()
+
+            it 'should return the requested attribute of the given element', ->
+                expect(scope.getDomAttribute({testAttr: 'test value'}, 'testAttr')).toEqual('test value')
+
+
+        describe 'scope.addMessageContent', ->
+
+            beforeEach inject ($templateCache) ->
+                $templateCache.put('/partials/chatPanel.html', "<div><div class='chatBody'></div></div>")
+                $rootScope.socket = {
+                    on: ->
+                    emit: ->
+                    group: deferredGroup.promise
+                }
+                element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
+                $rootScope.$digest()
+                scope = element.isolateScope()
+
+
+            describe 'when scrollAtBottom will be false', ->
+
+                it 'should set scope.messagesLoading to false', ->
+                    scope.messagesLoading = true
+                    callback = ->
+                    scope.addMessageContent(callback, false)
+                    expect(scope.messagesLoading).toEqual(false)
+
+                it 'should call the passed in addFunction', ->
+                    callback = jasmine.createSpy()
+                    scope.addMessageContent(callback)
+                    expect(callback).toHaveBeenCalled()
+
+
+            describe 'when scrollAtBottom will be true', ->
+
+                beforeEach ->
+                    spyOn(scope, 'getDomAttribute').and.callFake (elmt, attr) ->
+                        if attr is 'scrollTop'
+                            51
+                        else if attr is 'scrollHeight'
+                            1
+                        else if attr is 'offsetHeight'
+                            0
+
+                it 'should set scope.messagesLoading to true', ->
+                    scope.messagesLoading = true
+                    callback = ->
+                    scope.addMessageContent(callback, true)
+                    expect(scope.messagesLoading).toEqual(false)
+
+                it 'should call the passed in addFunction', ->
+                    callback = jasmine.createSpy()
+                    scope.addMessageContent(callback)
+                    expect(callback).toHaveBeenCalled()
+
+
+        describe 'socket.on', ->
+
+            socketCallbacksByName = {}
+
+            beforeEach inject ($templateCache) ->
+                $templateCache.put('/partials/chatPanel.html', "<div><div class='chatBody'></div></div>")
+                $rootScope.socket = {
+                    on: (callName, callback) ->
+                        socketCallbacksByName[callName] = callback
+                    emit: ->
+                    group: deferredGroup.promise
+                }
+                element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
+                $rootScope.$digest()
+                scope = element.isolateScope()
+
+
+            describe 'initialMessages', ->
+
+                it 'should call scope.addMessageContent with the add function and true', ->
+                    spyOn(scope, 'addMessageContent').and.callFake ->
+                    socketCallbacksByName['initialMessages']()
+                    expect(scope.addMessageContent).toHaveBeenCalledWith(jasmine.any(Function), true)
+
+                it 'should set scope.messages to the given messages when scope.addMessageContent calls the add function', ->
+                    testMessages = ['these', 'are', 'some', 'test', 'messages']
+                    spyOn(scope, 'addMessageContent').and.callFake (addFunction) -> addFunction()
+                    socketCallbacksByName['initialMessages'](testMessages)
+                    expect(scope.messages).toEqual(testMessages)
+
+
+            describe 'moreMessages', ->
+
+                it 'should set scope.allMessagesLoaded to true if the given messages length is 0', ->
+                    socketCallbacksByName['moreMessages']([])
+                    expect(scope.allMessagesLoaded).toEqual(true)
+
+                it 'should set scope.allMessagesLoaded to false if the given messages length is 0', ->
+                    socketCallbacksByName['moreMessages'](['only one message'])
+                    expect(scope.allMessagesLoaded).toEqual(false)
+
+                it 'should call scope.addMessageContent with the add function', ->
+                    spyOn(scope, 'addMessageContent').and.callFake ->
+                    socketCallbacksByName['moreMessages']([])
+                    expect(scope.addMessageContent).toHaveBeenCalledWith(jasmine.any(Function))
+
+                it 'should add the given messages to scope.message when scope.addMessageContent calls the add function', ->
+                    intialMessages = ['some', 'initial', 'messages']
+                    testMessages = ['these', 'are', 'some', 'test', 'messages']
+                    finalMessages = intialMessages.concat(testMessages)
+                    spyOn(scope, 'addMessageContent').and.callFake (addFunction) -> addFunction()
+                    scope.messages = intialMessages
+                    socketCallbacksByName['moreMessages'](testMessages)
+                    expect(scope.messages).toEqual(finalMessages)
+
+
+            describe 'newMessage', ->
+
+                it 'should call scope.addMessageContent with the add function and true', ->
+                    spyOn(scope, 'addMessageContent').and.callFake ->
+                    socketCallbacksByName['newMessage']()
+                    expect(scope.addMessageContent).toHaveBeenCalledWith(jasmine.any(Function))
+
+                it 'should set scope.messages to the given messages when scope.addMessageContent calls the add function', ->
+                    initialMessages = ['some', 'initial', 'messages']
+                    newMessage = 'new message'
+                    finalMessages = initialMessages.concat([newMessage])
+                    spyOn(scope, 'addMessageContent').and.callFake (addFunction) -> addFunction()
+                    scope.messages = initialMessages
+                    socketCallbacksByName['newMessage'](newMessage)
+                    expect(scope.messages).toEqual(finalMessages)
+
+
+            describe 'removeMessage', ->
+
+                it 'should call scope.addMessageContent with the add function and true', ->
+                    spyOn(scope, 'addMessageContent').and.callFake ->
+                    socketCallbacksByName['removeMessage']()
+                    expect(scope.addMessageContent).toHaveBeenCalledWith(jasmine.any(Function))
+
+                it 'should remove the message matching the given message id from scope.messages', ->
+                    initialMessages = [{_id: 321, content: 'first'}, {_id: 22, content: 'message to remove'}, {_id: 3, content: 'last'}]
+                    messageIdToRemove = 22
+                    finalMessages = [{_id: 321, content: 'first'}, {_id: 3, content: 'last'}]
+                    spyOn(scope, 'addMessageContent').and.callFake (addFunction) -> addFunction()
+                    scope.messages = initialMessages
+                    socketCallbacksByName['removeMessage'](messageIdToRemove)
+                    expect(scope.messages).toEqual(finalMessages)
+
+
+        describe 'scope.addMessageToWorkspace', ->
+
+            beforeEach ->
+                $rootScope.socket = {
+                    on: (callName, callback) ->
+                    emit: ->
+                    group: deferredGroup.promise
+                }
+                element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
+                $rootScope.$digest()
+                scope = element.isolateScope()
+
+            it 'should post to /api/text with the group id and the given text', inject ($httpBackend) ->
+                item = { _group: 321123, text: 'some text from a message' }
+                $httpBackend.expectPOST('/api/text', item).respond('')
+                scope.group = {
+                    _id: item._group
+                }
+                scope.addMessageToWorkspace(item.text)
+                $httpBackend.flush()
+
+        describe 'scope.sendMessage', ->
+
+            beforeEach ->
+                $rootScope.socket = {
+                    on: (callName, callback) ->
+                    emit: ->
+                    group: deferredGroup.promise
+                }
+                element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
+                $rootScope.$digest()
+                scope = element.isolateScope()
+
+            describe 'scope.newMessage is definedand contains at least 1 non white-space', ->
+
+                beforeEach ->
+                    spyOn($rootScope.socket, 'emit')
+                    scope.newMessage = 'test message'
+                    scope.sendMessage()
+
+                it 'should emit postNewMessage', ->
+                    expect($rootScope.socket.emit).toHaveBeenCalledWith('postNewMessage', 'test message')
+
+                it 'should clear scope.newMessage', ->
+                    expect(scope.newMessage).toEqual('')
+
+            describe 'scope.newMessage is defined and is empty', ->
+
+                beforeEach ->
+                    spyOn($rootScope.socket, 'emit')
+                    scope.newMessage = ''
+                    scope.sendMessage()
+
+                it 'should not emit postNewMessage', ->
+                    expect($rootScope.socket.emit).not.toHaveBeenCalled()
+
+            describe 'scope.newMessage is defined and contains only spaces', ->
+
+                beforeEach ->
+                    spyOn($rootScope.socket, 'emit')
+                    scope.newMessage = '      '
+                    scope.sendMessage()
+
+                it 'should not emit postNewMessage', ->
+                    expect($rootScope.socket.emit).not.toHaveBeenCalled()
+
+            describe 'scope.newMessage is not defined', ->
+
+                beforeEach ->
+                    spyOn($rootScope.socket, 'emit')
+                    scope.newMessage = undefined
+                    scope.sendMessage()
+
+                it 'should not emit postNewMessage', ->
+                    expect($rootScope.socket.emit).not.toHaveBeenCalled()
+
+
+        describe 'scope.removeMessage', ->
+
+            beforeEach ->
+                $rootScope.socket = {
+                    on: (callName, callback) ->
+                    emit: ->
+                    group: deferredGroup.promise
+                }
+                element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
+                $rootScope.$digest()
+                scope = element.isolateScope()
+
+            it 'should emit postRemoveMessage with the given message id', ->
+                spyOn($rootScope.socket, 'emit')
+                scope.removeMessage(987789)
+                expect($rootScope.socket.emit).toHaveBeenCalledWith('postRemoveMessage', 987789)
+
+
+        describe "$('.chatBody', element).on 'scoll'", ->
+
+            mockEvent = undefined
+
+            beforeEach inject ($templateCache) ->
+                $templateCache.put('/partials/chatPanel.html', "<div><div class='chatBody'></div></div>")
+                $rootScope.socket = {
+                    on: (callName, callback) ->
+                    emit: ->
+                    group: deferredGroup.promise
+                }
+                element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
+                $rootScope.$digest()
+                scope = element.isolateScope()
+                mockEvent = $.Event('scroll')
+                scope.messages = [{_id: 321, date: 'date1'}, {_id: 22, date: 'date2'}, {_id: 3, date: 'date3'}]
+
+
+            describe 'scope.allMessagesLoaded = false and chatBody.scrollTop is 0', ->
+
+                beforeEach ->
+                    scope.allMessagesLoaded = false
+
+                it 'should set scope.messagesLoading to true', ->
+                    scope.messagesLoading = false
+                    $('.chatBody', element).triggerHandler(mockEvent)
+                    expect(scope.messagesLoading).toEqual(true)
+
+                it 'should set scope.preLoadScrollHeight to chatBody.scrollHeight', ->
+                    scope.preLoadScrollHeight = undefined
+                    $('.chatBody', element).triggerHandler(mockEvent)
+                    expect(scope.preLoadScrollHeight).toEqual(0)
+
+                it 'should emit getMoreMessages with the date of the last message', ->
+                    spyOn($rootScope.socket, 'emit')
+                    $('.chatBody', element).triggerHandler(mockEvent)
+                    expect($rootScope.socket.emit).toHaveBeenCalledWith('getMoreMessages', 'date3')
+
+
+            describe 'scope.allMessagesLoaded = true and chatBody.scrollTop is 0', ->
+
+                beforeEach ->
+                    scope.allMessagesLoaded = true
+
+                it 'should set scope.messagesLoading to true', ->
+                    scope.messagesLoading = false
+                    $('.chatBody', element).triggerHandler(mockEvent)
+                    expect(scope.messagesLoading).toEqual(false)
+
+                it 'should set scope.preLoadScrollHeight to chatBody.scrollHeight', ->
+                    scope.preLoadScrollHeight = undefined
+                    $('.chatBody', element).triggerHandler(mockEvent)
+                    expect(scope.preLoadScrollHeight).toEqual(undefined)
+
+                it 'should emit getMoreMessages with the date of the last message', ->
+                    spyOn($rootScope.socket, 'emit')
+                    $('.chatBody', element).triggerHandler(mockEvent)
+                    expect($rootScope.socket.emit).not.toHaveBeenCalled()

@@ -1,7 +1,7 @@
 .chatPanel
     .chatHeader
         button.actionButton.homeButton.glyphicon.glyphicon-home(ui-sref='home.groups')
-    #chatBody.chatBody
+    .chatBody
         .messageRow(ng-show='messagesLoading')
             .loadingDiv loading...
         .messageRow(ng-repeat='message in messages | orderBy: "date" track by $index')

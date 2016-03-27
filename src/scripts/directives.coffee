@@ -121,49 +121,60 @@ angular.module('runwayAppDirectives', ['runwayAppConstants'])
     link: (scope, element, attrs) ->
         socket = scope.socket
 
+        scope.messages = []
         scope.messagesLoading = true
+
+        chatBody = $('.chatBody', element)[0]
 
         socket.group.then (group) ->
             scope.group = group
             socket.emit('getInitialMessages')
 
-        addMessageContent = (addFunction, all) ->
+        # slight hack to easily test dom attributes
+        scope.getDomAttribute = (elmt, attr) -> elmt[attr]
+
+        # todo: possibly use scope.apply wrapper instead
+        scope.addMessageContent = (addFunction, all) ->
             scope.$digest()
-            chatBody = document.getElementById('chatBody')
-            scrollAtBottom = all or Math.abs(chatBody.scrollTop - chatBody.scrollHeight + chatBody.offsetHeight) < 50
+            scrollAtBottom =
+                all or
+                Math.abs(
+                    scope.getDomAttribute(chatBody, 'scrollTop') -
+                    scope.getDomAttribute(chatBody, 'scrollHeight') +
+                    scope.getDomAttribute(chatBody, 'offsetHeight')
+                ) < 50
             addFunction()
             scope.messagesLoading = false
             scope.$digest()
-            chatBody.scrollTop = chatBody.scrollHeight if scrollAtBottom
+            chatBody.scrollTop = scope.getDomAttribute(chatBody, 'scrollHeight') if scrollAtBottom
 
         socket.on 'initialMessages', (messages) ->
-            addMessageContent ->
+            scope.addMessageContent ->
                 scope.messages = messages
             , true
 
         socket.on 'moreMessages', (moreMessages) ->
             scope.allMessagesLoaded = moreMessages.length is 0
-            chatBody = document.getElementById('chatBody')
             chatBody.scrollTop = 1
-            addMessageContent ->
+            scope.addMessageContent ->
                 scope.messages = scope.messages.concat(moreMessages)
-            chatBody.scrollTop = chatBody.scrollHeight - scope.preLoadScrollHeight
+            chatBody.scrollTop = scope.getDomAttribute(chatBody, 'scrollHeight') - scope.preLoadScrollHeight
 
         socket.on 'newMessage', (message) ->
-            addMessageContent ->
+            scope.addMessageContent ->
                 scope.messages.push(message)
 
         socket.on 'removeMessage', (_message) ->
-            addMessageContent ->
+            scope.addMessageContent ->
                 for message, index in scope.messages
                     if message._id is _message
                         scope.messages.splice(index, 1)
                         break
+                return
 
+        # todo: move these to MessageService service
         scope.addMessageToWorkspace = (string) ->
             http.post('/api/text', { _group: scope.group._id, text: string })
-
-        scope.messages = []
 
         scope.sendMessage = ->
             if scope.newMessage and scope.newMessage.trim().length > 0
@@ -173,8 +184,7 @@ angular.module('runwayAppDirectives', ['runwayAppConstants'])
         scope.removeMessage = (_message) ->
             socket.emit('postRemoveMessage', _message)
 
-        $('#chatBody').on 'scroll', (event) ->
-            chatBody = document.getElementById('chatBody')
+        $('.chatBody', element).on 'scroll', ->
             if !scope.allMessagesLoaded and chatBody.scrollTop is 0
                 scope.messagesLoading = true
                 scope.$digest()
