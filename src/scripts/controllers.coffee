@@ -284,10 +284,10 @@ angular.module('runwayAppControllers',
 
     deferredGroup = q.defer()
 
-    socket.group = deferredGroup.promise
+    socket._group = deferredGroup.promise
 
-    socket.on 'setGroup', (group) ->
-        deferredGroup.resolve(group)
+    socket.on 'setGroupId', (_group) ->
+        deferredGroup.resolve(_group)
 
     socket.on 'notAllowed', ->
         state.go(Constants.DEFAULT_ROUTE)

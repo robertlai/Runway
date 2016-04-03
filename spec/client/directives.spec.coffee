@@ -7,11 +7,15 @@ describe 'Directives', ->
     $compile = undefined
     scope = undefined
     element = undefined
+    MessageService = undefined
+    ItemService = undefined
 
-    beforeEach inject (_$compile_, _$rootScope_, _Constants_) ->
+    beforeEach inject (_$compile_, _$rootScope_, _Constants_, _MessageService_, _ItemService_) ->
         $compile = _$compile_
         $rootScope = _$rootScope_
         Constants = _Constants_
+        ItemService = _ItemService_
+        MessageService = _MessageService_
 
 
     describe 'runwayDropzone', ->
@@ -26,8 +30,7 @@ describe 'Directives', ->
             beforeEach ->
                 $rootScope.socket = {
                     on: ->
-                    emit: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div runway-dropzone="testRunway" socket="socket" style="width: 250px; height: 500px;"></div>')($rootScope)
                 $rootScope.$digest()
@@ -134,7 +137,7 @@ describe 'Directives', ->
                     }
                 $rootScope.socket = {
                     on: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
@@ -159,7 +162,7 @@ describe 'Directives', ->
             beforeEach ->
                 $rootScope.socket = {
                     on: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
@@ -196,13 +199,13 @@ describe 'Directives', ->
             describe 'accept file', ->
 
                 beforeEach ->
-                    scope.group = _id: 'testGroupId'
+                    scope._group = 'testGroupId'
                     spyOn(scope, 'maxx').and.callFake -> 5
                     spyOn(scope, 'maxy').and.callFake -> 15
                     scope.mouseX = 2
                     scope.mouseY = 236
 
-                it 'should set the headers _group to the scope.group._id', (done) ->
+                it 'should set the headers _group to the scope._group', (done) ->
                     scope.myDropzone.options.accept 'fake file', ->
                         expect(scope.myDropzone.options.headers._group).toEqual('testGroupId')
                         done()
@@ -241,21 +244,27 @@ describe 'Directives', ->
             beforeEach ->
                 $rootScope.socket = {
                     on: ->
-                    emit: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div runway-dropzone="testRunway" socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
                 scope = element.isolateScope()
-                deferredGroup.resolve('testResolvedGroup')
-                spyOn($rootScope.socket, 'emit')
+                spyOn(ItemService, 'getInitialItems').and.callFake -> {
+                    then: (callback) -> callback(['item1', 'item2'])
+                }
+                spyOn(scope, 'addNewItem').and.callFake ->
+                deferredGroup.resolve('testResolvedGroupId')
                 $rootScope.$digest()
 
-            it 'should set scope.group to the resolved scoket.group', ->
-                expect(scope.group).toEqual('testResolvedGroup')
+            it 'should set scope._group to the resolved scoket.group', ->
+                expect(scope._group).toEqual('testResolvedGroupId')
 
-            it "should emit 'getInitialItems'", ->
-                expect($rootScope.socket.emit).toHaveBeenCalledWith('getInitialItems')
+            it 'should call ItemService.getInitialItems', ->
+                expect(ItemService.getInitialItems).toHaveBeenCalledWith('testResolvedGroupId')
+
+            it 'should call scope.addNewItem with each new item', ->
+                expect(scope.addNewItem).toHaveBeenCalledWith('item1')
+                expect(scope.addNewItem).toHaveBeenCalledWith('item2')
 
         describe 'socket.on', ->
 
@@ -265,7 +274,7 @@ describe 'Directives', ->
                 $rootScope.socket = {
                     on: (callName, callback) ->
                         socketCallbacksByName[callName] = callback
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
 
             describe 'newItem', ->
@@ -438,7 +447,6 @@ describe 'Directives', ->
                     on: (callName, callback) ->
                         if callName is 'updateItem'
                             callback(itemInfo)
-                    emit: ->
                 }
                 itemsInfo = {
                     _id: 321123
@@ -450,13 +458,13 @@ describe 'Directives', ->
                 $rootScope.maxx = -> 102
                 $rootScope.maxy = -> 703
 
-                spyOn($rootScope.socket, 'emit')
+                spyOn(ItemService, 'updateItemLocation')
 
                 element = $compile('<div runway-draggable=' + JSON.stringify(itemsInfo) + '></div>')($rootScope)
                 $rootScope.$digest()
                 scope = element.isolateScope()
 
-            it 'should emit the changed location', ->
+            it 'should call ItemService.updateItemLocation with the item id, maxx and maxy', ->
                 mockEvent = $.Event('dragstop')
                 ui = {
                     offset: {
@@ -465,7 +473,7 @@ describe 'Directives', ->
                     }
                 }
                 $(element).triggerHandler(mockEvent, ui)
-                expect($rootScope.socket.emit).toHaveBeenCalledWith('updateItemLocation', 321123, 100000.0 / 102, 20000 / 703)
+                expect(ItemService.updateItemLocation).toHaveBeenCalledWith(321123, 100000.0 / 102, 20000 / 703)
 
 
     describe 'chatPanel', ->
@@ -481,8 +489,7 @@ describe 'Directives', ->
             beforeEach inject ->
                 $rootScope.socket = {
                     on: ->
-                    emit: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
@@ -509,41 +516,53 @@ describe 'Directives', ->
 
         describe 'resolve scoket.group', ->
 
-            beforeEach ->
+            toReturn = undefined
+            beforeEach (done) ->
+                toReturn = ['these', 'are', 'some', 'test', 'messages']
                 $rootScope.socket = {
                     on: ->
-                    emit: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
                 scope = element.isolateScope()
-                deferredGroup.resolve('testResolvedGroup')
-                spyOn($rootScope.socket, 'emit')
+                spyOn(scope, 'addMessageContent').and.callFake (addFunction) -> addFunction()
+                spyOn(MessageService, 'getInitialMessages').and.callFake -> {
+                    then: (callback) -> callback(toReturn)
+                }
+                deferredGroup.resolve('testResolvedGroupId')
                 $rootScope.$digest()
+                setTimeout ->
+                    done()
+                , 1
 
-            it 'should set scope.group to the resolved scoket.group', ->
-                expect(scope.group).toEqual('testResolvedGroup')
+            it 'should set scope._group to the resolved scoket.group', ->
+                expect(scope._group).toEqual('testResolvedGroupId')
 
-            it "should emit 'getInitialItems'", ->
-                expect($rootScope.socket.emit).toHaveBeenCalledWith('getInitialMessages')
+            it 'should call MessageService.getInitialMessages', ->
+                expect(MessageService.getInitialMessages).toHaveBeenCalledWith('testResolvedGroupId')
+
+            it 'should call scope.addMessageContent with the add function and true', ->
+                expect(scope.addMessageContent).toHaveBeenCalledWith(jasmine.any(Function), true)
+
+            it 'should set scope.messages to the given messages when scope.addMessageContent calls the add function', ->
+                expect(scope.messages).toEqual(toReturn)
 
 
         describe 'scope.getDomAttribute', ->
 
             beforeEach inject ($templateCache) ->
-                $templateCache.put('/partials/chatPanel.html', "<div></div>")
+                $templateCache.put('/partials/chatPanel.html', '<div></div>')
                 $rootScope.socket = {
                     on: ->
-                    emit: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
                 scope = element.isolateScope()
 
             it 'should return the requested attribute of the given element', ->
-                expect(scope.getDomAttribute({testAttr: 'test value'}, 'testAttr')).toEqual('test value')
+                expect(scope.getDomAttribute({ testAttr: 'test value' }, 'testAttr')).toEqual('test value')
 
 
         describe 'scope.addMessageContent', ->
@@ -552,8 +571,7 @@ describe 'Directives', ->
                 $templateCache.put('/partials/chatPanel.html', "<div><div class='chatBody'></div></div>")
                 $rootScope.socket = {
                     on: ->
-                    emit: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
@@ -606,51 +624,11 @@ describe 'Directives', ->
                 $rootScope.socket = {
                     on: (callName, callback) ->
                         socketCallbacksByName[callName] = callback
-                    emit: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
                 scope = element.isolateScope()
-
-
-            describe 'initialMessages', ->
-
-                it 'should call scope.addMessageContent with the add function and true', ->
-                    spyOn(scope, 'addMessageContent').and.callFake ->
-                    socketCallbacksByName['initialMessages']()
-                    expect(scope.addMessageContent).toHaveBeenCalledWith(jasmine.any(Function), true)
-
-                it 'should set scope.messages to the given messages when scope.addMessageContent calls the add function', ->
-                    testMessages = ['these', 'are', 'some', 'test', 'messages']
-                    spyOn(scope, 'addMessageContent').and.callFake (addFunction) -> addFunction()
-                    socketCallbacksByName['initialMessages'](testMessages)
-                    expect(scope.messages).toEqual(testMessages)
-
-
-            describe 'moreMessages', ->
-
-                it 'should set scope.allMessagesLoaded to true if the given messages length is 0', ->
-                    socketCallbacksByName['moreMessages']([])
-                    expect(scope.allMessagesLoaded).toEqual(true)
-
-                it 'should set scope.allMessagesLoaded to false if the given messages length is 0', ->
-                    socketCallbacksByName['moreMessages'](['only one message'])
-                    expect(scope.allMessagesLoaded).toEqual(false)
-
-                it 'should call scope.addMessageContent with the add function', ->
-                    spyOn(scope, 'addMessageContent').and.callFake ->
-                    socketCallbacksByName['moreMessages']([])
-                    expect(scope.addMessageContent).toHaveBeenCalledWith(jasmine.any(Function))
-
-                it 'should add the given messages to scope.message when scope.addMessageContent calls the add function', ->
-                    intialMessages = ['some', 'initial', 'messages']
-                    testMessages = ['these', 'are', 'some', 'test', 'messages']
-                    finalMessages = intialMessages.concat(testMessages)
-                    spyOn(scope, 'addMessageContent').and.callFake (addFunction) -> addFunction()
-                    scope.messages = intialMessages
-                    socketCallbacksByName['moreMessages'](testMessages)
-                    expect(scope.messages).toEqual(finalMessages)
 
 
             describe 'newMessage', ->
@@ -678,9 +656,9 @@ describe 'Directives', ->
                     expect(scope.addMessageContent).toHaveBeenCalledWith(jasmine.any(Function))
 
                 it 'should remove the message matching the given message id from scope.messages', ->
-                    initialMessages = [{_id: 321, content: 'first'}, {_id: 22, content: 'message to remove'}, {_id: 3, content: 'last'}]
+                    initialMessages = [{ _id: 321, content: 'first' }, { _id: 22, content: 'message to remove' }, { _id: 3, content: 'last' }]
                     messageIdToRemove = 22
-                    finalMessages = [{_id: 321, content: 'first'}, {_id: 3, content: 'last'}]
+                    finalMessages = [{ _id: 321, content: 'first' }, { _id: 3, content: 'last' }]
                     spyOn(scope, 'addMessageContent').and.callFake (addFunction) -> addFunction()
                     scope.messages = initialMessages
                     socketCallbacksByName['removeMessage'](messageIdToRemove)
@@ -692,8 +670,7 @@ describe 'Directives', ->
             beforeEach ->
                 $rootScope.socket = {
                     on: (callName, callback) ->
-                    emit: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
@@ -702,9 +679,7 @@ describe 'Directives', ->
             it 'should post to /api/text with the group id and the given text', inject ($httpBackend) ->
                 item = { _group: 321123, text: 'some text from a message' }
                 $httpBackend.expectPOST('/api/text', item).respond('')
-                scope.group = {
-                    _id: item._group
-                }
+                scope._group = item._group
                 scope.addMessageToWorkspace(item.text)
                 $httpBackend.flush()
 
@@ -713,22 +688,22 @@ describe 'Directives', ->
             beforeEach ->
                 $rootScope.socket = {
                     on: (callName, callback) ->
-                    emit: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
                 scope = element.isolateScope()
+                scope._group = 'testGroupId'
 
-            describe 'scope.newMessage is definedand contains at least 1 non white-space', ->
+            describe 'scope.newMessage is defined and contains at least 1 non-whitespace', ->
 
                 beforeEach ->
-                    spyOn($rootScope.socket, 'emit')
+                    spyOn(MessageService, 'addNewMessageToChat')
                     scope.newMessage = 'test message'
                     scope.sendMessage()
 
-                it 'should emit postNewMessage', ->
-                    expect($rootScope.socket.emit).toHaveBeenCalledWith('postNewMessage', 'test message')
+                it 'should call MessageService.addNewMessageToChat with the group id and newMessage postNewMessage', ->
+                    expect(MessageService.addNewMessageToChat).toHaveBeenCalledWith('testGroupId', 'test message')
 
                 it 'should clear scope.newMessage', ->
                     expect(scope.newMessage).toEqual('')
@@ -736,32 +711,32 @@ describe 'Directives', ->
             describe 'scope.newMessage is defined and is empty', ->
 
                 beforeEach ->
-                    spyOn($rootScope.socket, 'emit')
+                    spyOn(MessageService, 'addNewMessageToChat')
                     scope.newMessage = ''
                     scope.sendMessage()
 
-                it 'should not emit postNewMessage', ->
-                    expect($rootScope.socket.emit).not.toHaveBeenCalled()
+                it 'should not not call MessageService.addNewMessageToChat', ->
+                    expect(MessageService.addNewMessageToChat).not.toHaveBeenCalled()
 
             describe 'scope.newMessage is defined and contains only spaces', ->
 
                 beforeEach ->
-                    spyOn($rootScope.socket, 'emit')
+                    spyOn(MessageService, 'addNewMessageToChat')
                     scope.newMessage = '      '
                     scope.sendMessage()
 
-                it 'should not emit postNewMessage', ->
-                    expect($rootScope.socket.emit).not.toHaveBeenCalled()
+                it 'should not call MessageService.addNewMessageToChat', ->
+                    expect(MessageService.addNewMessageToChat).not.toHaveBeenCalled()
 
             describe 'scope.newMessage is not defined', ->
 
                 beforeEach ->
-                    spyOn($rootScope.socket, 'emit')
+                    spyOn(MessageService, 'addNewMessageToChat')
                     scope.newMessage = undefined
                     scope.sendMessage()
 
-                it 'should not emit postNewMessage', ->
-                    expect($rootScope.socket.emit).not.toHaveBeenCalled()
+                it 'should not call MessageService.addNewMessageToChat', ->
+                    expect(MessageService.addNewMessageToChat).not.toHaveBeenCalled()
 
 
         describe 'scope.removeMessage', ->
@@ -769,17 +744,16 @@ describe 'Directives', ->
             beforeEach ->
                 $rootScope.socket = {
                     on: (callName, callback) ->
-                    emit: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
                 scope = element.isolateScope()
 
-            it 'should emit postRemoveMessage with the given message id', ->
-                spyOn($rootScope.socket, 'emit')
+            it 'should call MessageService.removeMessage with the given message id', ->
+                spyOn(MessageService, 'removeMessage')
                 scope.removeMessage(987789)
-                expect($rootScope.socket.emit).toHaveBeenCalledWith('postRemoveMessage', 987789)
+                expect(MessageService.removeMessage).toHaveBeenCalledWith(987789)
 
 
         describe "$('.chatBody', element).on 'scoll'", ->
@@ -791,19 +765,25 @@ describe 'Directives', ->
                 $rootScope.socket = {
                     on: (callName, callback) ->
                     emit: ->
-                    group: deferredGroup.promise
+                    _group: deferredGroup.promise
                 }
                 element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
                 scope = element.isolateScope()
                 mockEvent = $.Event('scroll')
-                scope.messages = [{_id: 321, date: 'date1'}, {_id: 22, date: 'date2'}, {_id: 3, date: 'date3'}]
+                scope.messages = [{ _id: 321, date: 'date1' }, { _id: 22, date: 'date2' }, { _id: 3, date: 'date3' }]
 
 
             describe 'scope.allMessagesLoaded = false and chatBody.scrollTop is 0', ->
 
+                toReturn = undefined
+
                 beforeEach ->
+                    toReturn = []
                     scope.allMessagesLoaded = false
+                    spyOn(MessageService, 'getMoreMessages').and.callFake -> {
+                        then: (callback) -> callback(toReturn)
+                    }
 
                 it 'should set scope.messagesLoading to true', ->
                     scope.messagesLoading = false
@@ -815,10 +795,54 @@ describe 'Directives', ->
                     $('.chatBody', element).triggerHandler(mockEvent)
                     expect(scope.preLoadScrollHeight).toEqual(0)
 
-                it 'should emit getMoreMessages with the date of the last message', ->
-                    spyOn($rootScope.socket, 'emit')
+                it 'should call MessageService.getMoreMessages with the group id and the date of the last message', ->
+                    toReturn = []
+                    scope._group = 'testGroupId'
                     $('.chatBody', element).triggerHandler(mockEvent)
-                    expect($rootScope.socket.emit).toHaveBeenCalledWith('getMoreMessages', 'date3')
+                    $rootScope.$digest()
+                    expect(MessageService.getMoreMessages).toHaveBeenCalledWith('testGroupId', 'date3')
+
+                it 'should set scope.allMessagesLoaded to true if the given messages length is 0', (done) ->
+                    toReturn = []
+                    $('.chatBody', element).triggerHandler(mockEvent)
+                    $rootScope.$digest()
+                    setTimeout ->
+                        expect(scope.allMessagesLoaded).toEqual(true)
+                        done()
+                    , 5
+
+                it 'should set scope.allMessagesLoaded to false if the given messages length is 0', (done) ->
+                    toReturn = ['only one message']
+                    $('.chatBody', element).triggerHandler(mockEvent)
+                    $rootScope.$digest()
+                    setTimeout ->
+                        expect(scope.allMessagesLoaded).toEqual(false)
+                        done()
+                    , 5
+
+                it 'should call scope.addMessageContent with the add function', (done) ->
+                    spyOn(scope, 'addMessageContent').and.callFake ->
+                    toReturn = []
+                    $('.chatBody', element).triggerHandler(mockEvent)
+                    $rootScope.$digest()
+                    setTimeout ->
+                        expect(scope.addMessageContent).toHaveBeenCalledWith(jasmine.any(Function))
+                        done()
+                    , 5
+
+                it 'should add the given messages to scope.message when scope.addMessageContent calls the add function', (done) ->
+                    intialMessages = ['some', 'initial', 'messages']
+                    testMessages = ['these', 'are', 'some', 'test', 'messages']
+                    finalMessages = intialMessages.concat(testMessages)
+                    spyOn(scope, 'addMessageContent').and.callFake (addFunction) -> addFunction()
+                    scope.messages = intialMessages
+                    toReturn = testMessages
+                    $('.chatBody', element).triggerHandler(mockEvent)
+                    $rootScope.$digest()
+                    setTimeout ->
+                        expect(scope.messages).toEqual(finalMessages)
+                        done()
+                    , 5
 
 
             describe 'scope.allMessagesLoaded = true and chatBody.scrollTop is 0', ->

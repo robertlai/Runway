@@ -41,9 +41,9 @@ passport.use 'login', new LocalStrategy({
     User.findOne { 'username': username }, (err, user) ->
         if err
             done(err)
-        else if !user
+        else if not user
             done(null, false, 'This user was not found! Check your spelling.')
-        else if !user.validPassword(password)
+        else if not user.validPassword(password)
             done(null, false, 'Oops! Wrong password.')
         else
             done(null, user)

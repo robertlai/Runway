@@ -45,7 +45,7 @@ describe 'Routes', ->
     describe 'setup', ->
 
         it 'should set html5 mode with the correct options', ->
-            expect($locationProvider.html5Mode).toHaveBeenCalledWith({enabled: true})
+            expect($locationProvider.html5Mode).toHaveBeenCalledWith({ enabled: true })
 
         it 'should set the $urlRouterProvider otherwise to the defauth route', ->
             expect($urlRouterProvider.otherwise).toHaveBeenCalledWith('/home/groups/' + Constants.OWNED_GROUP)
@@ -58,7 +58,7 @@ describe 'Routes', ->
         beforeEach ->
             loginParams = {
                 returnStateName: 'testReturnState'
-                returnStateParams: JSON.stringify({params1: 'testParam1'})
+                returnStateParams: JSON.stringify({ params1: 'testParam1' })
             }
             httpBackend.when('GET', '/partials/login.html').respond()
             $state.go('login', loginParams)
@@ -122,10 +122,10 @@ describe 'Routes', ->
 
         it 'should resolve the User', (done) ->
             AuthService = {
-                getUser: -> resolvedPromiseFunc({username: 'Justin'})
+                getUser: -> resolvedPromiseFunc({ username: 'Justin' })
             }
             $state.get('home').views['navBar@'].resolve.User(AuthService).then (user) ->
-                expect(user).toEqual({username: 'Justin'})
+                expect(user).toEqual({ username: 'Justin' })
                 done()
             $rootScope.$digest()
 
@@ -158,10 +158,10 @@ describe 'Routes', ->
 
         it 'should resolve the User', (done) ->
             AuthService = {
-                getUser: -> resolvedPromiseFunc({username: 'Justin'})
+                getUser: -> resolvedPromiseFunc({ username: 'Justin' })
             }
             $state.get('home.settings').resolve.User(AuthService).then (user) ->
-                expect(user).toEqual({username: 'Justin'})
+                expect(user).toEqual({ username: 'Justin' })
                 done()
             $rootScope.$digest()
 
@@ -227,10 +227,10 @@ describe 'Routes', ->
 
         it 'should resolve the User', (done) ->
             AuthService = {
-                getUser: -> resolvedPromiseFunc({username: 'Justin'})
+                getUser: -> resolvedPromiseFunc({ username: 'Justin' })
             }
             $state.get('workspace').resolve.User(AuthService).then (user) ->
-                expect(user).toEqual({username: 'Justin'})
+                expect(user).toEqual({ username: 'Justin' })
                 done()
             $rootScope.$digest()
 
@@ -333,7 +333,7 @@ describe 'Routes Authentication', ->
             }
             nextParams = {
                 returnStateName: 'testReturnState'
-                returnStateParams: JSON.stringify({params1: 'testParam1'})
+                returnStateParams: JSON.stringify({ params1: 'testParam1' })
             }
             httpBackend.when('GET', '/partials/login.html').respond()
             httpBackend.when('GET', '/partials/navBar.html').respond()

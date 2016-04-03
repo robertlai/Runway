@@ -12,6 +12,8 @@ autoprefixer = require('gulp-autoprefixer')
 csso = require('gulp-csso')
 jade = require('gulp-jade')
 nodemon = require('gulp-nodemon')
+mocha = require('gulp-mocha')
+Server = require('karma').Server
 
 
 allCoffeeSrc = path.join('src', 'scripts', '*.coffee')
@@ -39,6 +41,16 @@ imagesSrcPath = path.join('src', 'images', '*.*')
 imagesDestPath = path.join('dist', 'images')
 
 
+passportSrcPath = './passport.coffee'
+appSrcPath = './app.coffee'
+socketManagerSrcPath = './socketManager.coffee'
+modelsSrcPath = './models/**/*.coffee'
+routesSrcPath = './routes/**/*.coffee'
+serverSpecSrc = './spec/server/**/*.spec.coffee'
+
+karmaConfSrcFile = path.join(__dirname, 'karma.conf.coffee')
+
+
 gulp.task 'coffeelint', ->
     gulp.src(allCoffeeSrc)
         .pipe(coffeelint())
@@ -49,9 +61,9 @@ gulp.task 'clean:clientScripts', ->
     del(scriptsDestPath + clientScriptsMinDestFile)
     del(scriptsDestPath + clientScriptsNonMinDestFile)
 gulp.task 'clientScripts', ['coffeelint', 'clean:clientScripts'], ->
-    browserify(clientScriptsSrcFile, {transform: ['coffeeify'], extensions: ['.coffee']})
+    browserify(clientScriptsSrcFile, { transform: ['coffeeify'], extensions: ['.coffee'] })
         .bundle()
-        .on 'error', (error) -> this.emit('end')
+        .on 'error', (error) -> @emit('end')
         .pipe(source(clientScriptsNonMinDestFile))
         .pipe(gulp.dest(scriptsDestPath))
         .pipe(buffer())
@@ -64,7 +76,7 @@ gulp.task 'clean:vendorScripts', -> del(scriptsDestPath + vendorScriptsDestFile)
 gulp.task 'vendorScripts', ['clean:vendorScripts'], ->
     browserify(vendorScriptsSrcFile)
         .bundle()
-        .on 'error', (error) -> this.emit('end')
+        .on 'error', (error) -> @emit('end')
         .pipe(source(vendorScriptsDestFile))
         .pipe(buffer())
         .pipe(uglify())
@@ -102,10 +114,10 @@ gulp.task 'images', ['clean:images'], ->
         .pipe(gulp.dest(imagesDestPath))
 
 
-allTasks = ['vendorCss', 'clientCss', 'vendorScripts', 'clientScripts', 'jade', 'images']
+allBuildTasks = ['vendorCss', 'clientCss', 'vendorScripts', 'clientScripts', 'jade', 'images']
 
 
-gulp.task 'dev', allTasks, ->
+gulp.task 'dev', allBuildTasks, ->
     gulp.watch(allCoffeeSrc, ['clientScripts'])
     gulp.watch([vendorScriptsSrcFile, 'package.json'], ['vendorScripts', 'vendorCss'])
     gulp.watch(['package.json', clientStylesSrcPath], ['clientCss'])
@@ -116,4 +128,14 @@ gulp.task 'dev', allTasks, ->
     })
 
 
-gulp.task 'release', allTasks
+gulp.task 'release', allBuildTasks
+
+
+# test
+gulp.task 'test:server', ->
+    gulp.src(serverSpecSrc)
+        .pipe(mocha({ reporter: 'nyan' }))
+
+gulp.task 'test', ['test:server'], ->
+    new Server({ configFile: karmaConfSrcFile }).start()
+    gulp.watch([passportSrcPath, appSrcPath, socketManagerSrcPath, modelsSrcPath, routesSrcPath, serverSpecSrc], ['test:server'])

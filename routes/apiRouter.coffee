@@ -7,11 +7,14 @@ sizeOf = require('image-size')
 
 Constants = require('../Constants')
 
-Item = require('../models/Item')
-User = require('../models/User')
 Group = require('../models/Group')
+Item = require('../models/Item')
+Message = require('../models/Message')
+User = require('../models/User')
 
 passport = require('passport')
+
+numberOfMessagesToLoad = 30
 
 
 module.exports = (io) ->
@@ -44,7 +47,7 @@ module.exports = (io) ->
         newGroup = req.body
         _user = req.user._id
         try
-            Group.findOne {name: newGroup.name}, (err, group) ->
+            Group.findOne { name: newGroup.name }, (err, group) ->
                 if err
                     throw err
                 else if group
@@ -56,7 +59,6 @@ module.exports = (io) ->
                         colour: newGroup.colour
                         _owner: req.user._id
                         _members: [req.user._id]
-                        numberOfMessagesToLoad: 30
                     }
                     newGroup.save (err, savedGroup) ->
                         throw err if err
@@ -79,10 +81,10 @@ module.exports = (io) ->
         groupToEdit = req.body
         _user = req.user._id
         try
-            Group.findOne {name: groupToEdit.name}, (err, group) ->
+            Group.findOne { name: groupToEdit.name }, (err, group) ->
                 if err
                     throw err
-                else if group and group._id.toString() != groupToEdit._id.toString()
+                else if group and group._id.toString() isnt groupToEdit._id.toString()
                     res.sendStatus(409)
                 else
                     editedGroup = {
@@ -124,9 +126,9 @@ module.exports = (io) ->
             # todo: check if user is a publicly findable user
             User.find({
                 $or: [
-                    {'firstName': { "$regex": query, "$options": "i" } }
-                    {'lastName': { "$regex": query, "$options": "i" } }
-                    {'nickname': { "$regex": query, "$options": "i" } }
+                    { 'firstName': { '$regex': query, '$options': 'i' } }
+                    { 'lastName': { '$regex': query, '$options': 'i' } }
+                    { 'nickname': { '$regex': query, '$options': 'i' } }
                 ]
                 '_id': { $ne: _user }
             })
@@ -147,7 +149,7 @@ module.exports = (io) ->
             .select('_members')
             .exec (err, group) ->
                 throw err if err
-                if group._members.indexOf(_memberToAdd) != -1
+                if group._members.indexOf(_memberToAdd) isnt -1
                     res.sendStatus(409)
                 else
                     group._members.push(_memberToAdd)
@@ -213,7 +215,7 @@ module.exports = (io) ->
             file: fs.readFileSync(fullFilePath)
         }
         item.save (err, newItem) ->
-            if !err
+            if not err
                 itemToSendBack = {
                     _id: newItem._id
                     date: date
@@ -235,6 +237,102 @@ module.exports = (io) ->
                 throw err if (not file or err)
                 res.set('Content-Type': file.type)
                 res.send(file.file)
+        catch err
+            res.sendStatus(500)
+
+    apiRouter.post '/newMessage', (req, res) ->
+        try
+            _user = req.user._id
+            _group = req.body._group
+            messageContent = req.body.messageContent
+
+            newMessage = new Message {
+                date: new Date()
+                _user: _user
+                _group: _group
+                content: messageContent
+            }
+            newMessage.save (err, message) ->
+                throw err if err
+                Message.populate newMessage, {
+                    path: '_user'
+                    select: 'username'
+                }, (err, populatedMessage) ->
+                    throw err if err
+                    io.sockets.in(_group).emit('newMessage', populatedMessage)
+                    res.sendStatus(201)
+        catch err
+            res.sendStatus(500)
+
+    apiRouter.post '/removeMessage', (req, res) ->
+        try
+            _message = req.body._message
+
+            Message.findById(_message)
+            .select('_group')
+            .exec (err, message) ->
+                throw err if err
+                message.remove().then (message, err) ->
+                    throw err if err
+                    io.sockets.in(message._group).emit('removeMessage', _message)
+                    res.sendStatus(200)
+        catch err
+            res.sendStatus(500)
+
+    apiRouter.post '/initialMessages', (req, res) ->
+        try
+            Message.find({ _group: req.body._group })
+            .select('date content _user')
+            .populate('_user', 'username')
+            .sort({ date: -1 })
+            .limit(numberOfMessagesToLoad)
+            .exec (err, messages) ->
+                throw err if err
+                res.json(messages)
+        catch err
+            res.sendStatus(500)
+
+    apiRouter.post '/moreMessages', (req, res) ->
+        try
+            Message.find({ _group: req.body._group })
+            .select('date content _user')
+            .populate('_user', 'username')
+            .where('date').lt(req.body.lastDate)
+            .sort({ date: -1 })
+            .limit(numberOfMessagesToLoad)
+            .exec (err, messages) ->
+                throw err if err
+                res.json(messages)
+        catch err
+            res.sendStatus(500)
+
+    apiRouter.post '/initialItems', (req, res) ->
+        try
+            Item.find({ _group: req.body._group })
+            .select('date type x y width height text')
+            .sort('date')
+            .exec (err, itemsInfo) ->
+                throw err if err
+                res.json(itemsInfo)
+        catch err
+            res.sendStatus(500)
+
+    apiRouter.post '/updateItemLocation', (req, res) ->
+        try
+            _item = req.body._item
+            newX = req.body.newX
+            newY = req.body.newY
+
+            Item.findById(_item)
+            .select('x y _group')
+            .exec (err, item) ->
+                throw err if err
+                item._id = _item
+                item.x = newX
+                item.y = newY
+                item.save()
+                io.sockets.in(item._group).emit('updateItem', item)
+                res.sendStatus(200)
         catch err
             res.sendStatus(500)
 

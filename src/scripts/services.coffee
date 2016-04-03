@@ -132,20 +132,6 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
 
             return deferred.promise
 
-        addMember: (_group, memberToAdd) =>
-            deferred = @q.defer()
-
-            @http.post('/api/addGroupMember', {_group: _group, memberToAdd: memberToAdd})
-                .success ->
-                    deferred.resolve()
-                .error (error, status) =>
-                    if status is 409
-                        deferred.reject(@Constants.Messages.USER_ALREADY_IN_GROUP)
-                    else
-                        deferred.reject(@Constants.Messages.SERVER_ERROR)
-
-            return deferred.promise
-
         deleteGroup: (groupToDelete) =>
             deferred = @q.defer()
 
@@ -155,6 +141,20 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
                 .error (error, status) =>
                     if status is 401
                         deferred.reject(@Constants.Messages.MUST_BE_OWNER_TO_DELETE)
+                    else
+                        deferred.reject(@Constants.Messages.SERVER_ERROR)
+
+            return deferred.promise
+
+        addMember: (_group, memberToAdd) =>
+            deferred = @q.defer()
+
+            @http.post('/api/addGroupMember', { _group: _group, memberToAdd: memberToAdd })
+                .success ->
+                    deferred.resolve()
+                .error (error, status) =>
+                    if status is 409
+                        deferred.reject(@Constants.Messages.USER_ALREADY_IN_GROUP)
                     else
                         deferred.reject(@Constants.Messages.SERVER_ERROR)
 
@@ -172,9 +172,104 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
         getUsers: (query) =>
             deferred = @q.defer()
 
-            @http.post('/api/getUsers', {query: query})
+            @http.post('/api/getUsers', { query: query })
                 .success (members) ->
                     deferred.resolve(members)
+                .error =>
+                    deferred.reject(@Constants.Messages.SERVER_ERROR)
+
+            return deferred.promise
+
+]
+
+.service 'MessageService', [
+    '$http'
+    '$q'
+    'Constants'
+    class MessageService
+        constructor: (@http, @q, @Constants) ->
+
+        addNewMessageToChat: (_group, messageContent) =>
+            deferred = @q.defer()
+
+            @http.post('/api/newMessage', { _group: _group, messageContent: messageContent })
+                .success ->
+                    deferred.resolve()
+                .error =>
+                    deferred.reject(@Constants.Messages.SERVER_ERROR)
+
+            return deferred.promise
+
+        removeMessage: (_message) =>
+            deferred = @q.defer()
+
+            @http.post('/api/removeMessage', { _message: _message })
+                .success ->
+                    deferred.resolve()
+                .error =>
+                    deferred.reject(@Constants.Messages.SERVER_ERROR)
+
+            return deferred.promise
+
+        postMessageToWorkspace: (_group, message) =>
+            deferred = @q.defer()
+
+            @http.post('/api/text', { _group: _group, text: message })
+                .success ->
+                    deferred.resolve()
+                .error =>
+                    deferred.reject(@Constants.Messages.SERVER_ERROR)
+
+            return deferred.promise
+
+        getInitialMessages: (_group) =>
+            deferred = @q.defer()
+
+            @http.post('/api/initialMessages', { _group: _group })
+                .success (messages) ->
+                    deferred.resolve(messages)
+                .error =>
+                    deferred.reject(@Constants.Messages.SERVER_ERROR)
+
+            return deferred.promise
+
+        getMoreMessages: (_group, lastDate) =>
+            deferred = @q.defer()
+
+            @http.post('/api/moreMessages', { _group: _group, lastDate: lastDate })
+                .success (messages) ->
+                    deferred.resolve(messages)
+                .error =>
+                    deferred.reject(@Constants.Messages.SERVER_ERROR)
+
+            return deferred.promise
+
+]
+
+.service 'ItemService', [
+    '$http'
+    '$q'
+    'Constants'
+    class ItemService
+        constructor: (@http, @q, @Constants) ->
+
+        getInitialItems: (_group) =>
+            deferred = @q.defer()
+
+            @http.post('/api/initialItems', { _group: _group })
+                .success (items) ->
+                    deferred.resolve(items)
+                .error =>
+                    deferred.reject(@Constants.Messages.SERVER_ERROR)
+
+            return deferred.promise
+
+        updateItemLocation: (_item, newX, newY) =>
+            deferred = @q.defer()
+
+            @http.post('/api/updateItemLocation', { _item: _item, newX: newX, newY: newY })
+                .success ->
+                    deferred.resolve()
                 .error =>
                     deferred.reject(@Constants.Messages.SERVER_ERROR)
 

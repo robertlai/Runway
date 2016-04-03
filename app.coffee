@@ -19,8 +19,6 @@ mongoose.connect(
         require('./dbcredentials.json').dbAddress
 )
 
-require('./passport')
-
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
 
@@ -42,14 +40,16 @@ app.use(session({
     resave: false
     saveUninitialized: false
 }))
+
+require('./passport')
 app.use(passport.initialize())
 app.use(passport.session())
 
+require('./socketManager')(io)
 router = require('./routes/router')(io)
 app.use(router)
-require('./routes/socketRouter')(io)
 
-port = (process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000)
+port = (process.env.OPENSHIFT_NODEJS_PORT or process.env.PORT or 3000)
 ip = process.env.OPENSHIFT_NODEJS_IP
 app.set('port', port)
 if ip?
@@ -57,3 +57,5 @@ if ip?
     http.listen(port, ip)
 else
     http.listen(port)
+
+module.exports = http

@@ -1,6 +1,6 @@
-angular.module('runwayAppDirectives', ['runwayAppConstants'])
+angular.module('runwayAppDirectives', ['runwayAppConstants', 'runwayAppServices'])
 
-.directive 'runwayDropzone', ['$compile', ($compile) ->
+.directive 'runwayDropzone', ['$compile', 'ItemService', ($compile, ItemService) ->
     restrict: 'A'
     scope:
         runwayDropzone: '@'
@@ -12,9 +12,23 @@ angular.module('runwayAppDirectives', ['runwayAppConstants'])
         element.attr('id', scope.runwayDropzone)
         element.css('position', 'relative')
 
-        socket.group.then (group) ->
-            scope.group = group
-            socket.emit('getInitialItems')
+        scope.addNewItem = (itemInfo) ->
+            newItem = undefined
+            if itemInfo.type is 'text'
+                newItem = $('<p />').attr('class', 'noselect').text(itemInfo.text)
+            else if itemInfo.type.substring(0, 5) is 'image'
+                newItem = $('<img />').attr('src', '/api/file?_file=' + itemInfo._id)
+            else if itemInfo.type is 'application/pdf'
+                newItem = $('<object data="/api/file?_file=' + itemInfo._id + '"/>').css('padding-top', '25px').css('background-color', '#525659')
+
+            if newItem
+                newItem.attr('runway-draggable', JSON.stringify(itemInfo))
+                element.append($compile(newItem)(scope))
+
+        socket._group.then (_group) ->
+            scope._group = _group
+            ItemService.getInitialItems(scope._group).then (items) ->
+                scope.addNewItem(item) for item in items
 
         scope.mouseX = null
         scope.mouseY = null
@@ -48,7 +62,7 @@ angular.module('runwayAppDirectives', ['runwayAppConstants'])
             acceptedFiles: 'image/*, application/pdf'
             accept: (file, done) ->
                 scope.myDropzone.options.headers = {
-                    '_group': scope.group._id
+                    '_group': scope._group
                     screenwidth: scope.maxx()
                     screenheight: scope.maxy()
                     x: scope.mouseX
@@ -62,20 +76,10 @@ angular.module('runwayAppDirectives', ['runwayAppConstants'])
             scope.myDropzone.removeFile(file)
 
         socket.on 'newItem', (itemInfo) ->
-            newItem = undefined
-            if itemInfo.type is 'text'
-                newItem = $('<p />').attr('class', 'noselect').text(itemInfo.text)
-            else if itemInfo.type.substring(0, 5) is 'image'
-                newItem = $('<img />').attr('src', '/api/file?_file=' + itemInfo._id)
-            else if itemInfo.type is 'application/pdf'
-                newItem = $('<object data="/api/file?_file=' + itemInfo._id + '"/>').css('padding-top', '25px').css('background-color', '#525659')
-
-            if newItem
-                newItem.attr('runway-draggable', JSON.stringify(itemInfo))
-                element.append($compile(newItem)(scope))
+            scope.addNewItem(itemInfo)
 ]
 
-.directive 'runwayDraggable', [ ->
+.directive 'runwayDraggable', ['ItemService', (ItemService) ->
     restrict: 'A'
     scope: false
     link: (scope, element, attrs) ->
@@ -108,10 +112,10 @@ angular.module('runwayAppDirectives', ['runwayAppConstants'])
             )
 
         $(element).on 'dragstop', (event, ui) ->
-            socket.emit('updateItemLocation', itemsInfo._id, ui.offset.left * 100.0 / scope.maxx(), ui.offset.top * 100.0 / scope.maxy())
+            ItemService.updateItemLocation(itemsInfo._id, ui.offset.left * 100.0 / scope.maxx(), ui.offset.top * 100.0 / scope.maxy())
 ]
 
-.directive 'chatPanel', ['$http', (http) ->
+.directive 'chatPanel', ['$http', 'MessageService', (http, MessageService) ->
     restrict: 'A'
     scope:
         socket: '='
@@ -126,14 +130,18 @@ angular.module('runwayAppDirectives', ['runwayAppConstants'])
 
         chatBody = $('.chatBody', element)[0]
 
-        socket.group.then (group) ->
-            scope.group = group
-            socket.emit('getInitialMessages')
+        socket._group.then (_group) ->
+            scope._group = _group
+            MessageService.getInitialMessages(scope._group).then (messages) ->
+                setTimeout ->
+                    scope.addMessageContent ->
+                        scope.messages = messages
+                    , true
+                , 1
 
         # slight hack to easily test dom attributes
         scope.getDomAttribute = (elmt, attr) -> elmt[attr]
 
-        # todo: possibly use scope.apply wrapper instead
         scope.addMessageContent = (addFunction, all) ->
             scope.$digest()
             scrollAtBottom =
@@ -148,18 +156,6 @@ angular.module('runwayAppDirectives', ['runwayAppConstants'])
             scope.$digest()
             chatBody.scrollTop = scope.getDomAttribute(chatBody, 'scrollHeight') if scrollAtBottom
 
-        socket.on 'initialMessages', (messages) ->
-            scope.addMessageContent ->
-                scope.messages = messages
-            , true
-
-        socket.on 'moreMessages', (moreMessages) ->
-            scope.allMessagesLoaded = moreMessages.length is 0
-            chatBody.scrollTop = 1
-            scope.addMessageContent ->
-                scope.messages = scope.messages.concat(moreMessages)
-            chatBody.scrollTop = scope.getDomAttribute(chatBody, 'scrollHeight') - scope.preLoadScrollHeight
-
         socket.on 'newMessage', (message) ->
             scope.addMessageContent ->
                 scope.messages.push(message)
@@ -172,23 +168,30 @@ angular.module('runwayAppDirectives', ['runwayAppConstants'])
                         break
                 return
 
-        # todo: move these to MessageService service
-        scope.addMessageToWorkspace = (string) ->
-            http.post('/api/text', { _group: scope.group._id, text: string })
+        scope.addMessageToWorkspace = (message) ->
+            MessageService.postMessageToWorkspace(scope._group, message)
+            # todo: do something on failure
 
         scope.sendMessage = ->
             if scope.newMessage and scope.newMessage.trim().length > 0
-                socket.emit('postNewMessage', scope.newMessage)
+                MessageService.addNewMessageToChat(scope._group, scope.newMessage)
                 scope.newMessage = ''
 
         scope.removeMessage = (_message) ->
-            socket.emit('postRemoveMessage', _message)
+            MessageService.removeMessage(_message)
 
         $('.chatBody', element).on 'scroll', ->
-            if !scope.allMessagesLoaded and chatBody.scrollTop is 0
+            if not scope.allMessagesLoaded and chatBody.scrollTop is 0
                 scope.messagesLoading = true
                 scope.$digest()
                 scope.preLoadScrollHeight = chatBody.scrollHeight
-                socket.emit('getMoreMessages', scope.messages[scope.messages.length - 1].date)
+                MessageService.getMoreMessages(scope._group, scope.messages[scope.messages.length - 1].date).then (moreMessages) ->
+                    scope.allMessagesLoaded = moreMessages.length is 0
+                    chatBody.scrollTop = 1
+                    setTimeout ->
+                        scope.addMessageContent ->
+                            scope.messages = scope.messages.concat(moreMessages)
+                        chatBody.scrollTop = scope.getDomAttribute(chatBody, 'scrollHeight') - scope.preLoadScrollHeight
+                    , 1
 
 ]

@@ -119,7 +119,7 @@ describe 'controllers', ->
             beforeEach ->
                 angular.extend loginControllerParams, {
                     returnStateName: 'home.settings.general'
-                    returnStateParams: JSON.stringify({param: 'testParam'})
+                    returnStateParams: JSON.stringify({ param: 'testParam' })
                 }
                 $controller('loginController', loginControllerParams)
                 scope.loginForm = mockCredentials
@@ -133,7 +133,7 @@ describe 'controllers', ->
             it 'should go to the given return state when a return state is given', (done) ->
                 spyOn($state, 'go')
                 scope.login().then ->
-                    expect($state.go).toHaveBeenCalledWith('home.settings.general', {param: 'testParam'})
+                    expect($state.go).toHaveBeenCalledWith('home.settings.general', { param: 'testParam' })
                     done()
                 $rootScope.$digest()
 
@@ -192,7 +192,7 @@ describe 'controllers', ->
         User = undefined
 
         beforeEach ->
-            User = {username: 'Justin'}
+            User = { username: 'Justin' }
             navBarControllerParams = {
                 $scope: scope
                 AuthService: AuthService
@@ -248,7 +248,7 @@ describe 'controllers', ->
         User = undefined
 
         beforeEach ->
-            User = {username: 'Justin'}
+            User = { username: 'Justin' }
             settingsControllerParams = {
                 $scope: scope
                 User: User
@@ -353,7 +353,7 @@ describe 'controllers', ->
         groupsControllerParams = groupToEdit = event = undefined
 
         beforeEach ->
-            groupToEdit = {_id: 5}
+            groupToEdit = { _id: 5 }
             event = {
                 stopPropagation: ->
             }
@@ -449,42 +449,42 @@ describe 'controllers', ->
                 beforeEach ->
                     $controller('groupsController', groupsControllerParams)
                     scope.openEditGroupPropertiesModal(event, groupToEdit)
-                    scope.groups = [{_id: 36}, {_id: 5}, {_id: 6}]
+                    scope.groups = [{ _id: 36 }, { _id: 5 }, { _id: 6 }]
 
 
                 describe 'with editedGroup and no deleteGroup specified', ->
 
                     it 'should clear all errors', ->
-                        uibModalInstance.close({_id: 5})
+                        uibModalInstance.close({ _id: 5 })
                         expect(scope.error).toEqual(null)
 
                     it 'should replace the groups being edited in the groups list', ->
-                        uibModalInstance.close({_id: 5, name: 'test'})
-                        expect(scope.groups).toEqual([{_id: 36}, {_id: 5, name: 'test'}, {_id: 6}])
+                        uibModalInstance.close({ _id: 5, name: 'test' })
+                        expect(scope.groups).toEqual([{ _id: 36 }, { _id: 5, name: 'test' }, { _id: 6 }])
 
 
                 describe 'with editedGroup and deleteGroup = true', ->
 
                     beforeEach ->
-                        uibModalInstance.close({_id: 5}, true)
+                        uibModalInstance.close({ _id: 5 }, true)
 
                     it 'should clear all errors', ->
                         expect(scope.error).toEqual(null)
 
                     it 'should remove the groups from the groups list', ->
-                        expect(scope.groups).toEqual([{_id: 36}, {_id: 6}])
+                        expect(scope.groups).toEqual([{ _id: 36 }, { _id: 6 }])
 
 
                 describe 'with editedGroup and deleteGroup = false', ->
 
                     beforeEach ->
-                        uibModalInstance.close({_id: 5, name: 'test'}, false)
+                        uibModalInstance.close({ _id: 5, name: 'test' }, false)
 
                     it 'should clear all errors', ->
                         expect(scope.error).toEqual(null)
 
                     it 'should replace the groups being edited in the groups list', ->
-                        expect(scope.groups).toEqual([{_id: 36}, {_id: 5, name: 'test'}, {_id: 6}])
+                        expect(scope.groups).toEqual([{ _id: 36 }, { _id: 5, name: 'test' }, { _id: 6 }])
 
 
         describe 'fail getting groups', ->
@@ -523,7 +523,7 @@ describe 'controllers', ->
                     size: 'lg'
                     resolve:
                         editingGroup: groupToEdit
-                        User: {username: 'Justin'}
+                        User: { username: 'Justin' }
                     templateUrl: '/partials/editGroupMembersModal.html'
                     controller: 'editGroupMembersModalController'
                 })
@@ -533,9 +533,9 @@ describe 'controllers', ->
 
                 it 'should replace the groups being edited in the groups list', ->
                     scope.openEditGroupMembersModal(event, groupToEdit)
-                    scope.groups = [{_id: 36}, {_id: 5}, {_id: 6}]
-                    uibModalInstance.close({_id: 5, name: 'test'}, false)
-                    expect(scope.groups).toEqual([{_id: 36}, {_id: 5, name: 'test'}, {_id: 6}])
+                    scope.groups = [{ _id: 36 }, { _id: 5 }, { _id: 6 }]
+                    uibModalInstance.close({ _id: 5, name: 'test' }, false)
+                    expect(scope.groups).toEqual([{ _id: 36 }, { _id: 5, name: 'test' }, { _id: 6 }])
 
 
         describe 'scope.openAddGroupModal', ->
@@ -558,9 +558,9 @@ describe 'controllers', ->
 
                 it 'should add the groupToAdd to the groups list', ->
                     scope.openAddGroupModal()
-                    scope.groups = [{_id: 5}, {_id: 36}, {_id: 6}]
-                    uibModalInstance.close({_id: 27})
-                    expect(scope.groups).toEqual([{_id: 5}, {_id: 36}, {_id: 6}, {_id: 27}])
+                    scope.groups = [{ _id: 5 }, { _id: 36 }, { _id: 6 }]
+                    uibModalInstance.close({ _id: 27 })
+                    expect(scope.groups).toEqual([{ _id: 5 }, { _id: 36 }, { _id: 6 }, { _id: 27 }])
 
 
     describe 'addGroupModalController', ->
@@ -610,9 +610,9 @@ describe 'controllers', ->
 
             it 'should close the modal with the addedGroup', ->
                 spyOn(uibModalInstance, 'close').and.callThrough()
-                scope.newGroup = {name: 'testGroup'}
+                scope.newGroup = { name: 'testGroup' }
                 scope.addGroup().then ->
-                    expect(uibModalInstance.close).toHaveBeenCalledWith({name: 'testGroup'})
+                    expect(uibModalInstance.close).toHaveBeenCalledWith({ name: 'testGroup' })
 
 
         describe "scope.addGroup doesn't add successfully", ->
@@ -651,7 +651,7 @@ describe 'controllers', ->
         editingGroup = editGroupPropertiesModalControllerParams = undefined
 
         beforeEach ->
-            editingGroup = {name: 'test name'}
+            editingGroup = { name: 'test name' }
             angular.extend uibModalInstance, {
                 close: (addedGroup) ->
             }
@@ -732,7 +732,7 @@ describe 'controllers', ->
                     $rootScope.$digest()
 
                 it 'should no nothing if the first dialog is rejected', (done) ->
-                    spyOn($window, 'confirm').and.callFake (message) -> message != Constants.Messages.CONFIRM_GROUP_DELETE_1
+                    spyOn($window, 'confirm').and.callFake (message) -> message isnt Constants.Messages.CONFIRM_GROUP_DELETE_1
                     spyOn(GroupService, 'deleteGroup').and.callThrough()
                     scope.delete().catch ->
                         expect(GroupService.deleteGroup).not.toHaveBeenCalled()
@@ -740,7 +740,7 @@ describe 'controllers', ->
                     $rootScope.$digest()
 
                 it 'should no nothing if the second dialog is rejected', (done) ->
-                    spyOn($window, 'confirm').and.callFake (message) -> message != Constants.Messages.CONFIRM_GROUP_DELETE_2
+                    spyOn($window, 'confirm').and.callFake (message) -> message isnt Constants.Messages.CONFIRM_GROUP_DELETE_2
                     spyOn(GroupService, 'deleteGroup').and.callThrough()
                     scope.delete().catch ->
                         expect(GroupService.deleteGroup).not.toHaveBeenCalled()
@@ -809,7 +809,7 @@ describe 'controllers', ->
                 name: 'test group name'
                 _members: []
             }
-            User = {username: 'Justin'}
+            User = { username: 'Justin' }
             editGroupMembersModalControllerParams = {
                 $scope: scope
                 $uibModalInstance: uibModalInstance
@@ -831,7 +831,7 @@ describe 'controllers', ->
                 expect(scope.editingGroup).not.toEqual(editingGroup)
 
             it 'should initialize scope.owner to the User reolved for the controller', ->
-                expect(scope.owner).toEqual({username: 'Justin'})
+                expect(scope.owner).toEqual({ username: 'Justin' })
 
             it 'should define the scope.getUsers function', ->
                 expect(scope.getUsers).toBeDefined()
@@ -886,7 +886,7 @@ describe 'controllers', ->
         describe 'scope.addMember, member adds successfully', ->
 
             beforeEach ->
-                scope.memberToAdd = {name: 'Justin'}
+                scope.memberToAdd = { name: 'Justin' }
                 $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
 
             it 'should set scope.disableModal to true', ->
@@ -896,7 +896,7 @@ describe 'controllers', ->
             it 'should call GroupService.addMember with the member to add', (done) ->
                 spyOn(GroupService, 'addMember').and.callThrough()
                 scope.addMember().then ->
-                    expect(GroupService.addMember).toHaveBeenCalledWith(editingGroup._id, {name: 'Justin'})
+                    expect(GroupService.addMember).toHaveBeenCalledWith(editingGroup._id, { name: 'Justin' })
                     done()
                 $rootScope.$digest()
 
@@ -908,7 +908,7 @@ describe 'controllers', ->
 
             it 'should push the newly aded member onto the scope.editingGroup._members list', (done) ->
                 scope.addMember().then ->
-                    expect(scope.editingGroup._members).toEqual([{name: 'Justin'}])
+                    expect(scope.editingGroup._members).toEqual([{ name: 'Justin' }])
                     done()
                 $rootScope.$digest()
 
@@ -922,7 +922,7 @@ describe 'controllers', ->
         describe 'scope.addMember, member add fails', ->
 
             beforeEach ->
-                scope.memberToAdd = {name: 'Justin'}
+                scope.memberToAdd = { name: 'Justin' }
                 angular.extend GroupService, {
                     addMember: -> rejectedPromiseFunc('test error message')
                 }
@@ -990,8 +990,8 @@ describe 'controllers', ->
         describe 'setup', ->
 
             beforeEach ->
-                testUser = {username: 'Justin'}
-                stateParams = {groupId: 'test groupId'}
+                testUser = { username: 'Justin' }
+                stateParams = { groupId: 'test groupId' }
                 Socket = {
                     on: ->
                     emit: -> 'test emit'
@@ -1015,15 +1015,15 @@ describe 'controllers', ->
                 expect(scope.socket.emit).toHaveBeenCalledWith('groupConnect', testUser, stateParams.groupId)
 
 
-        describe 'server emits setGroup', ->
+        describe 'server emits setGroupId', ->
 
             beforeEach ->
-                testUser = {username: 'Justin'}
-                stateParams = {groupId: 'test groupId'}
+                testUser = { username: 'Justin' }
+                stateParams = { groupId: 'test groupId' }
                 Socket = {
                     on: (name, callback) ->
-                        if name is 'setGroup'
-                            callback('testGroupName')
+                        if name is 'setGroupId'
+                            callback('testGroupId')
                     emit: -> 'test emit'
                 }
                 workspaceControllerParams = {
@@ -1035,8 +1035,8 @@ describe 'controllers', ->
                 $controller('workspaceController', workspaceControllerParams)
 
             it 'should initialize scope.chatVisible to true', (done) ->
-                scope.socket.group.then (group) ->
-                    expect(group).toEqual('testGroupName')
+                scope.socket._group.then (_group) ->
+                    expect(_group).toEqual('testGroupId')
                     done()
                 $rootScope.$digest()
 
@@ -1053,8 +1053,8 @@ describe 'controllers', ->
                 state = {
                     go: ->
                 }
-                testUser = {username: 'Justin'}
-                stateParams = {groupId: 'test groupId'}
+                testUser = { username: 'Justin' }
+                stateParams = { groupId: 'test groupId' }
                 Socket = {
                     on: (name, callback) ->
                         if name is 'notAllowed'

@@ -46,7 +46,7 @@ describe 'Services', ->
                 $rootScope.$digest()
 
             it 'should POST to /getUserStatus when no user exits', ->
-                httpBackend.expectPOST('/getUserStatus').respond(200, {loggedIn: true, user: mockUser})
+                httpBackend.expectPOST('/getUserStatus').respond(200, { loggedIn: true, user: mockUser })
                 AuthService.getUser()
                 httpBackend.flush()
 
@@ -57,7 +57,7 @@ describe 'Services', ->
                     mockUser2 = {
                         groups: ['thing1', 'thing2']
                     }
-                    httpBackend.expectPOST('/getUserStatus').respond(200, {loggedIn: true, user: mockUser2})
+                    httpBackend.expectPOST('/getUserStatus').respond(200, { loggedIn: true, user: mockUser2 })
                     AuthService.getUser().then ->
                         expect(AuthService.user).toEqual(mockUser2)
                         done()
@@ -67,7 +67,7 @@ describe 'Services', ->
                     mockUser2 = {
                         groups: ['thing1', 'thing2']
                     }
-                    httpBackend.expectPOST('/getUserStatus').respond(200, {loggedIn: false, user: mockUser2})
+                    httpBackend.expectPOST('/getUserStatus').respond(200, { loggedIn: false, user: mockUser2 })
                     AuthService.getUser().catch ->
                         expect(AuthService.user).toEqual(null)
                         done()
@@ -87,7 +87,7 @@ describe 'Services', ->
         describe 'login', ->
 
             it 'should POST to /login', ->
-                httpBackend.expectPOST('/login').respond(200, {user: mockUser})
+                httpBackend.expectPOST('/login').respond(200, { user: mockUser })
                 AuthService.login('Justin', 'superSecretPassword')
                 httpBackend.flush()
 
@@ -98,7 +98,7 @@ describe 'Services', ->
                     mockUser2 = {
                         groups: ['thing1', 'thing2']
                     }
-                    httpBackend.expectPOST('/login').respond(200, {user: mockUser2})
+                    httpBackend.expectPOST('/login').respond(200, { user: mockUser2 })
                     AuthService.login('Justin', 'superSecretPassword').then ->
                         expect(AuthService.user).toEqual(mockUser2)
                         done()
@@ -108,7 +108,7 @@ describe 'Services', ->
                     mockUser2 = {
                         groups: ['thing1', 'thing2']
                     }
-                    httpBackend.expectPOST('/login').respond(201, {user: mockUser2, error: 'test error messsage'})
+                    httpBackend.expectPOST('/login').respond(201, { user: mockUser2, error: 'test error messsage' })
                     AuthService.login('Justin', 'superSecretPassword').catch (message) ->
                         expect(AuthService.user).toEqual(null)
                         expect(message).toEqual('test error messsage')
@@ -119,7 +119,7 @@ describe 'Services', ->
             describe 'failed', ->
 
                 it 'should clear the user and reject with the user message', (done) ->
-                    httpBackend.expectPOST('/login').respond(500, {error: 'test error messsage'})
+                    httpBackend.expectPOST('/login').respond(500, { error: 'test error messsage' })
                     AuthService.login('Justin', 'superSecretPassword').catch (message) ->
                         expect(AuthService.user).toEqual(null)
                         expect(message).toEqual('test error messsage')
@@ -180,7 +180,7 @@ describe 'Services', ->
                     httpBackend.flush()
 
                 it "should reject the promise with error messsage if the status isn't 200", (done) ->
-                    httpBackend.expectPOST('/register').respond(201, {error: 'test error messsage'})
+                    httpBackend.expectPOST('/register').respond(201, { error: 'test error messsage' })
                     AuthService.register(registerForm).catch (message) ->
                         expect(message).toEqual('test error messsage')
                         done()
@@ -190,7 +190,7 @@ describe 'Services', ->
             describe 'failed', ->
 
                 it 'should reject the promise with error message', (done) ->
-                    httpBackend.expectPOST('/register').respond(500, {error: 'test error messsage'})
+                    httpBackend.expectPOST('/register').respond(500, { error: 'test error messsage' })
                     AuthService.register(registerForm).catch (message) ->
                         expect(message).toEqual('test error messsage')
                         done()
@@ -282,7 +282,7 @@ describe 'Services', ->
                     $rootScope.$digest()
 
                 it 'should reject with NO_GROUP_NAME_PROVIDED when group name zero characters', (done) ->
-                    GroupService.addGroup({name: ''}).catch (message) ->
+                    GroupService.addGroup({ name: '' }).catch (message) ->
                         expect(message).toEqual(Constants.Messages.NO_GROUP_NAME_PROVIDED)
                         done()
                     $rootScope.$digest()
@@ -338,7 +338,7 @@ describe 'Services', ->
                     $rootScope.$digest()
 
                 it 'should reject with NO_GROUP_NAME_PROVIDED when group name zero characters', (done) ->
-                    GroupService.editGroup({name: ''}).catch (message) ->
+                    GroupService.editGroup({ name: '' }).catch (message) ->
                         expect(message).toEqual(Constants.Messages.NO_GROUP_NAME_PROVIDED)
                         done()
                     $rootScope.$digest()
@@ -378,10 +378,10 @@ describe 'Services', ->
 
             beforeEach ->
                 _group = 'testGroup'
-                memberToAdd = {username: 'Justin'}
+                memberToAdd = { username: 'Justin' }
 
             it 'should POST to /api/addGroupMember', ->
-                httpBackend.expectPOST('/api/addGroupMember', {_group: _group, memberToAdd: memberToAdd}).respond(200)
+                httpBackend.expectPOST('/api/addGroupMember', { _group: _group, memberToAdd: memberToAdd }).respond(200)
                 GroupService.addMember(_group, memberToAdd)
                 httpBackend.flush()
 
@@ -389,7 +389,7 @@ describe 'Services', ->
             describe 'successful', ->
 
                 it 'should resolve the promise', (done) ->
-                    httpBackend.expectPOST('/api/addGroupMember', {_group: _group, memberToAdd: memberToAdd}).respond(200)
+                    httpBackend.expectPOST('/api/addGroupMember', { _group: _group, memberToAdd: memberToAdd }).respond(200)
                     GroupService.addMember(_group, memberToAdd).then -> done()
                     httpBackend.flush()
 
@@ -397,7 +397,7 @@ describe 'Services', ->
             describe 'failed', ->
 
                 it 'should reject with USER_ALREADY_IN_GROUP when status is 409', (done) ->
-                    httpBackend.expectPOST('/api/addGroupMember', {_group: _group, memberToAdd: memberToAdd}).respond(409)
+                    httpBackend.expectPOST('/api/addGroupMember', { _group: _group, memberToAdd: memberToAdd }).respond(409)
                     GroupService.addMember(_group, memberToAdd).catch (message) ->
                         expect(message).toEqual(Constants.Messages.USER_ALREADY_IN_GROUP)
                         done()
@@ -407,7 +407,7 @@ describe 'Services', ->
             describe 'failed', ->
 
                 it 'should reject with SERVER_ERROR otherwise', (done) ->
-                    httpBackend.expectPOST('/api/addGroupMember', {_group: _group, memberToAdd: memberToAdd}).respond(500)
+                    httpBackend.expectPOST('/api/addGroupMember', { _group: _group, memberToAdd: memberToAdd }).respond(500)
                     GroupService.addMember(_group, memberToAdd).catch (message) ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
@@ -469,7 +469,7 @@ describe 'Services', ->
                 testQuery = 'test query'
 
             it 'should POST to /api/getUsers', ->
-                httpBackend.expectPOST('/api/getUsers', {query: testQuery}).respond(200)
+                httpBackend.expectPOST('/api/getUsers', { query: testQuery }).respond(200)
                 UserService.getUsers(testQuery)
                 httpBackend.flush()
 
@@ -477,7 +477,7 @@ describe 'Services', ->
             describe 'successful', ->
 
                 it 'should resolve the members returned', (done) ->
-                    httpBackend.expectPOST('/api/getUsers', {query: testQuery}).respond(200, ['member1', 'member2'])
+                    httpBackend.expectPOST('/api/getUsers', { query: testQuery }).respond(200, ['member1', 'member2'])
                     UserService.getUsers(testQuery).then (members) ->
                         expect(members).toEqual(['member1', 'member2'])
                         done()
@@ -487,12 +487,269 @@ describe 'Services', ->
             describe 'failed', ->
 
                 it 'should reject with SERVER_ERROR', (done) ->
-                    httpBackend.expectPOST('/api/getUsers', {query: testQuery}).respond(401)
+                    httpBackend.expectPOST('/api/getUsers', { query: testQuery }).respond(401)
                     UserService.getUsers(testQuery).catch (message) ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
 
+
+    describe 'MessageService', ->
+
+        MessageService = undefined
+
+        beforeEach inject (_MessageService_) ->
+            MessageService = _MessageService_
+
+
+        describe 'addNewMessageToChat', ->
+
+            _group = undefined
+            messageContent = undefined
+
+            beforeEach ->
+                _group = 'groupId'
+                messageContent = 'an interesting message'
+
+            it 'should GET /api/newMessage', (done) ->
+                httpBackend.expectPOST('/api/newMessage', { _group: _group, messageContent: messageContent }).respond(200)
+                MessageService.addNewMessageToChat(_group, messageContent).then ->
+                    done()
+                httpBackend.flush()
+
+
+            describe 'successful', ->
+
+                it 'should resolve the messages returned', (done) ->
+                    httpBackend.expectPOST('/api/newMessage', { _group: _group, messageContent: messageContent }).respond(200)
+                    MessageService.addNewMessageToChat(_group, messageContent).then ->
+                        done()
+                    httpBackend.flush()
+
+
+            describe 'failed', ->
+
+                it 'should reject with SERVER_ERROR', (done) ->
+                    httpBackend.expectPOST('/api/newMessage', { _group: _group, messageContent: messageContent }).respond(401)
+                    MessageService.addNewMessageToChat(_group, messageContent).catch (message) ->
+                        expect(message).toEqual(Constants.Messages.SERVER_ERROR)
+                        done()
+                    httpBackend.flush()
+
+
+        describe 'removeMessage', ->
+
+            _message = undefined
+
+            beforeEach ->
+                _message = 'messageId'
+
+            it 'should POST to /api/removeMessage', ->
+                httpBackend.expectPOST('/api/removeMessage', { _message: _message }).respond(200)
+                MessageService.removeMessage(_message)
+                httpBackend.flush()
+
+
+            describe 'successful', ->
+
+                it 'should resolve when returned', (done) ->
+                    httpBackend.expectPOST('/api/removeMessage', { _message: _message }).respond(200)
+                    MessageService.removeMessage(_message).then ->
+                        done()
+                    httpBackend.flush()
+
+
+            describe 'failed', ->
+
+                it 'should reject with SERVER_ERROR', (done) ->
+                    httpBackend.expectPOST('/api/removeMessage', { _message: _message }).respond(401)
+                    MessageService.removeMessage(_message).catch (message) ->
+                        expect(message).toEqual(Constants.Messages.SERVER_ERROR)
+                        done()
+                    httpBackend.flush()
+
+
+        describe 'postMessageToWorkspace', ->
+
+            _group = undefined
+            message = undefined
+
+            beforeEach ->
+                _group = 'groupID'
+                message = 'test message'
+
+            it 'should POST to /api/text', ->
+                httpBackend.expectPOST('/api/text', { _group: _group, text: message }).respond(200)
+                MessageService.postMessageToWorkspace(_group, message)
+                httpBackend.flush()
+
+
+            describe 'successful', ->
+
+                it 'should resolve when returned', (done) ->
+                    httpBackend.expectPOST('/api/text', { _group: _group, text: message }).respond(200)
+                    MessageService.postMessageToWorkspace(_group, message).then ->
+                        done()
+                    httpBackend.flush()
+
+
+            describe 'failed', ->
+
+                it 'should reject with SERVER_ERROR', (done) ->
+                    httpBackend.expectPOST('/api/text', { _group: _group, text: message }).respond(401)
+                    MessageService.postMessageToWorkspace(_group, message).catch (message) ->
+                        expect(message).toEqual(Constants.Messages.SERVER_ERROR)
+                        done()
+                    httpBackend.flush()
+
+
+        describe 'getInitialMessages', ->
+
+            _group = undefined
+
+            beforeEach ->
+                _group = 'groupId'
+
+            it 'should POST to /api/initialMessages', (done) ->
+                httpBackend.expectPOST('/api/initialMessages', { _group: _group }).respond(200)
+                MessageService.getInitialMessages(_group).then ->
+                    done()
+                httpBackend.flush()
+
+
+            describe 'successful', ->
+
+                it 'should resolve the messages returned', (done) ->
+                    httpBackend.expectPOST('/api/initialMessages', { _group: _group }).respond(200, ['message1', 'message2'])
+                    MessageService.getInitialMessages(_group).then (messages) ->
+                        expect(messages).toEqual(['message1', 'message2'])
+                        done()
+                    httpBackend.flush()
+
+
+            describe 'failed', ->
+
+                it 'should reject with SERVER_ERROR', (done) ->
+                    httpBackend.expectPOST('/api/initialMessages', { _group: _group }).respond(401)
+                    MessageService.getInitialMessages(_group).catch (message) ->
+                        expect(message).toEqual(Constants.Messages.SERVER_ERROR)
+                        done()
+                    httpBackend.flush()
+
+
+        describe 'getMoreMessages', ->
+
+            _group = undefined
+            lastDate = undefined
+
+            beforeEach ->
+                _group = 'groupID'
+                lastDate = 'testLastDate'
+
+            it 'should POST to /api/moreMessages', (done) ->
+                httpBackend.expectPOST('/api/moreMessages', { _group: _group, lastDate: lastDate }).respond(200)
+                MessageService.getMoreMessages(_group, lastDate).then ->
+                    done()
+                httpBackend.flush()
+
+
+            describe 'successful', ->
+
+                it 'should resolve the messages returned', (done) ->
+                    httpBackend.expectPOST('/api/moreMessages', { _group: _group, lastDate: lastDate }).respond(200, ['message1', 'message2'])
+                    MessageService.getMoreMessages(_group, lastDate).then (messages) ->
+                        expect(messages).toEqual(['message1', 'message2'])
+                        done()
+                    httpBackend.flush()
+
+
+            describe 'failed', ->
+
+                it 'should reject with SERVER_ERROR', (done) ->
+                    httpBackend.expectPOST('/api/moreMessages', { _group: _group, lastDate: lastDate }).respond(401)
+                    MessageService.getMoreMessages(_group, lastDate).catch (message) ->
+                        expect(message).toEqual(Constants.Messages.SERVER_ERROR)
+                        done()
+                    httpBackend.flush()
+
+
+    describe 'ItemService', ->
+
+        ItemService = undefined
+
+        beforeEach inject (_ItemService_) ->
+            ItemService = _ItemService_
+
+
+        describe 'getInitialItems', ->
+
+            _group = undefined
+
+            beforeEach ->
+                _group = 'groupId'
+
+            it 'should POST to /api/initialItems', (done) ->
+                httpBackend.expectPOST('/api/initialItems', { _group: _group }).respond(200)
+                ItemService.getInitialItems(_group).then ->
+                    done()
+                httpBackend.flush()
+
+
+            describe 'successful', ->
+
+                it 'should resolve the items returned', (done) ->
+                    httpBackend.expectPOST('/api/initialItems', { _group: _group }).respond(200, ['item1', 'item2'])
+                    ItemService.getInitialItems(_group).then (items) ->
+                        expect(items).toEqual(['item1', 'item2'])
+                        done()
+                    httpBackend.flush()
+
+
+            describe 'failed', ->
+
+                it 'should reject with SERVER_ERROR', (done) ->
+                    httpBackend.expectPOST('/api/initialItems', { _group: _group }).respond(401)
+                    ItemService.getInitialItems(_group).catch (message) ->
+                        expect(message).toEqual(Constants.Messages.SERVER_ERROR)
+                        done()
+                    httpBackend.flush()
+
+
+        describe 'updateItemLocation', ->
+
+            _item = undefined
+            newX = undefined
+            newY = undefined
+
+            beforeEach ->
+                _item = 'itemId'
+                newX = 5
+                newY = 10
+
+            it 'should POST /api/updateItemLocation', (done) ->
+                httpBackend.expectPOST('/api/updateItemLocation', { _item: _item, newX: newX, newY: newY }).respond(200)
+                ItemService.updateItemLocation(_item, newX, newY).then ->
+                    done()
+                httpBackend.flush()
+
+
+            describe 'successful', ->
+
+                it 'should resolve returned', (done) ->
+                    httpBackend.expectPOST('/api/updateItemLocation', { _item: _item, newX: newX, newY: newY }).respond(200)
+                    ItemService.updateItemLocation(_item, newX, newY).then ->
+                        done()
+                    httpBackend.flush()
+
+
+            describe 'failed', ->
+
+                it 'should reject with SERVER_ERROR', (done) ->
+                    httpBackend.expectPOST('/api/updateItemLocation', { _item: _item, newX: newX, newY: newY }).respond(401)
+                    ItemService.updateItemLocation(_item, newX, newY).catch (message) ->
+                        expect(message).toEqual(Constants.Messages.SERVER_ERROR)
+                        done()
+                    httpBackend.flush()
 
 
     describe 'Socket', ->
@@ -505,9 +762,7 @@ describe 'Services', ->
             io = {
                 on: (eventName, callback) ->
                     callback('param1', 'param2')
-
                 emit: ->
-
             }
             window.io = -> io
             Socket = _Socket_
