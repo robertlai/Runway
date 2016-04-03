@@ -145,7 +145,7 @@ describe 'Directives', ->
 
             it 'should call new Dropzone with the correct params', ->
                 expect(window.Dropzone).toHaveBeenCalledWith($(element).get(0), {
-                    url: '/api/fileUpload'
+                    url: '/api/items/fileUpload'
                     method: 'post'
                     uploadMultiple: false
                     maxFilesize: 9
@@ -176,7 +176,7 @@ describe 'Directives', ->
                     options = scope.myDropzone.options
 
                 it 'should set the url', ->
-                    expect(options.url).toEqual('/api/fileUpload')
+                    expect(options.url).toEqual('/api/items/fileUpload')
 
                 it 'should set the method', ->
                     expect(options.method).toEqual('POST')
@@ -301,7 +301,7 @@ describe 'Directives', ->
                         scope = element.isolateScope()
                         socketCallbacksByName['newItem']({ type: 'image/anything', _id: 'imageId' })
                         expect(element.html()).toContain('<img')
-                        expect(element.html()).toContain('src="/api/file?_file=imageId"')
+                        expect(element.html()).toContain('src="/api/items/file?_file=imageId"')
                         expect(element.html()).toContain('ui-draggable')
                         expect(element.html()).toContain('runway-draggable=')
 
@@ -314,7 +314,7 @@ describe 'Directives', ->
                         scope = element.isolateScope()
                         socketCallbacksByName['newItem']({ type: 'application/pdf', _id: 'pdfId' })
                         expect(element.html()).toContain('<object')
-                        expect(element.html()).toContain('data="/api/file?_file=pdfId"')
+                        expect(element.html()).toContain('data="/api/items/file?_file=pdfId"')
                         expect(element.html()).toContain('runway-draggable=')
                         expect(element.html()).toContain('ui-draggable')
                         expect(element.html()).toContain('</object>')
@@ -676,9 +676,9 @@ describe 'Directives', ->
                 $rootScope.$digest()
                 scope = element.isolateScope()
 
-            it 'should post to /api/text with the group id and the given text', inject ($httpBackend) ->
+            it 'should post to /api/items/text with the group id and the given text', inject ($httpBackend) ->
                 item = { _group: 321123, text: 'some text from a message' }
-                $httpBackend.expectPOST('/api/text', item).respond('')
+                $httpBackend.expectPOST('/api/items/text', item).respond('')
                 scope._group = item._group
                 scope.addMessageToWorkspace(item.text)
                 $httpBackend.flush()

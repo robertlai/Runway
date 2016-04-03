@@ -102,7 +102,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
             deferred = @q.defer()
 
             if newGroup and newGroup.name.trim().length > 0
-                @http.post('/api/newGroup', newGroup)
+                @http.post('/api/groups/new', newGroup)
                     .success (addedGroup) ->
                         deferred.resolve(addedGroup)
                     .error (error, status) =>
@@ -119,7 +119,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
             deferred = @q.defer()
 
             if groupToEdit and groupToEdit.name.trim().length > 0
-                @http.post('/api/editGroup', groupToEdit)
+                @http.post('/api/groups/edit', groupToEdit)
                     .success (editedGroup) ->
                         deferred.resolve(editedGroup)
                     .error (error, status) =>
@@ -135,7 +135,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
         deleteGroup: (groupToDelete) =>
             deferred = @q.defer()
 
-            @http.post('/api/deleteGroup', groupToDelete)
+            @http.post('/api/groups/delete', groupToDelete)
                 .success ->
                     deferred.resolve()
                 .error (error, status) =>
@@ -149,7 +149,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
         addMember: (_group, memberToAdd) =>
             deferred = @q.defer()
 
-            @http.post('/api/addGroupMember', { _group: _group, memberToAdd: memberToAdd })
+            @http.post('/api/groups/addMember', { _group: _group, memberToAdd: memberToAdd })
                 .success ->
                     deferred.resolve()
                 .error (error, status) =>
@@ -169,10 +169,10 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
     class UserService
         constructor: (@http, @q, @Constants) ->
 
-        getUsers: (query) =>
+        findUsers: (query) =>
             deferred = @q.defer()
 
-            @http.post('/api/getUsers', { query: query })
+            @http.post('/api/users/find', { query: query })
                 .success (members) ->
                     deferred.resolve(members)
                 .error =>
@@ -192,7 +192,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
         addNewMessageToChat: (_group, messageContent) =>
             deferred = @q.defer()
 
-            @http.post('/api/newMessage', { _group: _group, messageContent: messageContent })
+            @http.post('/api/messages/new', { _group: _group, messageContent: messageContent })
                 .success ->
                     deferred.resolve()
                 .error =>
@@ -203,18 +203,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
         removeMessage: (_message) =>
             deferred = @q.defer()
 
-            @http.post('/api/removeMessage', { _message: _message })
-                .success ->
-                    deferred.resolve()
-                .error =>
-                    deferred.reject(@Constants.Messages.SERVER_ERROR)
-
-            return deferred.promise
-
-        postMessageToWorkspace: (_group, message) =>
-            deferred = @q.defer()
-
-            @http.post('/api/text', { _group: _group, text: message })
+            @http.post('/api/messages/delete', { _message: _message })
                 .success ->
                     deferred.resolve()
                 .error =>
@@ -225,7 +214,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
         getInitialMessages: (_group) =>
             deferred = @q.defer()
 
-            @http.post('/api/initialMessages', { _group: _group })
+            @http.post('/api/messages/getInitial', { _group: _group })
                 .success (messages) ->
                     deferred.resolve(messages)
                 .error =>
@@ -236,7 +225,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
         getMoreMessages: (_group, lastDate) =>
             deferred = @q.defer()
 
-            @http.post('/api/moreMessages', { _group: _group, lastDate: lastDate })
+            @http.post('/api/messages/getMore', { _group: _group, lastDate: lastDate })
                 .success (messages) ->
                     deferred.resolve(messages)
                 .error =>
@@ -256,7 +245,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
         getInitialItems: (_group) =>
             deferred = @q.defer()
 
-            @http.post('/api/initialItems', { _group: _group })
+            @http.post('/api/items/initialItems', { _group: _group })
                 .success (items) ->
                     deferred.resolve(items)
                 .error =>
@@ -267,7 +256,18 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
         updateItemLocation: (_item, newX, newY) =>
             deferred = @q.defer()
 
-            @http.post('/api/updateItemLocation', { _item: _item, newX: newX, newY: newY })
+            @http.post('/api/items/updateItemLocation', { _item: _item, newX: newX, newY: newY })
+                .success ->
+                    deferred.resolve()
+                .error =>
+                    deferred.reject(@Constants.Messages.SERVER_ERROR)
+
+            return deferred.promise
+
+        postMessageToWorkspace: (_group, message) =>
+            deferred = @q.defer()
+
+            @http.post('/api/items/text', { _group: _group, text: message })
                 .success ->
                     deferred.resolve()
                 .error =>

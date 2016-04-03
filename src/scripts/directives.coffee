@@ -17,9 +17,10 @@ angular.module('runwayAppDirectives', ['runwayAppConstants', 'runwayAppServices'
             if itemInfo.type is 'text'
                 newItem = $('<p />').attr('class', 'noselect').text(itemInfo.text)
             else if itemInfo.type.substring(0, 5) is 'image'
-                newItem = $('<img />').attr('src', '/api/file?_file=' + itemInfo._id)
+                newItem = $('<img />').attr('src', '/api/items/file?_file=' + itemInfo._id)
             else if itemInfo.type is 'application/pdf'
-                newItem = $('<object data="/api/file?_file=' + itemInfo._id + '"/>').css('padding-top', '25px').css('background-color', '#525659')
+                newItem = $('<object data="/api/items/file?_file=' + itemInfo._id + '"/>')
+                    .css('padding-top', '25px').css('background-color', '#525659')
 
             if newItem
                 newItem.attr('runway-draggable', JSON.stringify(itemInfo))
@@ -52,7 +53,7 @@ angular.module('runwayAppDirectives', ['runwayAppConstants', 'runwayAppServices'
                 scope.hoverTextOff()
 
         scope.myDropzone = new Dropzone $(element).get(0), {
-            url: '/api/fileUpload'
+            url: '/api/items/fileUpload'
             method: 'post'
             uploadMultiple: false
             maxFilesize: 9
@@ -115,7 +116,7 @@ angular.module('runwayAppDirectives', ['runwayAppConstants', 'runwayAppServices'
             ItemService.updateItemLocation(itemsInfo._id, ui.offset.left * 100.0 / scope.maxx(), ui.offset.top * 100.0 / scope.maxy())
 ]
 
-.directive 'chatPanel', ['$http', 'MessageService', (http, MessageService) ->
+.directive 'chatPanel', ['$http', 'MessageService', 'ItemService', (http, MessageService, ItemService) ->
     restrict: 'A'
     scope:
         socket: '='
@@ -169,8 +170,7 @@ angular.module('runwayAppDirectives', ['runwayAppConstants', 'runwayAppServices'
                 return
 
         scope.addMessageToWorkspace = (message) ->
-            MessageService.postMessageToWorkspace(scope._group, message)
-            # todo: do something on failure
+            ItemService.postMessageToWorkspace(scope._group, message)
 
         scope.sendMessage = ->
             if scope.newMessage and scope.newMessage.trim().length > 0

@@ -235,7 +235,7 @@ angular.module('runwayAppControllers',
     scope.getUsers = (query) ->
         deferred = q.defer()
 
-        UserService.getUsers(query)
+        UserService.findUsers(query)
             .then (members) ->
                 deferred.resolve(members)
             .catch (message) ->

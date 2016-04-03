@@ -39,7 +39,7 @@ describe 'test', ->
 
     it 'should do it', (done) ->
         userAgent
-            .post('/api/getUsers')
+            .post('/api/users/find')
             .send({ query: 'test' })
             .end (err, res) ->
                 done()

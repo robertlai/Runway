@@ -54,7 +54,7 @@ describe 'controllers', ->
         }
 
         UserService = {
-            getUsers: (query) -> resolvedPromiseFunc(query)
+            findUsers: (query) -> resolvedPromiseFunc(query)
         }
 
         uibModalInstance = {
@@ -854,10 +854,10 @@ describe 'controllers', ->
             beforeEach ->
                 $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
 
-            it 'should call UserService.getUsers with the given query to get the list of users', (done) ->
-                spyOn(UserService, 'getUsers').and.callThrough()
+            it 'should call UserService.findUsers with the given query to get the list of users', (done) ->
+                spyOn(UserService, 'findUsers').and.callThrough()
                 scope.getUsers('query').then ->
-                    expect(UserService.getUsers).toHaveBeenCalledWith('query')
+                    expect(UserService.findUsers).toHaveBeenCalledWith('query')
                     done()
                 $rootScope.$digest()
 
@@ -871,12 +871,12 @@ describe 'controllers', ->
 
             beforeEach ->
                 angular.extend UserService, {
-                    getUsers: -> rejectedPromiseFunc('test error message')
+                    findUsers: -> rejectedPromiseFunc('test error message')
                 }
                 $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
 
 
-            it 'should set scope.error to the error message returned from the UserService.getUsers', (done) ->
+            it 'should set scope.error to the error message returned from the UserService.findUsers', (done) ->
                 scope.getUsers('query').catch ->
                     expect(scope.error).toEqual('test error message')
                     done()
