@@ -22,7 +22,7 @@ describe 'Constants', ->
     describe 'Messages', ->
 
         it 'should have the correct server error', ->
-            expect(Constants.Messages.SERVER_ERROR).toEqual('Server Error.  Please contact support.')
+            expect(Constants.Messages.SERVER_ERROR).toEqual('Server Error. Please contact support.')
 
         it 'should have the correct GROUP_ALREADY_EXISTS', ->
             expect(Constants.Messages.GROUP_ALREADY_EXISTS).toEqual('This group already exists.')
@@ -51,4 +51,7 @@ describe 'Constants', ->
                                                                         There is no going back!''')
 
         it 'should have the correct CONFIRM_GROUP_DELETE_2', ->
-            expect(Constants.Messages.CONFIRM_GROUP_DELETE_2).toEqual('Last chance.  Are you 100% sure you want to do this?')
+            expect(Constants.Messages.CONFIRM_GROUP_DELETE_2).toEqual('Last chance. Are you 100% sure you want to do this?')
+
+        it 'should have the correct NOT_AUTHORIZED', ->
+            expect(Constants.Messages.NOT_AUTHORIZED).toEqual('You are not authorized to do this. Please log in.')

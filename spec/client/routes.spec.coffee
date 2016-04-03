@@ -5,6 +5,7 @@ describe 'Routes', ->
     Constants = undefined
     httpBackend = undefined
     $locationProvider = undefined
+    $httpProvider = undefined
     $urlRouterProvider = undefined
     $state = undefined
     $stateParams = undefined
@@ -12,14 +13,16 @@ describe 'Routes', ->
     $rootScope = undefined
 
     beforeEach ->
-        angular.module('preTestConfig', ['ui.router']).config (_$urlRouterProvider_, _$locationProvider_) ->
+        angular.module('preTestConfig', ['ui.router']).config (_$urlRouterProvider_, _$locationProvider_, _$httpProvider_) ->
             $locationProvider = _$locationProvider_
+            $httpProvider = _$httpProvider_
             $urlRouterProvider = {
                 otherwise: ->
             }
             $urlRouterProvider = _$urlRouterProvider_
             spyOn($locationProvider, 'html5Mode')
             spyOn($urlRouterProvider, 'otherwise')
+            spyOn($httpProvider.interceptors, 'push').and.callThrough()
 
         module('preTestConfig')
         module('runwayAppRoutes')
@@ -49,6 +52,37 @@ describe 'Routes', ->
 
         it 'should set the $urlRouterProvider otherwise to the defauth route', ->
             expect($urlRouterProvider.otherwise).toHaveBeenCalledWith('/home/groups/' + Constants.OWNED_GROUP)
+
+        it 'should push a new interceptor to the $httpProvider.interceptors', ->
+            expect($httpProvider.interceptors.push).toHaveBeenCalledWith(jasmine.any(Function))
+            expect($httpProvider.interceptors.length).toEqual(1)
+
+
+    describe 'responseError', ->
+
+        responseErrorFunction = undefined
+
+        beforeEach ->
+            responseErrorFunction = $httpProvider.interceptors[0]().responseError
+            spyOn(window, 'alert').and.callFake ->
+
+
+        describe '401 error', ->
+
+            beforeEach ->
+                responseErrorFunction({ status: 401 })
+
+            it 'should alert the NOT_AUTHORIZED message', ->
+                expect(window.alert).toHaveBeenCalledWith(Constants.Messages.NOT_AUTHORIZED)
+
+
+        describe '500 error', ->
+
+            beforeEach ->
+                responseErrorFunction({ status: 500 })
+
+            it 'should alert anything', ->
+                expect(window.alert).not.toHaveBeenCalled()
 
 
     describe 'login', ->

@@ -77,7 +77,6 @@ gulp.task 'clientScripts', ['coffeelint:client', 'clean:clientScripts'], ->
         .pipe(concat(clientScriptsMinDestFile))
         .pipe(gulp.dest(scriptsDestPath))
 
-# todo: add sourcemaps
 gulp.task 'clean:vendorScripts', -> del(scriptsDestPath + vendorScriptsDestFile)
 gulp.task 'vendorScripts', ['clean:vendorScripts'], ->
     browserify(vendorScriptsSrcFile)

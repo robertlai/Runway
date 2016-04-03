@@ -1,9 +1,18 @@
 angular.module('runwayAppRoutes', ['runwayAppConstants', 'runwayAppServices', 'ui.router', 'ui.router.title'])
 
-.config ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'Constants',
-(stateProvider, urlRouterProvider, locationProvider, Constants) ->
+.config ['$stateProvider', '$httpProvider', '$urlRouterProvider', '$locationProvider', 'Constants',
+(stateProvider, httpProvider, urlRouterProvider, locationProvider, Constants) ->
+
     locationProvider.html5Mode({ enabled: true })
     urlRouterProvider.otherwise('/home/groups/' + Constants.OWNED_GROUP)
+
+    httpProvider.interceptors.push ->
+        {
+            responseError: (response) ->
+                if response.status is 401
+                    window.alert(Constants.Messages.NOT_AUTHORIZED)
+                return response
+        }
 
     stateProvider
     .state('login',
@@ -96,7 +105,6 @@ angular.module('runwayAppRoutes', ['runwayAppConstants', 'runwayAppServices', 'u
     )
 ]
 
-# todo: add angular interceptor to handle a similar situation as below but for http requests
 .run ['$rootScope', '$state', 'AuthService', (rootScope, state, AuthService) ->
     rootScope.$on '$stateChangeStart', (event, nextState, nextParams) ->
         if nextState.authenticated

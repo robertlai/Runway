@@ -178,6 +178,7 @@ angular.module('runwayAppControllers',
         uibModalInstance.dismiss()
 ]
 
+# too: use window instead of $window
 .controller 'editGroupPropertiesModalController', ['$window', '$scope', '$q', '$uibModalInstance', 'GroupService', 'editingGroup', 'Constants'
 ($window, scope, q, uibModalInstance, GroupService, editingGroup, Constants) ->
 

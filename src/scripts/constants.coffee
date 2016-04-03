@@ -4,14 +4,13 @@ angular.module('runwayAppConstants', [])
 
     DEFAULT_ROUTE: 'home.groups'
 
-    # todo: test that these match other constants file
     OWNED_GROUP: 'owned'
     JOINED_GROUP: 'joined'
 
     DEFAULT_GROUP_COLOUR: '#0099CC'
 
     Messages: {
-        SERVER_ERROR: 'Server Error.  Please contact support.'
+        SERVER_ERROR: 'Server Error. Please contact support.'
 
         GROUP_ALREADY_EXISTS: 'This group already exists.'
         NO_OWNED_GROUPS: 'You have no groups. Create one!'
@@ -23,6 +22,7 @@ angular.module('runwayAppConstants', [])
         CONFIRM_GROUP_DELETE_1: '''Are you sure you and to delete this group?
                                    All members will be removed and all content destroyed.
                                    There is no going back!'''
-        CONFIRM_GROUP_DELETE_2: 'Last chance.  Are you 100% sure you want to do this?'
+        CONFIRM_GROUP_DELETE_2: 'Last chance. Are you 100% sure you want to do this?'
+        NOT_AUTHORIZED: 'You are not authorized to do this. Please log in.'
     }
 }
