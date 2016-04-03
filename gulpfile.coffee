@@ -47,12 +47,18 @@ socketManagerSrcPath = './socketManager.coffee'
 modelsSrcPath = './models/**/*.coffee'
 routesSrcPath = './routes/**/*.coffee'
 serverSpecSrc = './spec/server/**/*.spec.coffee'
+allServerCoffeeFiles = [passportSrcPath, appSrcPath, socketManagerSrcPath, modelsSrcPath, routesSrcPath, serverSpecSrc]
 
 karmaConfSrcFile = path.join(__dirname, 'karma.conf.coffee')
 
 
-gulp.task 'coffeelint', ->
+gulp.task 'coffeelint:client', ->
     gulp.src(allCoffeeSrc)
+        .pipe(coffeelint())
+        .pipe(coffeelint.reporter())
+
+gulp.task 'coffeelint:server', ->
+    gulp.src(allServerCoffeeFiles)
         .pipe(coffeelint())
         .pipe(coffeelint.reporter())
 
@@ -60,7 +66,7 @@ gulp.task 'coffeelint', ->
 gulp.task 'clean:clientScripts', ->
     del(scriptsDestPath + clientScriptsMinDestFile)
     del(scriptsDestPath + clientScriptsNonMinDestFile)
-gulp.task 'clientScripts', ['coffeelint', 'clean:clientScripts'], ->
+gulp.task 'clientScripts', ['coffeelint:client', 'clean:clientScripts'], ->
     browserify(clientScriptsSrcFile, { transform: ['coffeeify'], extensions: ['.coffee'] })
         .bundle()
         .on 'error', (error) -> @emit('end')
@@ -132,10 +138,10 @@ gulp.task 'release', allBuildTasks
 
 
 # test
-gulp.task 'test:server', ->
+gulp.task 'test:server', ['coffeelint:server'], ->
     gulp.src(serverSpecSrc)
         .pipe(mocha({ reporter: 'nyan' }))
 
 gulp.task 'test', ['test:server'], ->
     new Server({ configFile: karmaConfSrcFile }).start()
-    gulp.watch([passportSrcPath, appSrcPath, socketManagerSrcPath, modelsSrcPath, routesSrcPath, serverSpecSrc], ['test:server'])
+    gulp.watch(allServerCoffeeFiles, ['test:server'])
