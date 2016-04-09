@@ -9,6 +9,12 @@ angular.module('runwayAppConstants', [])
 
     DEFAULT_GROUP_COLOUR: '#0099CC'
 
+    SEARCHABILITY: {
+        PRIVATE: 'private'
+        FRIENDS: 'friends'
+        PUBLIC: 'public'
+    }
+
     Messages: {
         SERVER_ERROR: 'Server Error. Please contact support.'
 

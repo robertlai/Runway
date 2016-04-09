@@ -120,8 +120,8 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
 
             if groupToEdit and groupToEdit.name.trim().length > 0
                 @http.post('/api/groups/edit', groupToEdit)
-                    .success (editedGroup) ->
-                        deferred.resolve(editedGroup)
+                    .success (newProperties) ->
+                        deferred.resolve(newProperties)
                     .error (error, status) =>
                         if status is 409
                             deferred.reject(@Constants.Messages.GROUP_ALREADY_EXISTS)
@@ -175,6 +175,28 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
             @http.post('/api/users/find', { query: query })
                 .success (members) ->
                     deferred.resolve(members)
+                .error =>
+                    deferred.reject(@Constants.Messages.SERVER_ERROR)
+
+            return deferred.promise
+
+        updateGeneralSettings: (user) =>
+            deferred = @q.defer()
+
+            @http.post('/api/users/updateGeneralSettings', user)
+                .success ->
+                    deferred.resolve()
+                .error =>
+                    deferred.reject(@Constants.Messages.SERVER_ERROR)
+
+            return deferred.promise
+
+        saveUserSettings: (user) =>
+            deferred = @q.defer()
+
+            @http.post('/api/users/updateUserSettings', user)
+                .success ->
+                    deferred.resolve()
                 .error =>
                     deferred.reject(@Constants.Messages.SERVER_ERROR)
 

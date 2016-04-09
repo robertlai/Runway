@@ -57,9 +57,34 @@ angular.module('runwayAppControllers',
 
 .controller 'settingsController', [
     '$scope'
+    '$q'
     'User'
-    (scope, User) ->
-        scope.user = User
+    'UserService'
+    (scope, q, User, UserService) ->
+
+        scope.generalSettings = {
+            _id: User._id
+            username: User.username
+            firstName: User.firstName
+            lastName: User.lastName
+            email: User.email
+        }
+        scope.securitySettings = {
+            _id: User._id
+            searchability: User.searchability
+        }
+
+        scope.saveUserSettings = (userSettingsToSave) ->
+            deferred = q.defer()
+            UserService.saveUserSettings(userSettingsToSave)
+                .then ->
+                    deferred.resolve()
+                .catch (errorMessage) ->
+                    scope.error = errorMessage
+                    deferred.reject()
+
+            return deferred.promise
+
 ]
 
 .controller 'registerController', [
@@ -108,14 +133,14 @@ angular.module('runwayAppControllers',
             templateUrl: '/partials/editGroupPropertiesModal.html'
             controller: 'editGroupPropertiesModalController'
         )
-        modalInstance.result.then (editedGroup, deleteGroup = false) ->
+        modalInstance.result.then (newEditedGroupProperties, deleteGroup = false) ->
             scope.error = null
             for group, index in scope.groups
-                if group._id is editedGroup._id
+                if group._id is newEditedGroupProperties._id
                     if deleteGroup
                         scope.groups.splice(index, 1)
                     else
-                        scope.groups[index] = editedGroup
+                        angular.extend(scope.groups[index], newEditedGroupProperties)
                     break
             return
 
@@ -189,8 +214,8 @@ angular.module('runwayAppControllers',
 
         scope.disableModal = true
         GroupService.editGroup(scope.editingGroup)
-            .then (editedGroup) ->
-                uibModalInstance.close(editedGroup)
+            .then (newProperties) ->
+                uibModalInstance.close(newProperties)
                 deferred.resolve()
             .catch (message) ->
                 scope.disableModal = false

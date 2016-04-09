@@ -19,6 +19,17 @@ describe 'Constants', ->
     it 'should have the correct DEFAULT_GROUP_COLOUR', ->
         expect(Constants.DEFAULT_GROUP_COLOUR).toEqual('#0099CC')
 
+    describe 'searchability settings', ->
+
+        it 'should have the correct constant for private', ->
+            expect(Constants.SEARCHABILITY.PRIVATE).toEqual('private')
+
+        it 'should have the correct constant for friends', ->
+            expect(Constants.SEARCHABILITY.FRIENDS).toEqual('friends')
+
+        it 'should have the correct constant for public', ->
+            expect(Constants.SEARCHABILITY.PUBLIC).toEqual('public')
+
     describe 'Messages', ->
 
         it 'should have the correct server error', ->

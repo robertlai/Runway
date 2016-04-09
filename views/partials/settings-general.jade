@@ -1,5 +1,19 @@
 .form-horizontal
-    .form-group
+    .alert.alert-danger(ng-show='error' ng-bind='error')
+    form.form-group(name='generalSettingsForm')
         label.col-xs-2.control-label Username:
         .col-xs-10
-            input.form-control(type='text' ng-model='settings.username' placeholder='Username' autofocus)
+            input.form-control(type='text' ng-model='generalSettings.username' placeholder='Username' autofocus)
+        label.col-xs-12.control-label
+        label.col-xs-2.control-label Name:
+        .col-xs-5
+            input.form-control(type='text' ng-model='generalSettings.firstName' placeholder='First')
+        .col-xs-5
+            input.form-control(type='text' ng-model='generalSettings.lastName' placeholder='Last')
+        label.col-xs-12.control-label
+        label.col-xs-2.control-label Email:
+        .col-xs-10
+            input.form-control(type='email' ng-model='generalSettings.email' placeholder='Email')
+        label.col-xs-12.control-label
+        .col-xs-12
+            button.col-xs-12.btn.btn-primary(ng-disabled='!generalSettingsForm.$valid' ng-click='saveUserSettings(generalSettings)') Save

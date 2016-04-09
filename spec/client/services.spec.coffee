@@ -494,6 +494,70 @@ describe 'Services', ->
                     httpBackend.flush()
 
 
+        describe 'updateGeneralSettings', ->
+
+            user = undefined
+
+            beforeEach ->
+                user = { username: 'Justin' }
+
+            it 'should POST to /api/users/updateGeneralSettings', ->
+                httpBackend.expectPOST('/api/users/updateGeneralSettings', user).respond(200)
+                UserService.updateGeneralSettings(user)
+                httpBackend.flush()
+
+
+            describe 'successful', ->
+
+                it 'should resolve the promise', (done) ->
+                    httpBackend.expectPOST('/api/users/updateGeneralSettings', user).respond(200)
+                    UserService.updateGeneralSettings(user).then ->
+                        done()
+                    httpBackend.flush()
+
+
+            describe 'failed', ->
+
+                it 'should reject with SERVER_ERROR', (done) ->
+                    httpBackend.expectPOST('/api/users/updateGeneralSettings', user).respond(401)
+                    UserService.updateGeneralSettings(user).catch (message) ->
+                        expect(message).toEqual(Constants.Messages.SERVER_ERROR)
+                        done()
+                    httpBackend.flush()
+
+
+        describe 'saveUserSettings', ->
+
+            user = undefined
+
+            beforeEach ->
+                user = { username: 'Justin' }
+
+            it 'should POST to /api/users/updateUserSettings', ->
+                httpBackend.expectPOST('/api/users/updateUserSettings', user).respond(200)
+                UserService.saveUserSettings(user)
+                httpBackend.flush()
+
+
+            describe 'successful', ->
+
+                it 'should resolve the promise', (done) ->
+                    httpBackend.expectPOST('/api/users/updateUserSettings', user).respond(200)
+                    UserService.saveUserSettings(user).then ->
+                        done()
+                    httpBackend.flush()
+
+
+            describe 'failed', ->
+
+                it 'should reject with SERVER_ERROR', (done) ->
+                    httpBackend.expectPOST('/api/users/updateUserSettings', user).respond(401)
+                    UserService.saveUserSettings(user).catch (message) ->
+                        expect(message).toEqual(Constants.Messages.SERVER_ERROR)
+                        done()
+                    httpBackend.flush()
+
+
     describe 'MessageService', ->
 
         MessageService = undefined

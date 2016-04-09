@@ -16,7 +16,7 @@ mocha = require('gulp-mocha')
 Server = require('karma').Server
 
 
-allCoffeeSrc = path.join('src', 'scripts', '*.coffee')
+allClientCoffeeSrc = path.join('src', 'scripts', '*.coffee')
 clientScriptsSrcFile = path.join('src', 'scripts', 'app.coffee')
 scriptsDestPath = path.join('dist', 'scripts')
 clientScriptsMinDestFile = 'client.min.js'
@@ -52,21 +52,17 @@ allServerCoffeeFiles = [passportSrcPath, appSrcPath, socketManagerSrcPath, model
 karmaConfSrcFile = path.join(__dirname, 'karma.conf.coffee')
 
 
-gulp.task 'coffeelint:client', ->
-    gulp.src(allCoffeeSrc)
+allCoffeeFiles = allServerCoffeeFiles.concat([allClientCoffeeSrc])
+
+gulp.task 'coffeelint', ->
+    gulp.src(allCoffeeFiles)
         .pipe(coffeelint())
         .pipe(coffeelint.reporter())
-
-gulp.task 'coffeelint:server', ->
-    gulp.src(allServerCoffeeFiles)
-        .pipe(coffeelint())
-        .pipe(coffeelint.reporter())
-
 
 gulp.task 'clean:clientScripts', ->
     del(scriptsDestPath + clientScriptsMinDestFile)
     del(scriptsDestPath + clientScriptsNonMinDestFile)
-gulp.task 'clientScripts', ['coffeelint:client', 'clean:clientScripts'], ->
+gulp.task 'clientScripts', ['coffeelint', 'clean:clientScripts'], ->
     browserify(clientScriptsSrcFile, { transform: ['coffeeify'], extensions: ['.coffee'] })
         .bundle()
         .on 'error', (error) -> @emit('end')
@@ -109,7 +105,9 @@ gulp.task 'vendorCss', ['clean:vendorCss'], ->
 gulp.task 'clean:jade', -> del(partialsDestPath)
 gulp.task 'jade', ['clean:jade'], ->
     gulp.src(jadeSrcPath)
-        .pipe(jade())
+        .pipe(jade().on 'error', (error) ->
+            console.log 'error compiling jade'
+            @emit('end'))
         .pipe(gulp.dest(partialsDestPath))
 
 
@@ -123,7 +121,7 @@ allBuildTasks = ['vendorCss', 'clientCss', 'vendorScripts', 'clientScripts', 'ja
 
 
 gulp.task 'dev', allBuildTasks, ->
-    gulp.watch(allCoffeeSrc, ['clientScripts'])
+    gulp.watch(allClientCoffeeSrc, ['clientScripts'])
     gulp.watch([vendorScriptsSrcFile, 'package.json'], ['vendorScripts', 'vendorCss'])
     gulp.watch(['package.json', clientStylesSrcPath], ['clientCss'])
     gulp.watch(jadeSrcPath, ['jade'])
@@ -137,7 +135,7 @@ gulp.task 'release', allBuildTasks
 
 
 # test
-gulp.task 'test:server', ['coffeelint:server'], ->
+gulp.task 'test:server', ['coffeelint'], ->
     gulp.src(serverSpecSrc)
         .pipe(mocha({ reporter: 'nyan' }))
 

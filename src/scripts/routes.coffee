@@ -6,12 +6,15 @@ angular.module('runwayAppRoutes', ['runwayAppConstants', 'runwayAppServices', 'u
     locationProvider.html5Mode({ enabled: true })
     urlRouterProvider.otherwise('/home/groups/' + Constants.OWNED_GROUP)
 
+    injector = angular.injector(['ng'])
+    q = injector.get('$q')
+
     httpProvider.interceptors.push ->
         {
             responseError: (response) ->
                 if response.status is 401
                     window.alert(Constants.Messages.NOT_AUTHORIZED)
-                return response
+                q.reject(response)
         }
 
     stateProvider

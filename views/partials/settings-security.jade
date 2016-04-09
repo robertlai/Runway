@@ -1,2 +1,12 @@
-h2 Security
-
+.form-horizontal
+    .alert.alert-danger(ng-show='error' ng-bind='error')
+    form.form-group(name='securitySettingsForm')
+        label.col-xs-2.control-label Searchability:
+        .col-xs-10
+            .btn-group
+                label(class='btn btn-success' ng-model='securitySettings.searchability' uib-btn-radio="'private'") Private
+                label(class='btn btn-success' ng-model='securitySettings.searchability' uib-btn-radio="'friends'") Friends
+                label(class='btn btn-success' ng-model='securitySettings.searchability' uib-btn-radio="'public'") Public
+        label.col-xs-12.control-label
+        .col-xs-12
+            button.col-xs-12.btn.btn-primary(ng-disabled='!securitySettingsForm.$valid' ng-click='saveUserSettings(securitySettings)') Save

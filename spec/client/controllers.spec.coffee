@@ -55,6 +55,7 @@ describe 'controllers', ->
 
         UserService = {
             findUsers: (query) -> resolvedPromiseFunc(query)
+            saveUserSettings: -> resolvedPromiseFunc()
         }
 
         uibModalInstance = {
@@ -246,17 +247,91 @@ describe 'controllers', ->
 
         settingsControllerParams = undefined
         User = undefined
+        UserService = undefined
 
-        beforeEach ->
-            User = { username: 'Justin' }
-            settingsControllerParams = {
-                $scope: scope
-                User: User
-            }
 
-        it 'should initialize scope.user to the user obtained the resolved User', ->
-            $controller('settingsController', settingsControllerParams)
-            expect(scope.user).toEqual(User)
+        describe 'setup', ->
+
+            beforeEach ->
+                User = {
+                    _id: 'justinId'
+                    username: 'Justin'
+                    firstName: 'Justin'
+                    lastName: 'Stribling'
+                    email: 'justin@email.com'
+                    searchability: 'friends'
+                }
+                settingsControllerParams = {
+                    $scope: scope
+                    User: User
+                }
+                $controller('settingsController', settingsControllerParams)
+
+            it 'should initialize scope.generalSettings from the user obtained from the resolved User', ->
+                expect(scope.generalSettings).toEqual {
+                    _id: 'justinId'
+                    username: 'Justin'
+                    firstName: 'Justin'
+                    lastName: 'Stribling'
+                    email: 'justin@email.com'
+                }
+
+            it 'should initialize scope.securitySettings from the user obtained from the resolved User', ->
+                expect(scope.securitySettings).toEqual {
+                    _id: 'justinId'
+                    searchability: 'friends'
+                }
+
+            it 'should define scope.saveUserSettings', ->
+                expect(scope.saveUserSettings).toEqual(jasmine.any(Function))
+
+
+        describe 'scope.saveUserSettings', ->
+
+            settingsToSave = undefined
+
+            beforeEach ->
+                settingsToSave = {
+                    key: 'value'
+                }
+                User = {
+                    _id: 'justinId'
+                    username: 'Justin'
+                    firstName: 'Justin'
+                    lastName: 'Stribling'
+                    email: 'justin@email.com'
+                    searchability: 'friends'
+                }
+                settingsControllerParams = {
+                    $scope: scope
+                    User: User
+                    UserService: UserService
+                }
+                spyOn(UserService, 'saveUserSettings').and.callThrough()
+                $controller('settingsController', settingsControllerParams)
+
+
+            describe 'UserService.saveUserSettings returns successfully', ->
+
+                it 'should resolve the promise', (done) ->
+                    scope.saveUserSettings(settingsToSave).then ->
+                        expect(UserService.saveUserSettings).toHaveBeenCalledWith(settingsToSave)
+                        done()
+                    $rootScope.$digest()
+
+
+            describe 'UserService.saveUserSettings fails', ->
+
+                beforeEach ->
+                    angular.extend UserService, {
+                        saveUserSettings: -> rejectedPromiseFunc('test error message')
+                    }
+
+                it 'should reject the promise and set scope.error to the returned error', (done) ->
+                    scope.saveUserSettings(settingsToSave).catch (error) ->
+                        expect(scope.error).toEqual('test error message')
+                        done()
+                    $rootScope.$digest()
 
 
     describe 'registerController', ->

@@ -11,6 +11,7 @@ userSchema = new Schema({
     password: String
     _ownedGroups: [{ type: Schema.Types.ObjectId, ref: 'group' }]
     _joinedGroups: [{ type: Schema.Types.ObjectId, ref: 'group' }]
+    searchability: { type: String, default: 'friends' }
 })
 
 userSchema.methods.generateHash = (password) ->
