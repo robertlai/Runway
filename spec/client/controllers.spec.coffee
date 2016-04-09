@@ -530,18 +530,18 @@ describe 'controllers', ->
                 describe 'with editedGroup and no deleteGroup specified', ->
 
                     it 'should clear all errors', ->
-                        uibModalInstance.close({ _id: 5 })
+                        uibModalInstance.close([{ _id: 5 }])
                         expect(scope.error).toEqual(null)
 
                     it 'should replace the groups being edited in the groups list', ->
-                        uibModalInstance.close({ _id: 5, name: 'test' })
+                        uibModalInstance.close([{ _id: 5, name: 'test' }])
                         expect(scope.groups).toEqual([{ _id: 36 }, { _id: 5, name: 'test' }, { _id: 6 }])
 
 
                 describe 'with editedGroup and deleteGroup = true', ->
 
                     beforeEach ->
-                        uibModalInstance.close({ _id: 5 }, true)
+                        uibModalInstance.close([{ _id: 5 }, true])
 
                     it 'should clear all errors', ->
                         expect(scope.error).toEqual(null)
@@ -553,7 +553,7 @@ describe 'controllers', ->
                 describe 'with editedGroup and deleteGroup = false', ->
 
                     beforeEach ->
-                        uibModalInstance.close({ _id: 5, name: 'test' }, false)
+                        uibModalInstance.close([{ _id: 5, name: 'test' }, false])
 
                     it 'should clear all errors', ->
                         expect(scope.error).toEqual(null)
@@ -763,7 +763,7 @@ describe 'controllers', ->
                 $controller('editGroupPropertiesModalController', editGroupPropertiesModalControllerParams)
                 spyOn(uibModalInstance, 'close').and.callThrough()
                 scope.editGroup(editingGroup).then ->
-                    expect(uibModalInstance.close).toHaveBeenCalledWith(editingGroup)
+                    expect(uibModalInstance.close).toHaveBeenCalledWith([editingGroup])
                 $rootScope.$digest()
 
 
@@ -839,7 +839,7 @@ describe 'controllers', ->
                 it 'should close the modal', (done) ->
                     spyOn(uibModalInstance, 'close').and.callFake -> true
                     scope.delete().then ->
-                        expect(uibModalInstance.close).toHaveBeenCalledWith(editingGroup, true)
+                        expect(uibModalInstance.close).toHaveBeenCalledWith([editingGroup, true])
                         done()
                     $rootScope.$digest()
 

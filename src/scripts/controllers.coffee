@@ -133,7 +133,9 @@ angular.module('runwayAppControllers',
             templateUrl: '/partials/editGroupPropertiesModal.html'
             controller: 'editGroupPropertiesModalController'
         )
-        modalInstance.result.then (newEditedGroupProperties, deleteGroup = false) ->
+        # seem to have to pass an array or the second param is always lost...
+        # todo: found out why passing args normally is not wokring here
+        modalInstance.result.then ([newEditedGroupProperties, deleteGroup]) ->
             scope.error = null
             for group, index in scope.groups
                 if group._id is newEditedGroupProperties._id
@@ -215,7 +217,7 @@ angular.module('runwayAppControllers',
         scope.disableModal = true
         GroupService.editGroup(scope.editingGroup)
             .then (newProperties) ->
-                uibModalInstance.close(newProperties)
+                uibModalInstance.close([newProperties])
                 deferred.resolve()
             .catch (message) ->
                 scope.disableModal = false
@@ -231,7 +233,7 @@ angular.module('runwayAppControllers',
                 scope.disableModal = true
                 GroupService.deleteGroup(scope.editingGroup)
                     .then ->
-                        uibModalInstance.close(scope.editingGroup, true)
+                        uibModalInstance.close([scope.editingGroup, true])
                         deferred.resolve()
                     .catch (message) ->
                         scope.disableModal = false

@@ -1,7 +1,10 @@
 express = require('express')
 Constants = require('../Constants')
 Group = require('../models/Group')
+Item = require('../models/Item')
 User = require('../models/User')
+Message = require('../models/Message')
+mongoose = require('mongoose')
 
 
 module.exports = express.Router()
@@ -87,7 +90,7 @@ module.exports = express.Router()
         res.sendStatus(500)
 
 .post '/delete', (req, res) ->
-    _groupToDelete = req.body._id
+    _groupToDelete = mongoose.Types.ObjectId(req.body._id)
     _user = req.user._id
     try
         Group.findById(_groupToDelete)
@@ -98,8 +101,20 @@ module.exports = express.Router()
             if groupToDelete._owner.toString() isnt _user.toString()
                 res.sendStatus(401)
             else
-                # todo: finish deleting stuff
-                res.sendStatus(200) # hack
+                Message.remove { _group: _groupToDelete },
+                (err) ->
+                    throw err if err
+                    Item.remove { _group: _groupToDelete },
+                    (err) ->
+                        throw err if err
+                        User.update {},
+                            { $pull: { _ownedGroups: _groupToDelete, _joinedGroups: _groupToDelete } },
+                            { multi: true },
+                            (err) ->
+                                throw err if err
+                                Group.remove { _id: _groupToDelete }, (err) ->
+                                    throw err if err
+                                    res.sendStatus(200)
     catch err
         res.sendStatus(500)
 
