@@ -759,7 +759,7 @@ describe 'controllers', ->
             it 'should define the cancel function', ->
                 expect(scope.cancel).toBeDefined()
 
-            it 'should set to true if the resolved user id matches the groups owner', ->
+            it 'should set scope.canDelete to true if the resolved user id matches the groups owner', ->
                 expect(scope.canDelete).toEqual(true)
 
         describe 'setup not owner of group', ->
@@ -770,7 +770,7 @@ describe 'controllers', ->
                 }
                 $controller('editGroupPropertiesModalController', editGroupPropertiesModalControllerParams)
 
-            it 'should set to true if the resolved user id doesnt match the groups owner', ->
+            it "should set scope.canDelete to false if the resolved user id doesn't match the groups owner", ->
                 expect(scope.canDelete).toEqual(false)
 
 
@@ -802,6 +802,7 @@ describe 'controllers', ->
                 scope.editGroup().catch ->
                     expect(scope.error).toEqual('test error message')
                 $rootScope.$digest()
+
 
         describe 'scope.delete', ->
 
@@ -940,6 +941,20 @@ describe 'controllers', ->
 
             it 'should define the scope.close function', ->
                 expect(scope.close).toBeDefined()
+
+            it 'should set scope.canDelete to true if the resolved user id matches the groups owner', ->
+                expect(scope.canDelete).toEqual(true)
+
+        describe 'setup not owner of group', ->
+
+            beforeEach  ->
+                angular.extend editGroupMembersModalControllerParams, {
+                    User: { _id: 'notJustinId' }
+                }
+                $controller('editGroupPropertiesModalController', editGroupMembersModalControllerParams)
+
+            it "should set scope.canDelete to false if the resolved user id doesn't match the groups owner", ->
+                expect(scope.canDelete).toEqual(false)
 
 
         describe 'scope.getUsers, get users successfully', ->

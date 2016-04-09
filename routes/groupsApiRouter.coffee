@@ -17,7 +17,7 @@ module.exports = express.Router()
             groupField = '_' + groupType + 'Groups'
             User.findById(_user)
             .select(groupField)
-            .populate(groupField, 'name description colour _members')
+            .populate(groupField, 'name description colour _members _owner')
             .exec (err, user) ->
                 throw err if err
                 Group.populate user[groupField], {

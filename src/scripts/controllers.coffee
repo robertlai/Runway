@@ -212,6 +212,7 @@ angular.module('runwayAppControllers',
 ($window, scope, q, uibModalInstance, GroupService, editingGroup, User, Constants) ->
 
     scope.editingGroup = angular.copy(editingGroup)
+
     scope.canDelete = scope.editingGroup._owner is User._id
 
     scope.editGroup = ->
@@ -262,6 +263,8 @@ angular.module('runwayAppControllers',
     scope.owner = User
 
     scope.editingGroup = angular.copy(editingGroup)
+
+    scope.canDelete = scope.editingGroup._owner is scope.owner._id
 
     scope.getUsers = (query) ->
         deferred = q.defer()
