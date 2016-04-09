@@ -27,5 +27,5 @@ form(ng-submit='editGroup()')
     .modal-footer
         fieldset(ng-disabled='disableModal')
             button.btn.btn-primary(type='submit') Edit Group
-            button.btn.btn-danger(ng-click='delete()') Delete
+            button.btn.btn-danger(ng-click='delete()' ng-show='canDelete') Delete
             button.btn.btn-warning(ng-click='cancel()') Cancel

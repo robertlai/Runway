@@ -139,7 +139,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
                 .success ->
                     deferred.resolve()
                 .error (error, status) =>
-                    if status is 401
+                    if status is 403
                         deferred.reject(@Constants.Messages.MUST_BE_OWNER_TO_DELETE)
                     else
                         deferred.reject(@Constants.Messages.SERVER_ERROR)

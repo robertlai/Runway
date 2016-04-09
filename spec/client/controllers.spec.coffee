@@ -39,7 +39,7 @@ describe 'controllers', ->
             deferred.promise
 
         AuthService = {
-            getUser: -> { username: 'Justin' }
+            getUser: -> { _id: 'justinId', username: 'Justin' }
             login: -> resolvedPromiseFunc()
             logout: -> resolvedPromiseFunc()
             register: -> resolvedPromiseFunc()
@@ -514,6 +514,7 @@ describe 'controllers', ->
                     backdrop: 'static'
                     resolve:
                         editingGroup: groupToEdit
+                        User: { _id: 'justinId', username: 'Justin' }
                     templateUrl: '/partials/editGroupPropertiesModal.html'
                     controller: 'editGroupPropertiesModalController'
                 })
@@ -598,7 +599,7 @@ describe 'controllers', ->
                     size: 'lg'
                     resolve:
                         editingGroup: groupToEdit
-                        User: { username: 'Justin' }
+                        User: { _id: 'justinId', username: 'Justin' }
                     templateUrl: '/partials/editGroupMembersModal.html'
                     controller: 'editGroupMembersModalController'
                 })
@@ -723,10 +724,11 @@ describe 'controllers', ->
 
     describe 'editGroupPropertiesModalController', ->
 
-        editingGroup = editGroupPropertiesModalControllerParams = undefined
+        editingGroup = User = editGroupPropertiesModalControllerParams = undefined
 
         beforeEach ->
-            editingGroup = { name: 'test name' }
+            editingGroup = { name: 'test name', _owner: 'justinId' }
+            User = { _id: 'justinId' }
             angular.extend uibModalInstance, {
                 close: (addedGroup) ->
             }
@@ -735,9 +737,10 @@ describe 'controllers', ->
                 $uibModalInstance: uibModalInstance
                 GroupService: GroupService
                 editingGroup: editingGroup
+                User: User
             }
 
-        describe 'setup', ->
+        describe 'setup owner of group', ->
 
             beforeEach  ->
                 $controller('editGroupPropertiesModalController', editGroupPropertiesModalControllerParams)
@@ -755,6 +758,21 @@ describe 'controllers', ->
 
             it 'should define the cancel function', ->
                 expect(scope.cancel).toBeDefined()
+
+            it 'should set to true if the resolved user id matches the groups owner', ->
+                expect(scope.canDelete).toEqual(true)
+
+        describe 'setup not owner of group', ->
+
+            beforeEach  ->
+                angular.extend editGroupPropertiesModalControllerParams, {
+                    User: { _id: 'notJustinId' }
+                }
+                $controller('editGroupPropertiesModalController', editGroupPropertiesModalControllerParams)
+
+            it 'should set to true if the resolved user id doesnt match the groups owner', ->
+                expect(scope.canDelete).toEqual(false)
+
 
 
         describe 'scope.editGroup edits successfully', ->

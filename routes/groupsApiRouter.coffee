@@ -99,7 +99,7 @@ module.exports = express.Router()
         .exec (err, groupToDelete) ->
             throw err if err
             if groupToDelete._owner.toString() isnt _user.toString()
-                res.sendStatus(401)
+                res.sendStatus(403)
             else
                 Message.remove { _group: _groupToDelete },
                 (err) ->

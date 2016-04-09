@@ -438,8 +438,8 @@ describe 'Services', ->
 
             describe 'failed', ->
 
-                it 'should reject with MUST_BE_OWNER_TO_DELETE when status is 401', (done) ->
-                    httpBackend.expectPOST('/api/groups/delete', groupToDelete).respond(401)
+                it 'should reject with MUST_BE_OWNER_TO_DELETE when status is 403', (done) ->
+                    httpBackend.expectPOST('/api/groups/delete', groupToDelete).respond(403)
                     GroupService.deleteGroup(groupToDelete).catch (message) ->
                         expect(message).toEqual(Constants.Messages.MUST_BE_OWNER_TO_DELETE)
                         done()

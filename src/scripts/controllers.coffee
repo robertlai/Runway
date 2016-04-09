@@ -130,6 +130,7 @@ angular.module('runwayAppControllers',
             backdrop: 'static'
             resolve:
                 editingGroup: groupToEdit
+                User: AuthService.getUser()
             templateUrl: '/partials/editGroupPropertiesModal.html'
             controller: 'editGroupPropertiesModalController'
         )
@@ -206,10 +207,12 @@ angular.module('runwayAppControllers',
 ]
 
 # too: use window instead of $window
-.controller 'editGroupPropertiesModalController', ['$window', '$scope', '$q', '$uibModalInstance', 'GroupService', 'editingGroup', 'Constants'
-($window, scope, q, uibModalInstance, GroupService, editingGroup, Constants) ->
+.controller 'editGroupPropertiesModalController',
+['$window', '$scope', '$q', '$uibModalInstance', 'GroupService', 'editingGroup', 'User', 'Constants'
+($window, scope, q, uibModalInstance, GroupService, editingGroup, User, Constants) ->
 
     scope.editingGroup = angular.copy(editingGroup)
+    scope.canDelete = scope.editingGroup._owner is User._id
 
     scope.editGroup = ->
         deferred = q.defer()
