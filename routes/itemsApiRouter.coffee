@@ -13,28 +13,25 @@ module.exports = (io) ->
 
     return express.Router()
 
-    .post '/text', (req, res) ->
-        try
-            _group = req.body._group
-            item = new Item {
-                date: new Date()
-                _group: _group
-                _owner: req.user._id
-                type: 'text'
-                x: 0
-                y: 0
-                width: null
-                height: null
-                text: req.body.text
-            }
-            item.save (err, newItem) ->
-                throw err if err
-                io.sockets.in(_group).emit('newItem', newItem)
-                res.sendStatus(201)
-        catch err
-            res.sendStatus(500)
+    .post '/text', (req, res, next) ->
+        _group = req.body._group
+        item = new Item {
+            date: new Date()
+            _group: _group
+            _owner: req.user._id
+            type: 'text'
+            x: 0
+            y: 0
+            width: null
+            height: null
+            text: req.body.text
+        }
+        item.save (err, newItem) ->
+            return next(err) if err
+            io.sockets.in(_group).emit('newItem', newItem)
+            res.sendStatus(201)
 
-    .post '/fileUpload', upload.single('file'), (req, res) ->
+    .post '/fileUpload', upload.single('file'), (req, res, next) ->
         date = new Date()
         _group = req.headers._group
         _owner = req.user._id
@@ -75,43 +72,34 @@ module.exports = (io) ->
             res.redirect('back')
             fs.unlinkSync(fullFilePath)
 
-    .get '/file', (req, res) ->
-        try
-            Item.findById(req.query._file)
-            .select('file type')
-            .exec (err, file) ->
-                throw err if (not file or err)
-                res.set('Content-Type': file.type)
-                res.send(file.file)
-        catch err
-            res.sendStatus(500)
+    .get '/file', (req, res, next) ->
+        Item.findById(req.query._file)
+        .select('file type')
+        .exec (err, file) ->
+            return next(err) if (not file or err)
+            res.set('Content-Type': file.type)
+            res.send(file.file)
 
-    .post '/initialItems', (req, res) ->
-        try
-            Item.find({ _group: req.body._group })
-            .select('date type x y width height text')
-            .sort('date')
-            .exec (err, itemsInfo) ->
-                throw err if err
-                res.json(itemsInfo)
-        catch err
-            res.sendStatus(500)
+    .post '/initialItems', (req, res, next) ->
+        Item.find({ _group: req.body._group })
+        .select('date type x y width height text')
+        .sort('date')
+        .exec (err, itemsInfo) ->
+            return next(err) if err
+            res.json(itemsInfo)
 
-    .post '/updateItemLocation', (req, res) ->
-        try
-            _item = req.body._item
-            newX = req.body.newX
-            newY = req.body.newY
+    .post '/updateItemLocation', (req, res, next) ->
+        _item = req.body._item
+        newX = req.body.newX
+        newY = req.body.newY
 
-            Item.findById(_item)
-            .select('x y _group')
-            .exec (err, item) ->
-                throw err if err
-                item._id = _item
-                item.x = newX
-                item.y = newY
-                item.save()
-                io.sockets.in(item._group).emit('updateItem', item)
-                res.sendStatus(200)
-        catch err
-            res.sendStatus(500)
+        Item.findById(_item)
+        .select('x y _group')
+        .exec (err, item) ->
+            return next(err) if err
+            item._id = _item
+            item.x = newX
+            item.y = newY
+            item.save()
+            io.sockets.in(item._group).emit('updateItem', item)
+            res.sendStatus(200)

@@ -2,9 +2,9 @@ express = require('express')
 passport = require('passport')
 
 
-pageRouter = express.Router()
+module.exports = express.Router()
 
-pageRouter.post '/getUserStatus', (req, res, next) ->
+.post '/getUserStatus', (req, res, next) ->
     currentUser = req.user
     user = if currentUser
         currentUser.password = undefined
@@ -16,7 +16,7 @@ pageRouter.post '/getUserStatus', (req, res, next) ->
         user: user
     })
 
-pageRouter.post '/login', (req, res, next) ->
+.post '/login', (req, res, next) ->
     passport.authenticate('login', (error, user, message) ->
         if error?
             res.sendStatus(500).json({ error: error })
@@ -27,11 +27,13 @@ pageRouter.post '/login', (req, res, next) ->
                 if error?
                     res.sendStatus(500).json({ error: error })
                 else
+                    delete user.password
                     user.password = undefined
                     res.sendStatus(200).json({ user: user })
     )(req, res, next)
 
-pageRouter.post '/register', (req, res, next) ->
+#todo: double password matching
+.post '/register', (req, res, next) ->
     passport.authenticate('register', (error, user, message) ->
         if error?
             res.sendStatus(500).json({ error: error })
@@ -41,11 +43,9 @@ pageRouter.post '/register', (req, res, next) ->
             res.sendStatus(200).json({})
     )(req, res, next)
 
-pageRouter.get '/logout', (req, res) ->
+.get '/logout', (req, res) ->
     req.logout()
     res.sendStatus(200).json({})
 
-pageRouter.get '/*', (req, res) ->
+.get '/*', (req, res) ->
     res.render('index')
-
-module.exports = pageRouter

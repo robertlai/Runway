@@ -11,9 +11,12 @@ module.exports = (io) ->
     router = express.Router()
 
     apiRouter = require('./apiRouter')(io)
-    pageRouter = require('./pageRouter')
+    authRouter = require('./authRouter')
 
     router.use('/api', loggedIn, apiRouter)
-    router.use(pageRouter)
+    router.use(authRouter)
+
+    router.use (err, req, res, next) ->
+        res.sendStatus(500).send(err)
 
     return router
