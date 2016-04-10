@@ -10,7 +10,7 @@ concat = require('gulp-concat')
 sass = require('gulp-sass')
 autoprefixer = require('gulp-autoprefixer')
 csso = require('gulp-csso')
-jade = require('gulp-jade')
+pug = require('gulp-pug')
 nodemon = require('gulp-nodemon')
 mocha = require('gulp-mocha')
 Server = require('karma').Server
@@ -34,7 +34,7 @@ vendorStylesSrcPaths = ['node_modules/jquery-ui-bundle/jquery-ui.min.css'
     'node_modules/angularjs-color-picker/dist/themes/angularjs-color-picker-bootstrap.min.css']
 vendorStylesDestFile = 'vendor.min.css'
 
-jadeSrcPath = path.join('views', 'partials', '*.jade')
+pugSrcPath = path.join('views', 'partials', '*.pug')
 partialsDestPath = path.join('dist', 'partials')
 
 imagesSrcPath = path.join('src', 'images', '*.*')
@@ -102,11 +102,11 @@ gulp.task 'vendorCss', ['clean:vendorCss'], ->
         .pipe(gulp.dest(stylesDestPath))
 
 
-gulp.task 'clean:jade', -> del(partialsDestPath)
-gulp.task 'jade', ['clean:jade'], ->
-    gulp.src(jadeSrcPath)
-        .pipe(jade().on 'error', (error) ->
-            console.log 'error compiling jade'
+gulp.task 'clean:pug', -> del(partialsDestPath)
+gulp.task 'pug', ['clean:pug'], ->
+    gulp.src(pugSrcPath)
+        .pipe(pug().on 'error', (error) ->
+            console.log 'error compiling pug'
             @emit('end'))
         .pipe(gulp.dest(partialsDestPath))
 
@@ -117,14 +117,14 @@ gulp.task 'images', ['clean:images'], ->
         .pipe(gulp.dest(imagesDestPath))
 
 
-allBuildTasks = ['vendorCss', 'clientCss', 'vendorScripts', 'clientScripts', 'jade', 'images']
+allBuildTasks = ['vendorCss', 'clientCss', 'vendorScripts', 'clientScripts', 'pug', 'images']
 
 
 gulp.task 'dev', allBuildTasks, ->
     gulp.watch(allClientCoffeeSrc, ['clientScripts'])
     gulp.watch([vendorScriptsSrcFile, 'package.json'], ['vendorScripts', 'vendorCss'])
     gulp.watch(['package.json', clientStylesSrcPath], ['clientCss'])
-    gulp.watch(jadeSrcPath, ['jade'])
+    gulp.watch(pugSrcPath, ['pug'])
     gulp.watch(imagesSrcPath, ['images'])
     nodemon({
         script: 'server.coffee'
