@@ -264,7 +264,7 @@ angular.module('runwayAppControllers',
 
     scope.editingGroup = angular.copy(editingGroup)
 
-    scope.canDelete = scope.editingGroup._owner is scope.owner._id
+    scope.canRemove = scope.editingGroup._owner is scope.owner._id
 
     scope.getUsers = (query) ->
         deferred = q.defer()
@@ -296,7 +296,7 @@ angular.module('runwayAppControllers',
         return deferred.promise
 
 
-    scope.deleteMember = (member) ->
+    scope.removeMember = (member) ->
         'not implemented yet'
 
     scope.getMemberDisplay = (member) ->

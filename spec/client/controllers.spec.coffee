@@ -924,7 +924,7 @@ describe 'controllers', ->
                 editingGroup = 'thing'
                 expect(scope.editingGroup).not.toEqual(editingGroup)
 
-            it 'should initialize scope.owner to the User reolved for the controller', ->
+            it 'should initialize scope.owner to the User resolved for the controller', ->
                 expect(scope.owner).toEqual({ username: 'Justin' })
 
             it 'should define the scope.getUsers function', ->
@@ -933,8 +933,8 @@ describe 'controllers', ->
             it 'should define the scope.addMember function', ->
                 expect(scope.addMember).toBeDefined()
 
-            it 'should define the scope.deleteMember function', ->
-                expect(scope.deleteMember).toBeDefined()
+            it 'should define the scope.removeMember function', ->
+                expect(scope.removeMember).toBeDefined()
 
             it 'should define the scope.getMemberDisplay function', ->
                 expect(scope.getMemberDisplay).toBeDefined()
@@ -942,8 +942,8 @@ describe 'controllers', ->
             it 'should define the scope.close function', ->
                 expect(scope.close).toBeDefined()
 
-            it 'should set scope.canDelete to true if the resolved user id matches the groups owner', ->
-                expect(scope.canDelete).toEqual(true)
+            it 'should set scope.canRemove to true if the resolved user id matches the groups owner', ->
+                expect(scope.canRemove).toEqual(true)
 
         describe 'setup not owner of group', ->
 
@@ -951,10 +951,10 @@ describe 'controllers', ->
                 angular.extend editGroupMembersModalControllerParams, {
                     User: { _id: 'notJustinId' }
                 }
-                $controller('editGroupPropertiesModalController', editGroupMembersModalControllerParams)
+                $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
 
-            it "should set scope.canDelete to false if the resolved user id doesn't match the groups owner", ->
-                expect(scope.canDelete).toEqual(false)
+            it "should set scope.canRemove to false if the resolved user id doesn't match the groups owner", ->
+                expect(scope.canRemove).toEqual(false)
 
 
         describe 'scope.getUsers, get users successfully', ->
@@ -1049,13 +1049,13 @@ describe 'controllers', ->
                 $rootScope.$digest()
 
 
-        describe 'scope.deleteMember', ->
+        describe 'scope.removeMember', ->
 
             beforeEach ->
                 $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
 
             it 'should not be implemented yet', ->
-                expect(scope.deleteMember()).toEqual('not implemented yet')
+                expect(scope.removeMember()).toEqual('not implemented yet')
 
         describe 'scope.getMemberDisplay', ->
 
@@ -1119,7 +1119,7 @@ describe 'controllers', ->
             it 'should into scope.user to the given User', ->
                 expect(scope.user).toEqual(testUser)
 
-            it "should emit 'groupConnect' with the username and groupId tot he soket", ->
+            it "should emit 'groupConnect' with the username and groupId tot he socket", ->
                 expect(scope.socket.emit).toHaveBeenCalledWith('groupConnect', testUser, stateParams.groupId)
 
 
