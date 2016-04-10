@@ -160,6 +160,20 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
 
             return deferred.promise
 
+        removeMember: (_group, _memberToRemove) =>
+            deferred = @q.defer()
+
+            @http.post('/api/groups/removeMember', { _group: _group, _memberToRemove: _memberToRemove })
+                .success ->
+                    deferred.resolve()
+                .error (error, status) =>
+                    if status is 403
+                        deferred.reject(@Constants.Messages.MUST_BE_OWNER_TO_REMOVE_MEMBER)
+                    else
+                        deferred.reject(@Constants.Messages.SERVER_ERROR)
+
+            return deferred.promise
+
 ]
 
 .service 'UserService', [

@@ -51,6 +51,7 @@ describe 'controllers', ->
             editGroup: (editingGroup) -> resolvedPromiseFunc(editingGroup)
             deleteGroup: -> resolvedPromiseFunc()
             addMember: -> resolvedPromiseFunc()
+            removeMember: -> resolvedPromiseFunc()
         }
 
         UserService = {
@@ -1014,7 +1015,7 @@ describe 'controllers', ->
                     done()
                 $rootScope.$digest()
 
-            it 'should push the newly aded member onto the scope.editingGroup._members list', (done) ->
+            it 'should push the newly added member onto the scope.editingGroup._members list', (done) ->
                 scope.addMember().then ->
                     expect(scope.editingGroup._members).toEqual([{ name: 'Justin' }])
                     done()
@@ -1049,13 +1050,59 @@ describe 'controllers', ->
                 $rootScope.$digest()
 
 
-        describe 'scope.removeMember', ->
+        describe 'scope.removeMember, member removal succeeds', ->
+
+            _memberToRemove = undefined
 
             beforeEach ->
+                _memberToRemove = 'justinId'
                 $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
 
-            it 'should not be implemented yet', ->
-                expect(scope.removeMember()).toEqual('not implemented yet')
+            it 'should set scope.disableModal to true', ->
+                scope.removeMember(_memberToRemove)
+                expect(scope.disableModal).toEqual(true)
+
+            it 'should call GroupService.removeMember with the member to remove', (done) ->
+                spyOn(GroupService, 'removeMember').and.callThrough()
+                scope.removeMember(_memberToRemove).then ->
+                    expect(GroupService.removeMember).toHaveBeenCalledWith(editingGroup._id, 'justinId')
+                    done()
+                $rootScope.$digest()
+
+            it 'should set scope.disableModal to false', (done) ->
+                scope.removeMember(_memberToRemove).then ->
+                    expect(scope.disableModal).toEqual(false)
+                    done()
+                $rootScope.$digest()
+
+            it 'should remove the newly removed member from the scope.editingGroup._members list', (done) ->
+                scope.editingGroup._members = [{ _id: 'otherId', name: 'Other' }, { _id: 'justinId', name: 'Justin' }]
+                scope.removeMember(_memberToRemove).then ->
+                    expect(scope.editingGroup._members).toEqual([{ _id: 'otherId', name: 'Other' }])
+                    done()
+                $rootScope.$digest()
+
+
+        describe 'scope.removeMember, member removal fails', ->
+
+            beforeEach ->
+                angular.extend GroupService, {
+                    removeMember: -> rejectedPromiseFunc('test error message')
+                }
+                $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
+
+            it 'should set the scope.disableModal to false', (done) ->
+                scope.removeMember().catch (message) ->
+                    expect(scope.disableModal).toEqual(false)
+                    done()
+                $rootScope.$digest()
+
+            it 'should set the scope.error to the error passed back from the GroupService.removeMember', (done) ->
+                scope.removeMember().catch (message) ->
+                    expect(scope.error).toEqual('test error message')
+                    done()
+                $rootScope.$digest()
+
 
         describe 'scope.getMemberDisplay', ->
 

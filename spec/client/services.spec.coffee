@@ -371,7 +371,6 @@ describe 'Services', ->
                     httpBackend.flush()
 
 
-
         describe 'addMember', ->
 
             _group = memberToAdd = undefined
@@ -413,6 +412,47 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
+
+        describe 'removeMember', ->
+
+            _group = _memberToRemove = undefined
+
+            beforeEach ->
+                _group = 'testGroup'
+                _memberToRemove = 'testMemberToRemoveId'
+
+            it 'should POST to /api/groups/removeMember', ->
+                httpBackend.expectPOST('/api/groups/removeMember', { _group: _group, _memberToRemove: _memberToRemove }).respond(200)
+                GroupService.removeMember(_group, _memberToRemove)
+                httpBackend.flush()
+
+
+            describe 'successful', ->
+
+                it 'should resolve the promise', (done) ->
+                    httpBackend.expectPOST('/api/groups/removeMember', { _group: _group, _memberToRemove: _memberToRemove }).respond(200)
+                    GroupService.removeMember(_group, _memberToRemove).then -> done()
+                    httpBackend.flush()
+
+
+            describe 'failed', ->
+
+                it 'should reject with USER_ALREADY_IN_GROUP when status is 403', (done) ->
+                    httpBackend.expectPOST('/api/groups/removeMember', { _group: _group, _memberToRemove: _memberToRemove }).respond(403)
+                    GroupService.removeMember(_group, _memberToRemove).catch (message) ->
+                        expect(message).toEqual(Constants.Messages.MUST_BE_OWNER_TO_REMOVE_MEMBER)
+                        done()
+                    httpBackend.flush()
+
+
+            describe 'failed', ->
+
+                it 'should reject with SERVER_ERROR otherwise', (done) ->
+                    httpBackend.expectPOST('/api/groups/removeMember', { _group: _group, _memberToRemove: _memberToRemove }).respond(500)
+                    GroupService.removeMember(_group, _memberToRemove).catch (message) ->
+                        expect(message).toEqual(Constants.Messages.SERVER_ERROR)
+                        done()
+                    httpBackend.flush()
 
 
         describe 'deleteGroup', ->

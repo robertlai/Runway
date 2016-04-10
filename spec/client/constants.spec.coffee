@@ -54,7 +54,10 @@ describe 'Constants', ->
             expect(Constants.Messages.USER_ALREADY_IN_GROUP).toEqual('This user has already been added to this group.')
 
         it 'should have the correct MUST_BE_OWNER_TO_DELETE', ->
-            expect(Constants.Messages.MUST_BE_OWNER_TO_DELETE).toEqual('You must be the owner of a group in order to delte it.')
+            expect(Constants.Messages.MUST_BE_OWNER_TO_DELETE).toEqual('You must be the owner of a group in order to delete it.')
+
+        it 'should have the correct MUST_BE_OWNER_TO_REMOVE_MEMBER', ->
+            expect(Constants.Messages.MUST_BE_OWNER_TO_REMOVE_MEMBER).toEqual('You must be the owner of a group in order to remove members from it.')
 
         it 'should have the correct CONFIRM_GROUP_DELETE_1', ->
             expect(Constants.Messages.CONFIRM_GROUP_DELETE_1).toEqual('''Are you sure you and to delete this group?

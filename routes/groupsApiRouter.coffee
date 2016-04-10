@@ -50,18 +50,16 @@ module.exports = express.Router()
                 }
                 newGroup.save (err, savedGroup) ->
                     throw err if err
-                    User.findById(_user)
-                    .exec (err, user) ->
+                    User.findByIdAndUpdate _user,
+                    { $push: { _ownedGroups: savedGroup._id } },
+                    (err) ->
                         throw err if err
-                        user._ownedGroups.push(savedGroup._id)
-                        user.save (err) ->
+                        Group.populate newGroup, {
+                            path: '_members'
+                            select: 'firstName lastName username'
+                        }, (err, populatedGroup) ->
                             throw err if err
-                            Group.populate newGroup, {
-                                path: '_members'
-                                select: 'firstName lastName username'
-                            }, (err, populatedGroup) ->
-                                throw err if err
-                                res.json(populatedGroup)
+                            res.json(populatedGroup)
     catch err
         res.sendStatus(500)
 
@@ -118,11 +116,10 @@ module.exports = express.Router()
     catch err
         res.sendStatus(500)
 
-
 .post '/addMember', (req, res) ->
     # todo: verify that the memberToAdd is valid and also have it possiby look for username if not fully valid
     _user = req.user._id
-    _group = req.body._group
+    _group = mongoose.Types.ObjectId(req.body._group)
     _memberToAdd = req.body.memberToAdd._id
     try
         Group.findById(_group)
@@ -132,17 +129,31 @@ module.exports = express.Router()
             if group._members.indexOf(_memberToAdd) isnt -1
                 res.sendStatus(409)
             else
-                group._members.push(_memberToAdd)
+                group._members.push(_memberToAdd) #todo: possibly use $addToSet (need to find a way to deal with duplicates (send back error))
                 group.save (err) ->
                     throw err if err
-                    User.findById(_memberToAdd)
-                    .select('_joinedGroups')
-                    .populate('_joinedGroups')
-                    .exec (err, userBeingAdded) ->
+                    User.findByIdAndUpdate _memberToAdd,
+                    { $push: { _joinedGroups: _group } },
+                    (err) ->
                         throw err if err
-                        userBeingAdded._joinedGroups.push(_group)
-                        userBeingAdded.save (err) ->
-                            throw err if err
-                            res.sendStatus(200)
+                        res.sendStatus(200)
+    catch err
+        res.sendStatus(500)
+
+# todo: dont remove the owner
+.post '/removeMember', (req, res) ->
+    _user = req.user._id
+    _group = req.body._group
+    _memberToRemove = mongoose.Types.ObjectId(req.body._memberToRemove)
+    try
+        User.findByIdAndUpdate _memberToRemove,
+        { $pull: { _joinedGroups: _group } },
+        (err) ->
+            throw err if err
+            Group.findByIdAndUpdate _group,
+            { $pull: { _members: _memberToRemove } },
+            (err) ->
+                throw err if err
+                res.sendStatus(200)
     catch err
         res.sendStatus(500)

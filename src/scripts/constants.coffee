@@ -24,7 +24,8 @@ angular.module('runwayAppConstants', [])
         UNSUPPORTED_GROUP_TYPE: 'This group type is unsupported.'
         NO_GROUP_NAME_PROVIDED: 'Please provide a group name.'
         USER_ALREADY_IN_GROUP: 'This user has already been added to this group.'
-        MUST_BE_OWNER_TO_DELETE: 'You must be the owner of a group in order to delte it.'
+        MUST_BE_OWNER_TO_DELETE: 'You must be the owner of a group in order to delete it.'
+        MUST_BE_OWNER_TO_REMOVE_MEMBER: 'You must be the owner of a group in order to remove members from it.'
         CONFIRM_GROUP_DELETE_1: '''Are you sure you and to delete this group?
                                    All members will be removed and all content destroyed.
                                    There is no going back!'''

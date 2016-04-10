@@ -296,8 +296,24 @@ angular.module('runwayAppControllers',
         return deferred.promise
 
 
-    scope.removeMember = (member) ->
-        'not implemented yet'
+    scope.removeMember = (_member) ->
+        deferred = q.defer()
+
+        scope.disableModal = true
+        GroupService.removeMember(scope.editingGroup._id, _member)
+            .then ->
+                scope.disableModal = false
+                for member, index in scope.editingGroup._members
+                    if member._id is _member
+                        scope.editingGroup._members.splice(index, 1)
+                        break
+                deferred.resolve()
+            .catch (message) ->
+                scope.disableModal = false
+                scope.error = message
+                deferred.reject()
+
+        return deferred.promise
 
     scope.getMemberDisplay = (member) ->
         if member then member.username + ' (' + member.firstName + ' ' + member.lastName + ')' else ''
