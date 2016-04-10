@@ -50,7 +50,7 @@ describe 'controllers', ->
             addGroup: -> resolvedPromiseFunc()
             editGroup: (editingGroup) -> resolvedPromiseFunc(editingGroup)
             deleteGroup: -> resolvedPromiseFunc()
-            addMember: -> resolvedPromiseFunc()
+            addMember: -> resolvedPromiseFunc({ _id: 'newMemberId', name: 'test return member' })
             removeMember: -> resolvedPromiseFunc()
         }
 
@@ -760,8 +760,8 @@ describe 'controllers', ->
             it 'should define the cancel function', ->
                 expect(scope.cancel).toBeDefined()
 
-            it 'should set scope.canDelete to true if the resolved user id matches the groups owner', ->
-                expect(scope.canDelete).toEqual(true)
+            it 'should set scope.isOwner to true if the resolved user id matches the groups owner', ->
+                expect(scope.isOwner).toEqual(true)
 
         describe 'setup not owner of group', ->
 
@@ -771,8 +771,8 @@ describe 'controllers', ->
                 }
                 $controller('editGroupPropertiesModalController', editGroupPropertiesModalControllerParams)
 
-            it "should set scope.canDelete to false if the resolved user id doesn't match the groups owner", ->
-                expect(scope.canDelete).toEqual(false)
+            it "should set scope.isOwner to false if the resolved user id doesn't match the groups owner", ->
+                expect(scope.isOwner).toEqual(false)
 
 
 
@@ -903,8 +903,9 @@ describe 'controllers', ->
                 _id: 5
                 name: 'test group name'
                 _members: []
+                _owner: 'justinId'
             }
-            User = { username: 'Justin' }
+            User = { _id: 'justinId', username: 'Justin' }
             editGroupMembersModalControllerParams = {
                 $scope: scope
                 $uibModalInstance: uibModalInstance
@@ -925,8 +926,8 @@ describe 'controllers', ->
                 editingGroup = 'thing'
                 expect(scope.editingGroup).not.toEqual(editingGroup)
 
-            it 'should initialize scope.owner to the User resolved for the controller', ->
-                expect(scope.owner).toEqual({ username: 'Justin' })
+            it 'should initialize scope._owner to the owner of the scope.editingGroup', ->
+                expect(scope._owner).toEqual('justinId')
 
             it 'should define the scope.getUsers function', ->
                 expect(scope.getUsers).toBeDefined()
@@ -943,8 +944,8 @@ describe 'controllers', ->
             it 'should define the scope.close function', ->
                 expect(scope.close).toBeDefined()
 
-            it 'should set scope.canRemove to true if the resolved user id matches the groups owner', ->
-                expect(scope.canRemove).toEqual(true)
+            it 'should set scope.isOwner to true if the resolved user id matches the groups owner', ->
+                expect(scope.isOwner).toEqual(true)
 
         describe 'setup not owner of group', ->
 
@@ -954,8 +955,8 @@ describe 'controllers', ->
                 }
                 $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
 
-            it "should set scope.canRemove to false if the resolved user id doesn't match the groups owner", ->
-                expect(scope.canRemove).toEqual(false)
+            it "should set scope.isOwner to false if the resolved user id doesn't match the groups owner", ->
+                expect(scope.isOwner).toEqual(false)
 
 
         describe 'scope.getUsers, get users successfully', ->
@@ -966,7 +967,7 @@ describe 'controllers', ->
             it 'should call UserService.findUsers with the given query to get the list of users', (done) ->
                 spyOn(UserService, 'findUsers').and.callThrough()
                 scope.getUsers('query').then ->
-                    expect(UserService.findUsers).toHaveBeenCalledWith('query')
+                    expect(UserService.findUsers).toHaveBeenCalledWith('query', editingGroup._id)
                     done()
                 $rootScope.$digest()
 
@@ -1017,7 +1018,7 @@ describe 'controllers', ->
 
             it 'should push the newly added member onto the scope.editingGroup._members list', (done) ->
                 scope.addMember().then ->
-                    expect(scope.editingGroup._members).toEqual([{ name: 'Justin' }])
+                    expect(scope.editingGroup._members).toEqual([{ _id: 'newMemberId', name: 'test return member' }])
                     done()
                 $rootScope.$digest()
 

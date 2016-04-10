@@ -14,8 +14,8 @@ module.exports = (io) ->
     return express.Router()
 
     .post '/text', (req, res) ->
-        _group = req.body._group
         try
+            _group = req.body._group
             item = new Item {
                 date: new Date()
                 _group: _group

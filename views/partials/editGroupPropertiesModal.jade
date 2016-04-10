@@ -1,9 +1,10 @@
 form(ng-submit='editGroup()')
     .modal-header
-        h3.modal-title Edit Group
+        h3.modal-title(ng-show='isOwner') Edit Group Properties
+        h3.modal-title(ng-hide='isOwner') View Group Properties
     .modal-body
         .alert.alert-danger(ng-show='error' ng-bind='error')
-        fieldset(ng-disabled='disableModal')
+        fieldset(ng-disabled='disableModal || !isOwner')
             .form-horizontal
                 .form-group
                     label.col-xs-3.control-label Name:
@@ -26,6 +27,6 @@ form(ng-submit='editGroup()')
                         )
     .modal-footer
         fieldset(ng-disabled='disableModal')
-            button.btn.btn-primary(type='submit') Edit Group
-            button.btn.btn-danger(ng-click='delete()' ng-show='canDelete') Delete
+            button.btn.btn-primary(type='submit' ng-show='isOwner') Edit Group
+            button.btn.btn-danger(ng-click='delete()' ng-show='isOwner') Delete
             button.btn.btn-warning(ng-click='cancel()') Cancel

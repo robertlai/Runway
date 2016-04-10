@@ -10,10 +10,10 @@ mongoose = require('mongoose')
 module.exports = express.Router()
 
 .get '/:groupType', (req, res) ->
-    groupType = req.params.groupType
-    if groupType in Constants.GROUP_TYPES
-        _user = req.user._id
-        try
+    try
+        groupType = req.params.groupType
+        if groupType in Constants.GROUP_TYPES
+            _user = req.user._id
             groupField = '_' + groupType + 'Groups'
             User.findById(_user)
             .select(groupField)
@@ -26,15 +26,15 @@ module.exports = express.Router()
                 }, (err, populatedMembers) ->
                     throw err if err
                     res.json(user[groupField])
-        catch err
-            res.sendStatus(500)
-    else
-        res.sendStatus(404)
+        else
+            res.sendStatus(404)
+    catch err
+        res.sendStatus(500)
 
 .post '/new', (req, res) ->
-    newGroup = req.body
-    _user = req.user._id
     try
+        newGroup = req.body
+        _user = req.user._id
         Group.findOne { name: newGroup.name }, (err, group) ->
             if err
                 throw err
@@ -64,9 +64,9 @@ module.exports = express.Router()
         res.sendStatus(500)
 
 .post '/edit', (req, res) ->
-    groupToEdit = req.body
-    _user = req.user._id
     try
+        groupToEdit = req.body
+        _user = req.user._id
         Group.findOne { name: groupToEdit.name }, (err, group) ->
             if err
                 throw err
@@ -88,9 +88,9 @@ module.exports = express.Router()
         res.sendStatus(500)
 
 .post '/delete', (req, res) ->
-    _groupToDelete = mongoose.Types.ObjectId(req.body._id)
-    _user = req.user._id
     try
+        _groupToDelete = mongoose.Types.ObjectId(req.body._id)
+        _user = req.user._id
         Group.findById(_groupToDelete)
         .select('_owner _members')
         .populate('_members', '_joinedGroups')
@@ -117,35 +117,41 @@ module.exports = express.Router()
         res.sendStatus(500)
 
 .post '/addMember', (req, res) ->
-    # todo: verify that the memberToAdd is valid and also have it possiby look for username if not fully valid
-    _user = req.user._id
-    _group = mongoose.Types.ObjectId(req.body._group)
-    _memberToAdd = req.body.memberToAdd._id
     try
-        Group.findById(_group)
-        .select('_members')
-        .exec (err, group) ->
-            throw err if err
-            if group._members.indexOf(_memberToAdd) isnt -1
-                res.sendStatus(409)
-            else
-                group._members.push(_memberToAdd) #todo: possibly use $addToSet (need to find a way to deal with duplicates (send back error))
-                group.save (err) ->
+        _user = req.user._id
+        _group = mongoose.Types.ObjectId(req.body._group)
+        addMemberFunc = (memberToAdd) ->
+            _memberToAdd = memberToAdd._id
+            Group.findByIdAndUpdate _group,
+            { $addToSet: { _members: _memberToAdd } },
+            (err) ->
+                throw err if err
+                User.findByIdAndUpdate _memberToAdd,
+                { $push: { _joinedGroups: _group } },
+                (err) ->
                     throw err if err
-                    User.findByIdAndUpdate _memberToAdd,
-                    { $push: { _joinedGroups: _group } },
-                    (err) ->
-                        throw err if err
-                        res.sendStatus(200)
+                    res.json(memberToAdd)
+
+        if req.body.memberToAdd._id?
+            addMemberFunc(req.body.memberToAdd)
+        else
+            User.findOne({ username: req.body.memberToAdd })
+            .select('_id firstName lastName username')
+            .exec (err, member) ->
+                throw err if err
+                if member?
+                    addMemberFunc(member)
+                else
+                    res.sendStatus(400)
     catch err
         res.sendStatus(500)
 
 # todo: dont remove the owner
 .post '/removeMember', (req, res) ->
-    _user = req.user._id
-    _group = req.body._group
-    _memberToRemove = mongoose.Types.ObjectId(req.body._memberToRemove)
     try
+        _user = req.user._id
+        _group = req.body._group
+        _memberToRemove = mongoose.Types.ObjectId(req.body._memberToRemove)
         User.findByIdAndUpdate _memberToRemove,
         { $pull: { _joinedGroups: _group } },
         (err) ->

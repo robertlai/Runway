@@ -14,15 +14,15 @@
                                 th.col-xs-3 Last
                                 th.col-xs-3 username
                         tbody
-                            tr(ng-repeat='member in editingGroup._members | orderBy: "firstName" track by $index' ng-class='{info: member.username === owner.username}')
+                            tr(ng-repeat='member in editingGroup._members | orderBy: "firstName" track by $index' ng-class='{info: member._id === _owner}')
                                 td.col-xs-3(ng-bind='member.firstName')
                                 td.col-xs-3(ng-bind='member.lastName')
                                 td.col-xs-4(ng-bind='member.username')
                                 td.col-xs-2
-                                    div.btn.btn-xs.btn-danger(ng-click='removeMember(member._id)' ng-hide='member.username === owner.username || !canRemove') Remove
-                                    div(ng-show='member.username === owner.username') Owner
+                                    div.btn.btn-xs.btn-danger(ng-click='removeMember(member._id)' ng-show='isOwner && member._id !== _owner') Remove
+                                    div(ng-show='member._id === _owner') Owner
 
-                    form.col-xs-12(ng-submit='addMember()')
+                    form.col-xs-12(ng-submit='addMember()' ng-show='isOwner')
                         .col-xs-9
                             input.form-control(type='text' ng-model='memberToAdd' placeholder='Search other members' uib-typeahead='member as getMemberDisplay(member) for member in getUsers($viewValue)' typeahead-loading='loadingLocations' typeahead-no-results='noResults')
                             i.glyphicon.glyphicon-refresh(ng-show='loadingLocations')

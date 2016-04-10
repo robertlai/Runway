@@ -213,7 +213,7 @@ angular.module('runwayAppControllers',
 
     scope.editingGroup = angular.copy(editingGroup)
 
-    scope.canDelete = scope.editingGroup._owner is User._id
+    scope.isOwner = scope.editingGroup._owner is User._id
 
     scope.editGroup = ->
         deferred = q.defer()
@@ -260,16 +260,16 @@ angular.module('runwayAppControllers',
 (scope, q, http, uibModalInstance, GroupService, UserService, editingGroup, User) ->
     # todo: this should be passed an id / resolve the id of the group and populate everything before getting here
     # then all info will be present and the info doesn't have to be retuned from the modal and it becomes state free
-    scope.owner = User
-
     scope.editingGroup = angular.copy(editingGroup)
 
-    scope.canRemove = scope.editingGroup._owner is scope.owner._id
+    scope._owner = scope.editingGroup._owner
+
+    scope.isOwner = User._id is scope._owner
 
     scope.getUsers = (query) ->
         deferred = q.defer()
 
-        UserService.findUsers(query)
+        UserService.findUsers(query, editingGroup._id)
             .then (members) ->
                 deferred.resolve(members)
             .catch (message) ->
@@ -283,9 +283,9 @@ angular.module('runwayAppControllers',
 
         scope.disableModal = true
         GroupService.addMember(scope.editingGroup._id, scope.memberToAdd)
-            .then ->
+            .then (addedMember) ->
                 scope.disableModal = false
-                scope.editingGroup._members.push(scope.memberToAdd)
+                scope.editingGroup._members.push(addedMember)
                 scope.memberToAdd = null
                 deferred.resolve()
             .catch (message) ->
@@ -294,7 +294,6 @@ angular.module('runwayAppControllers',
                 deferred.reject()
 
         return deferred.promise
-
 
     scope.removeMember = (_member) ->
         deferred = q.defer()

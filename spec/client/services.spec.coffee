@@ -393,12 +393,12 @@ describe 'Services', ->
                     httpBackend.flush()
 
 
-            describe 'failed', ->
+            describe 'failed with 400', ->
 
-                it 'should reject with USER_ALREADY_IN_GROUP when status is 409', (done) ->
-                    httpBackend.expectPOST('/api/groups/addMember', { _group: _group, memberToAdd: memberToAdd }).respond(409)
+                it 'should reject with MEMBER_TRYING_TO_ADD_NOT_FOUND', (done) ->
+                    httpBackend.expectPOST('/api/groups/addMember', { _group: _group, memberToAdd: memberToAdd }).respond(400)
                     GroupService.addMember(_group, memberToAdd).catch (message) ->
-                        expect(message).toEqual(Constants.Messages.USER_ALREADY_IN_GROUP)
+                        expect(message).toEqual(Constants.Messages.MEMBER_TRYING_TO_ADD_NOT_FOUND)
                         done()
                     httpBackend.flush()
 
@@ -437,7 +437,7 @@ describe 'Services', ->
 
             describe 'failed', ->
 
-                it 'should reject with USER_ALREADY_IN_GROUP when status is 403', (done) ->
+                it 'should reject with MUST_BE_OWNER_TO_REMOVE_MEMBER when status is 403', (done) ->
                     httpBackend.expectPOST('/api/groups/removeMember', { _group: _group, _memberToRemove: _memberToRemove }).respond(403)
                     GroupService.removeMember(_group, _memberToRemove).catch (message) ->
                         expect(message).toEqual(Constants.Messages.MUST_BE_OWNER_TO_REMOVE_MEMBER)
@@ -445,9 +445,9 @@ describe 'Services', ->
                     httpBackend.flush()
 
 
-            describe 'failed', ->
+            describe 'failed with 500', ->
 
-                it 'should reject with SERVER_ERROR otherwise', (done) ->
+                it 'should reject with SERVER_ERROR', (done) ->
                     httpBackend.expectPOST('/api/groups/removeMember', { _group: _group, _memberToRemove: _memberToRemove }).respond(500)
                     GroupService.removeMember(_group, _memberToRemove).catch (message) ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
@@ -504,21 +504,23 @@ describe 'Services', ->
         describe 'findUsers', ->
 
             testQuery = undefined
+            _group = undefined
 
             beforeEach ->
                 testQuery = 'test query'
+                _group = 'testGroupId'
 
             it 'should POST to /api/users/find', ->
-                httpBackend.expectPOST('/api/users/find', { query: testQuery }).respond(200)
-                UserService.findUsers(testQuery)
+                httpBackend.expectPOST('/api/users/find', { query: testQuery, _group: _group }).respond(200)
+                UserService.findUsers(testQuery, _group)
                 httpBackend.flush()
 
 
             describe 'successful', ->
 
                 it 'should resolve the members returned', (done) ->
-                    httpBackend.expectPOST('/api/users/find', { query: testQuery }).respond(200, ['member1', 'member2'])
-                    UserService.findUsers(testQuery).then (members) ->
+                    httpBackend.expectPOST('/api/users/find', { query: testQuery, _group: _group }).respond(200, ['member1', 'member2'])
+                    UserService.findUsers(testQuery, _group).then (members) ->
                         expect(members).toEqual(['member1', 'member2'])
                         done()
                     httpBackend.flush()
@@ -527,8 +529,8 @@ describe 'Services', ->
             describe 'failed', ->
 
                 it 'should reject with SERVER_ERROR', (done) ->
-                    httpBackend.expectPOST('/api/users/find', { query: testQuery }).respond(401)
-                    UserService.findUsers(testQuery).catch (message) ->
+                    httpBackend.expectPOST('/api/users/find', { query: testQuery, _group: _group }).respond(401)
+                    UserService.findUsers(testQuery, _group).catch (message) ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
@@ -588,10 +590,20 @@ describe 'Services', ->
                     httpBackend.flush()
 
 
-            describe 'failed', ->
+            describe 'failed with 409', ->
 
                 it 'should reject with SERVER_ERROR', (done) ->
-                    httpBackend.expectPOST('/api/users/updateUserSettings', user).respond(401)
+                    httpBackend.expectPOST('/api/users/updateUserSettings', user).respond(409)
+                    UserService.saveUserSettings(user).catch (message) ->
+                        expect(message).toEqual(Constants.Messages.USERNAME_ALREADY_TAKEN)
+                        done()
+                    httpBackend.flush()
+
+
+            describe 'failed with 500', ->
+
+                it 'should reject with SERVER_ERROR otherwise', (done) ->
+                    httpBackend.expectPOST('/api/users/updateUserSettings', user).respond(500)
                     UserService.saveUserSettings(user).catch (message) ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()

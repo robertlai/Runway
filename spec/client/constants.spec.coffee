@@ -35,6 +35,9 @@ describe 'Constants', ->
         it 'should have the correct server error', ->
             expect(Constants.Messages.SERVER_ERROR).toEqual('Server Error. Please contact support.')
 
+        it 'should have the correct USERNAME_ALREADY_TAKEN', ->
+            expect(Constants.Messages.USERNAME_ALREADY_TAKEN).toEqual('That username is already taken.')
+
         it 'should have the correct GROUP_ALREADY_EXISTS', ->
             expect(Constants.Messages.GROUP_ALREADY_EXISTS).toEqual('This group already exists.')
 
@@ -50,14 +53,15 @@ describe 'Constants', ->
         it 'should have the correct NO_GROUP_NAME_PROVIDED', ->
             expect(Constants.Messages.NO_GROUP_NAME_PROVIDED).toEqual('Please provide a group name.')
 
-        it 'should have the correct USER_ALREADY_IN_GROUP', ->
-            expect(Constants.Messages.USER_ALREADY_IN_GROUP).toEqual('This user has already been added to this group.')
-
         it 'should have the correct MUST_BE_OWNER_TO_DELETE', ->
             expect(Constants.Messages.MUST_BE_OWNER_TO_DELETE).toEqual('You must be the owner of a group in order to delete it.')
 
         it 'should have the correct MUST_BE_OWNER_TO_REMOVE_MEMBER', ->
             expect(Constants.Messages.MUST_BE_OWNER_TO_REMOVE_MEMBER).toEqual('You must be the owner of a group in order to remove members from it.')
+
+        it 'should have the correct MEMBER_TRYING_TO_ADD_NOT_FOUND', ->
+            expect(Constants.Messages.MEMBER_TRYING_TO_ADD_NOT_FOUND)
+                .toEqual('The member you are trying to add cannot be found. Please check your spelling and try again.')
 
         it 'should have the correct CONFIRM_GROUP_DELETE_1', ->
             expect(Constants.Messages.CONFIRM_GROUP_DELETE_1).toEqual('''Are you sure you and to delete this group?

@@ -6,11 +6,13 @@ mongoose = require('mongoose')
 module.exports = express.Router()
 
 .post '/find', (req, res) ->
-    _user = req.user._id
-    query = req.body.query
     try
+        _user = req.user._id
+        query = req.body.query
+        _group = req.body._group
         User.find({
             _id: { $ne: _user }
+            _joinedGroups: { $nin: [_group] }
             $and: [
                 {
                     $or: [
@@ -46,12 +48,22 @@ module.exports = express.Router()
         res.sendStatus(500)
 
 .post '/updateUserSettings', (req, res) ->
-    user = req.body
     try
-        User.findByIdAndUpdate user._id,
-        { $set: user },
-        (err) ->
+        user = req.user
+        newUserSettings = req.body
+
+        User.findById(user._id)
+        .exec (err, editingUser) ->
             throw err if err
-            res.sendStatus(200)
+            User.findOne({ username: newUserSettings.username })
+            .exec (err, possibleOverlapUser) ->
+                throw err if err
+                if possibleOverlapUser?._id? and possibleOverlapUser._id.toString() isnt user._id.toString()
+                    res.sendStatus(409)
+                else
+                    editingUser[key] = value for key, value of newUserSettings
+                    editingUser.save (err) ->
+                        throw err if err
+                        res.sendStatus(200)
     catch err
         res.sendStatus(500)

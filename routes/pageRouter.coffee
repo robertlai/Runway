@@ -21,7 +21,7 @@ pageRouter.post '/login', (req, res, next) ->
         if error?
             res.sendStatus(500).json({ error: error })
         else if not user
-            res.sendStatus(401).json({ error: message })
+            res.sendStatus(403).json({ error: message })
         else
             req.logIn user, (error) ->
                 if error?

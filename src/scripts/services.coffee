@@ -150,11 +150,11 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
             deferred = @q.defer()
 
             @http.post('/api/groups/addMember', { _group: _group, memberToAdd: memberToAdd })
-                .success ->
-                    deferred.resolve()
+                .success (member) ->
+                    deferred.resolve(member)
                 .error (error, status) =>
-                    if status is 409
-                        deferred.reject(@Constants.Messages.USER_ALREADY_IN_GROUP)
+                    if status is 400
+                        deferred.reject(@Constants.Messages.MEMBER_TRYING_TO_ADD_NOT_FOUND)
                     else
                         deferred.reject(@Constants.Messages.SERVER_ERROR)
 
@@ -183,10 +183,10 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
     class UserService
         constructor: (@http, @q, @Constants) ->
 
-        findUsers: (query) =>
+        findUsers: (query, _group) =>
             deferred = @q.defer()
 
-            @http.post('/api/users/find', { query: query })
+            @http.post('/api/users/find', { query: query, _group: _group })
                 .success (members) ->
                     deferred.resolve(members)
                 .error =>
@@ -211,8 +211,11 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
             @http.post('/api/users/updateUserSettings', user)
                 .success ->
                     deferred.resolve()
-                .error =>
-                    deferred.reject(@Constants.Messages.SERVER_ERROR)
+                .error (error, status) =>
+                    if status is 409
+                        deferred.reject(@Constants.Messages.USERNAME_ALREADY_TAKEN)
+                    else
+                        deferred.reject(@Constants.Messages.SERVER_ERROR)
 
             return deferred.promise
 
