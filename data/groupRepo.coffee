@@ -16,7 +16,9 @@ getGroupByName = (groupName, next) ->
     Group.findOne { name: groupName }, next
 
 updateGroupProperties = (group, next) ->
-    Group.findByIdAndUpdate group._id, { $set: group }, next
+    Group.findByIdAndUpdate group._id,
+    { $set: group },
+    next
 
 getOwnerOfGroupById = (_group, next) ->
     Group.findById(_group)
@@ -28,10 +30,14 @@ deleteGroupById = (_group, next) ->
     Group.findByIdAndRemove _group, next
 
 addMemberToGroup = (_group, _member, next) ->
-    Group.findByIdAndUpdate _group, { $addToSet: { _members: _member } }, next
+    Group.findByIdAndUpdate _group,
+    { $addToSet: { _members: _member } },
+    next
 
 removeMemberFromGroup = (_group, _member, next) ->
-    Group.findByIdAndUpdate _group, { $pull: { _members: _member } }, next
+    Group.findByIdAndUpdate _group,
+    { $pull: { _members: _member } },
+    next
 
 getGroupMembersById = (_group, next) ->
     Group.findById(_group)

@@ -3,11 +3,11 @@ mongoose = require('mongoose')
 
 Constants = require('../Constants')
 
-Item = require('../models/Item')
 User = require('../models/User')
 Message = require('../models/Message')
 
 GroupRepo = require('../data/GroupRepo')
+ItemRepo = require('../data/ItemRepo')
 
 
 module.exports = express.Router()
@@ -83,8 +83,7 @@ module.exports = express.Router()
             Message.remove { _group: _groupToDelete },
             (err) ->
                 return next(err) if err
-                Item.remove { _group: _groupToDelete },
-                (err) ->
+                ItemRepo.deleteByGroupId _groupToDelete, (err) ->
                     return next(err) if err
                     User.update {},
                         { $pull: { _ownedGroups: _groupToDelete, _joinedGroups: _groupToDelete } },
