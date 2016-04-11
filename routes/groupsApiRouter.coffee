@@ -3,11 +3,11 @@ mongoose = require('mongoose')
 
 Constants = require('../Constants')
 
-User = require('../models/User')
 Message = require('../models/Message')
 
 GroupRepo = require('../data/GroupRepo')
 ItemRepo = require('../data/ItemRepo')
+UserRepo = require('../data/UserRepo')
 
 
 module.exports = express.Router()
@@ -17,10 +17,7 @@ module.exports = express.Router()
     if groupType in Constants.GROUP_TYPES
         _user = req.user._id
         groupField = '_' + groupType + 'Groups'
-        User.findById(_user)
-        .select(groupField)
-        .populate(groupField, 'name description colour _members _owner')
-        .exec (err, user) ->
+        UserRepo.getGroupsOfTypeFromUserWithId _user, groupField, (err, user) ->
             return next(err) if err
             requestedGroups = user[groupField]
             GroupRepo.populateGroupMembersDisplayInfo requestedGroups, (err, populatedGroups) ->
@@ -46,9 +43,7 @@ module.exports = express.Router()
         else
             GroupRepo.createNewGroup newGroup, (err, savedGroup) ->
                 return next(err) if err
-                User.findByIdAndUpdate _user,
-                { $push: { _ownedGroups: savedGroup._id } },
-                (err) ->
+                UserRepo.addOwnedGroupIdToUserWithId _user, savedGroup._id, (err) ->
                     return next(err) if err
                     GroupRepo.populateGroupMembersDisplayInfo savedGroup, (err, populatedGroup) ->
                         return next(err) if err
@@ -85,14 +80,11 @@ module.exports = express.Router()
                 return next(err) if err
                 ItemRepo.deleteByGroupId _groupToDelete, (err) ->
                     return next(err) if err
-                    User.update {},
-                        { $pull: { _ownedGroups: _groupToDelete, _joinedGroups: _groupToDelete } },
-                        { multi: true },
-                        (err) ->
+                    UserRepo.removeGroupByIdFromAllUsers _groupToDelete, (err) ->
+                        return next(err) if err
+                        GroupRepo.deleteGroupById _groupToDelete, (err) ->
                             return next(err) if err
-                            GroupRepo.deleteGroupById _groupToDelete, (err) ->
-                                return next(err) if err
-                                res.sendStatus(200)
+                            res.sendStatus(200)
 
 .post '/addMember', (req, res, next) ->
     _user = req.user._id
@@ -101,18 +93,14 @@ module.exports = express.Router()
         _memberToAdd = memberToAdd._id
         GroupRepo.addMemberToGroup _group, _memberToAdd, (err) ->
             return next(err) if err
-            User.findByIdAndUpdate _memberToAdd,
-            { $push: { _joinedGroups: _group } },
-            (err) ->
+            UserRepo.addJoinedGroupToUser _memberToAdd, _group, (err) ->
                 return next(err) if err
                 res.json(memberToAdd)
 
     if req.body.memberToAdd._id?
         addMemberFunc(req.body.memberToAdd)
     else
-        User.findOne({ username: req.body.memberToAdd })
-        .select('firstName lastName username')
-        .exec (err, member) ->
+        UserRepo.getUserDisplayInfoByUsername req.body.memberToAdd, (err, member) ->
             return next(err) if err
             if member?
                 addMemberFunc(member)
@@ -124,9 +112,7 @@ module.exports = express.Router()
     _user = req.user._id
     _group = req.body._group
     _memberToRemove = mongoose.Types.ObjectId(req.body._memberToRemove)
-    User.findByIdAndUpdate _memberToRemove,
-    { $pull: { _joinedGroups: _group } },
-    (err) ->
+    UserRepo.removeJoinedGroupToUser _memberToRemove, _group, (err) ->
         return next(err) if err
         GroupRepo.removeMemberFromGroup _group, _memberToRemove, (err) ->
             return next(err) if err

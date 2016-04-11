@@ -1,6 +1,6 @@
 require('coffee-script').register()
 
-# expect = require('chai').expect
+expect = require('chai').expect
 
 mongoose = require('mongoose')
 supertest = require('supertest')
@@ -14,7 +14,7 @@ mongoose.models = {}
 mongoose.modelSchemas = {}
 
 app = require('../../app')
-User = require('../../models/User')
+User = require('../../data/models/User')
 
 describe 'test', ->
 
@@ -22,19 +22,20 @@ describe 'test', ->
 
     beforeEach (done) ->
         User.remove {}, ->
-            newUser = new User {
+            newUser = new User({
                 firstName: 'testFirstName'
                 lastName: 'testLastName'
                 email: 'testingUser@testEmail.com'
                 username: 'testingUser'
-            }
-            newUser.password = newUser.generateHash('testingPassword')
-            newUser.save (err) ->
-                userAgent
-                    .post('/login')
-                    .send({ username: 'testingUser', password: 'testingPassword' })
-                    .end ->
-                        done()
+                password: 'testingPassword'
+            })
+                .encryptPassword()
+                .save (err) ->
+                    userAgent
+                        .post('/login')
+                        .send({ username: 'testingUser', password: 'testingPassword' })
+                        .end ->
+                            done()
 
 
     it 'should do it', (done) ->

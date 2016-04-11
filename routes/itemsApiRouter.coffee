@@ -51,7 +51,7 @@ module.exports = (io) ->
             height: height
             file: fs.readFileSync(fullFilePath)
         }, (err, newItem) ->
-            if not err
+            unless err
                 delete newItem.file
                 newItem.file = undefined
                 io.sockets.in(_group).emit('newItem', newItem)

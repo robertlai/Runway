@@ -20,7 +20,7 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
                         else
                             @user = null
                             deferred.reject()
-                    .error (data) =>
+                    .error =>
                         @user = null
                         deferred.reject()
 
@@ -32,8 +32,11 @@ angular.module('runwayAppServices', ['runwayAppConstants'])
             @http.post '/login', { username: username, password: password }
                 .success (data, status) =>
                     if status is 200
-                        @user = data.user
-                        deferred.resolve()
+                        @getUser()
+                            .then ->
+                                deferred.resolve()
+                            .catch ->
+                                deferred.reject()
                     else
                         @user = null
                         deferred.reject(data.error)

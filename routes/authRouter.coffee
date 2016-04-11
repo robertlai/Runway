@@ -27,17 +27,15 @@ module.exports = express.Router()
                 if error?
                     res.sendStatus(500).json({ error: error })
                 else
-                    delete user.password
-                    user.password = undefined
-                    res.sendStatus(200).json({ user: user })
+                    res.sendStatus(200)
     )(req, res, next)
 
 #todo: double password matching
 .post '/register', (req, res, next) ->
-    passport.authenticate('register', (error, user, message) ->
+    passport.authenticate('register', (error, userCreated, message) ->
         if error?
             res.sendStatus(500).json({ error: error })
-        else if not user
+        else if not userCreated
             res.sendStatus(409).json({ error: message })
         else
             res.sendStatus(200).json({})

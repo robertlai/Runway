@@ -1,47 +1,46 @@
 LocalStrategy = require('passport-local').Strategy
-User = require('./models/User')
 passport = require('passport')
+
+UserRepo = require('./data/UserRepo')
 
 passport.serializeUser (user, done) ->
     done(null, user.id)
 
-passport.deserializeUser (id, done) ->
-    User.findById id, (err, user) ->
-        done(err, user)
+passport.deserializeUser (_user, done) ->
+    UserRepo.getUserById _user, done
 
 passport.use 'register', new LocalStrategy({
     usernameField: 'username'
     passwordField: 'password'
     passReqToCallback: true
 }, (req, username, password, done) ->
-    User.findOne { 'username': username }, (err, user) ->
+    UserRepo.getUserByUserName username, (err, user) ->
         if err
             done(err)
-        else if user
+        else if user?
             done(null, false, 'That username is already taken.')
         else
-            newUser = new User {
+            UserRepo.createNewUser {
                 firstName: req.body.firstName
                 lastName: req.body.lastName
                 email: req.body.email
                 username: username
-            }
-            newUser.password = newUser.generateHash(password)
-            newUser.save (err) ->
+                password: password
+            }, (err) ->
                 if err
                     done(err)
                 else
-                    done(null, newUser)
+                    done(null, true)
 )
 
 passport.use 'login', new LocalStrategy({
     usernameField: 'username'
     passwordField: 'password'
 }, (username, password, done) ->
-    User.findOne { 'username': username }, (err, user) ->
+    UserRepo.getUserByUserName username, (err, user) ->
         if err
             done(err)
-        else if not user
+        else if not user?
             done(null, false, 'This user was not found! Check your spelling.')
         else if not user.validPassword(password)
             done(null, false, 'Oops! Wrong password.')

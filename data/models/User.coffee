@@ -14,8 +14,9 @@ userSchema = new Schema({
     searchability: { type: String, default: 'friends' }
 })
 
-userSchema.methods.generateHash = (password) ->
-    bcrypt.hashSync(password, bcrypt.genSaltSync(8), null)
+userSchema.methods.encryptPassword = ->
+    @password = bcrypt.hashSync(@password, bcrypt.genSaltSync(8), null)
+    @
 
 userSchema.methods.validPassword = (password) ->
     bcrypt.compareSync(password, @password)

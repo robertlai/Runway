@@ -87,33 +87,56 @@ describe 'Services', ->
         describe 'login', ->
 
             it 'should POST to /login', ->
-                httpBackend.expectPOST('/login').respond(200, { user: mockUser })
+                httpBackend.expectPOST('/login').respond(500, { error: '' })
                 AuthService.login('Justin', 'superSecretPassword')
                 httpBackend.flush()
 
 
             describe 'successful', ->
 
-                it 'should set the user to the retuned user if the status is 200', (done) ->
-                    mockUser2 = {
-                        groups: ['thing1', 'thing2']
-                    }
-                    httpBackend.expectPOST('/login').respond(200, { user: mockUser2 })
-                    AuthService.login('Justin', 'superSecretPassword').then ->
-                        expect(AuthService.user).toEqual(mockUser2)
-                        done()
-                    httpBackend.flush()
 
-                it "should clear the user and reject with error message if the status isn't 200", (done) ->
-                    mockUser2 = {
-                        groups: ['thing1', 'thing2']
-                    }
-                    httpBackend.expectPOST('/login').respond(201, { user: mockUser2, error: 'test error messsage' })
-                    AuthService.login('Justin', 'superSecretPassword').catch (message) ->
-                        expect(AuthService.user).toEqual(null)
-                        expect(message).toEqual('test error messsage')
-                        done()
-                    httpBackend.flush()
+                describe 'status is 200', ->
+
+                    beforeEach ->
+                        httpBackend.expectPOST('/login').respond(200)
+
+                    it 'should call AuthService.getUser', (done) ->
+                        spyOn(AuthService, 'getUser').and.callFake resolvedPromiseFunc
+                        AuthService.login('Justin', 'superSecretPassword').then ->
+                            expect(AuthService.getUser).toHaveBeenCalled()
+                            done()
+                        httpBackend.flush()
+
+
+                    describe 'AuthService.getUser succeeds', ->
+
+                        it 'should resolve the promise', (done) ->
+                            spyOn(AuthService, 'getUser').and.callFake resolvedPromiseFunc
+                            AuthService.login('Justin', 'superSecretPassword').then ->
+                                done()
+                            httpBackend.flush()
+
+
+                    describe 'AuthService.getUser fails', ->
+
+                        it 'should reject the promise', (done) ->
+                            spyOn(AuthService, 'getUser').and.callFake rejectedPromiseFunc
+                            AuthService.login('Justin', 'superSecretPassword').catch ->
+                                done()
+                            httpBackend.flush()
+
+
+                describe 'status is 201', ->
+
+                    beforeEach ->
+                        httpBackend.expectPOST('/login').respond(201, { error: 'test error messsage' })
+
+                    it 'should clear the user and reject with error message', (done) ->
+                        AuthService.login('Justin', 'superSecretPassword').catch (message) ->
+                            expect(AuthService.user).toEqual(null)
+                            expect(message).toEqual('test error messsage')
+                            done()
+                        httpBackend.flush()
 
 
             describe 'failed', ->
