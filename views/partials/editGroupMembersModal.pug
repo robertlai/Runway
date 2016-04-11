@@ -19,7 +19,7 @@
                                 td.col-xs-3(ng-bind='member.lastName')
                                 td.col-xs-4(ng-bind='member.username')
                                 td.col-xs-2
-                                    div.btn.btn-xs.btn-danger(ng-click='removeMember(member._id)' ng-show='isOwner && member._id !== _owner') Remove
+                                    div.btn.btn-xs.btn-danger(ng-click='removeMember(member._id)' ng-show='member._id !== _owner && (isOwner || member._id === _user)') Remove
                                     div(ng-show='member._id === _owner') Owner
 
                     form.col-xs-12(ng-submit='addMember()' ng-show='isOwner')

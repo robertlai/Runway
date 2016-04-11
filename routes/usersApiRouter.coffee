@@ -38,7 +38,7 @@ module.exports = express.Router()
             }
         ]
     })
-    .select('_id firstName lastName username')
+    .select('firstName lastName username')
     .limit(20)
     .exec (err, users) ->
         return next(err) if err

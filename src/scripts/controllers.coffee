@@ -264,6 +264,8 @@ angular.module('runwayAppControllers',
 
     scope._owner = scope.editingGroup._owner
 
+    scope._user = User._id
+
     scope.isOwner = User._id is scope._owner
 
     scope.getUsers = (query) ->

@@ -105,9 +105,7 @@ gulp.task 'vendorCss', ['clean:vendorCss'], ->
 gulp.task 'clean:pug', -> del(partialsDestPath)
 gulp.task 'pug', ['clean:pug'], ->
     gulp.src(pugSrcPath)
-        .pipe(pug().on 'error', (error) ->
-            console.log 'error compiling pug'
-            @emit('end'))
+        .pipe(pug().on 'error', (error) -> @emit('end'))
         .pipe(gulp.dest(partialsDestPath))
 
 
