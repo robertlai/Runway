@@ -3,10 +3,9 @@ mongoose = require('mongoose')
 
 Constants = require('../Constants')
 
-Message = require('../models/Message')
-
 GroupRepo = require('../data/GroupRepo')
 ItemRepo = require('../data/ItemRepo')
+MessageRepo = require('../data/MessageRepo')
 UserRepo = require('../data/UserRepo')
 
 
@@ -75,8 +74,7 @@ module.exports = express.Router()
         if _onwerOfGroup.toString() isnt _user.toString()
             res.sendStatus(403)
         else
-            Message.remove { _group: _groupToDelete },
-            (err) ->
+            MessageRepo.deleteByGroupId _groupToDelete, (err) ->
                 return next(err) if err
                 ItemRepo.deleteByGroupId _groupToDelete, (err) ->
                     return next(err) if err

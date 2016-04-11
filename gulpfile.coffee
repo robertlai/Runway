@@ -44,10 +44,10 @@ imagesDestPath = path.join('dist', 'images')
 passportSrcPath = './passport.coffee'
 appSrcPath = './app.coffee'
 socketManagerSrcPath = './socketManager.coffee'
-modelsSrcPath = './models/**/*.coffee'
+dataSrcPath = './data/**/*.coffee'
 routesSrcPath = './routes/**/*.coffee'
 serverSpecSrc = './spec/server/**/*.spec.coffee'
-allServerCoffeeFiles = [passportSrcPath, appSrcPath, socketManagerSrcPath, modelsSrcPath, routesSrcPath, serverSpecSrc]
+allServerCoffeeFiles = [passportSrcPath, appSrcPath, socketManagerSrcPath, dataSrcPath, routesSrcPath, serverSpecSrc]
 
 karmaConfSrcFile = path.join(__dirname, 'karma.conf.coffee')
 

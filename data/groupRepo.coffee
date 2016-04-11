@@ -2,9 +2,8 @@ Group = require('./models/Group')
 
 
 createNewGroup = (options, next) ->
-    newGroup = new Group(options)
-    newGroup.save (err) ->
-        next(err, newGroup)
+    new Group(options)
+        .save next
 
 populateGroupMembersDisplayInfo = (groups, next) ->
     Group.populate groups, {
