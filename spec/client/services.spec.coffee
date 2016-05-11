@@ -8,7 +8,6 @@ describe 'Services', ->
     $rootScope = undefined
     httpBackend = undefined
 
-
     beforeEach inject ($q, _Constants_, _$rootScope_, _$httpBackend_) ->
         Constants = _Constants_
         $rootScope = _$rootScope_
@@ -24,7 +23,6 @@ describe 'Services', ->
             deferred.reject(value)
             deferred.promise
 
-
     describe 'AuthService', ->
 
         AuthService = mockUser = undefined
@@ -34,7 +32,6 @@ describe 'Services', ->
             mockUser = {
                 username: 'Justin'
             }
-
 
         describe 'getUser', ->
 
@@ -49,7 +46,6 @@ describe 'Services', ->
                 httpBackend.expectPOST('/getUserStatus').respond(200, { loggedIn: true, user: mockUser })
                 AuthService.getUser()
                 httpBackend.flush()
-
 
             describe 'successful', ->
 
@@ -73,7 +69,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
             describe 'failed', ->
 
                 it 'should clear the user', (done) ->
@@ -83,7 +78,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
         describe 'login', ->
 
             it 'should POST to /login', ->
@@ -91,9 +85,7 @@ describe 'Services', ->
                 AuthService.login('Justin', 'superSecretPassword')
                 httpBackend.flush()
 
-
             describe 'successful', ->
-
 
                 describe 'status is 200', ->
 
@@ -107,7 +99,6 @@ describe 'Services', ->
                             done()
                         httpBackend.flush()
 
-
                     describe 'AuthService.getUser succeeds', ->
 
                         it 'should resolve the promise', (done) ->
@@ -116,7 +107,6 @@ describe 'Services', ->
                                 done()
                             httpBackend.flush()
 
-
                     describe 'AuthService.getUser fails', ->
 
                         it 'should reject the promise', (done) ->
@@ -124,7 +114,6 @@ describe 'Services', ->
                             AuthService.login('Justin', 'superSecretPassword').catch ->
                                 done()
                             httpBackend.flush()
-
 
                 describe 'status is 201', ->
 
@@ -138,7 +127,6 @@ describe 'Services', ->
                             done()
                         httpBackend.flush()
 
-
             describe 'failed', ->
 
                 it 'should clear the user and reject with the user message', (done) ->
@@ -149,14 +137,12 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
         describe 'logout', ->
 
             it 'should GET /logout', ->
                 httpBackend.expectGET('/logout').respond(200)
                 AuthService.logout()
                 httpBackend.flush()
-
 
             describe 'successful', ->
 
@@ -166,7 +152,6 @@ describe 'Services', ->
                         expect(AuthService.user).toEqual(null)
                         done()
                     httpBackend.flush()
-
 
             describe 'failed', ->
 
@@ -194,7 +179,6 @@ describe 'Services', ->
                 AuthService.register(registerForm)
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve the promise if the status is 200', (done) ->
@@ -209,7 +193,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
             describe 'failed', ->
 
                 it 'should reject the promise with error message', (done) ->
@@ -218,7 +201,6 @@ describe 'Services', ->
                         expect(message).toEqual('test error messsage')
                         done()
                     httpBackend.flush()
-
 
     describe 'GroupService', ->
 
@@ -238,7 +220,6 @@ describe 'Services', ->
                 httpBackend.expectGET('/api/groups/' + groupToGet).respond(200, ['group1', 'group2'])
                 GroupService.getGroups(groupToGet)
                 httpBackend.flush()
-
 
             describe 'successful', ->
 
@@ -270,7 +251,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
             describe 'failed', ->
 
                 it 'should reject with SERVER_ERROR ', (done) ->
@@ -279,7 +259,6 @@ describe 'Services', ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
-
 
         describe 'addGroup', ->
 
@@ -294,7 +273,6 @@ describe 'Services', ->
                 httpBackend.expectPOST('/api/groups/new', newGroup).respond(200)
                 GroupService.addGroup(newGroup)
                 httpBackend.flush()
-
 
             describe 'invalid group given', ->
 
@@ -319,7 +297,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
             describe 'failed', ->
 
                 it 'should reject with GROUP_ALREADY_EXISTS when status is 409', (done) ->
@@ -336,7 +313,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
         describe 'editGroup', ->
 
             groupToEdit = undefined
@@ -350,7 +326,6 @@ describe 'Services', ->
                 httpBackend.expectPOST('/api/groups/edit', groupToEdit).respond(200)
                 GroupService.editGroup(groupToEdit)
                 httpBackend.flush()
-
 
             describe 'invalid group given', ->
 
@@ -366,7 +341,6 @@ describe 'Services', ->
                         done()
                     $rootScope.$digest()
 
-
             describe 'successful', ->
 
                 it 'should resolve the group returned', (done) ->
@@ -375,7 +349,6 @@ describe 'Services', ->
                         expect(groups).toEqual(groupToEdit)
                         done()
                     httpBackend.flush()
-
 
             describe 'failed', ->
 
@@ -393,7 +366,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
         describe 'addMember', ->
 
             _group = memberToAdd = undefined
@@ -407,14 +379,12 @@ describe 'Services', ->
                 GroupService.addMember(_group, memberToAdd)
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve the promise', (done) ->
                     httpBackend.expectPOST('/api/groups/addMember', { _group: _group, memberToAdd: memberToAdd }).respond(200)
                     GroupService.addMember(_group, memberToAdd).then -> done()
                     httpBackend.flush()
-
 
             describe 'failed with 400', ->
 
@@ -425,7 +395,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
             describe 'failed', ->
 
                 it 'should reject with SERVER_ERROR otherwise', (done) ->
@@ -434,7 +403,6 @@ describe 'Services', ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
-
 
         describe 'removeMember', ->
 
@@ -449,14 +417,12 @@ describe 'Services', ->
                 GroupService.removeMember(_group, _memberToRemove)
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve the promise', (done) ->
                     httpBackend.expectPOST('/api/groups/removeMember', { _group: _group, _memberToRemove: _memberToRemove }).respond(200)
                     GroupService.removeMember(_group, _memberToRemove).then -> done()
                     httpBackend.flush()
-
 
             describe 'failed', ->
 
@@ -467,7 +433,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
             describe 'failed with 500', ->
 
                 it 'should reject with SERVER_ERROR', (done) ->
@@ -476,7 +441,6 @@ describe 'Services', ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
-
 
         describe 'deleteGroup', ->
 
@@ -490,14 +454,12 @@ describe 'Services', ->
                 GroupService.deleteGroup(groupToDelete)
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve the promise', (done) ->
                     httpBackend.expectPOST('/api/groups/delete', groupToDelete).respond(200)
                     GroupService.deleteGroup(groupToDelete).then -> done()
                     httpBackend.flush()
-
 
             describe 'failed', ->
 
@@ -515,14 +477,12 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
     describe 'UserService', ->
 
         UserService = undefined
 
         beforeEach inject (_UserService_) ->
             UserService = _UserService_
-
 
         describe 'findUsers', ->
 
@@ -538,7 +498,6 @@ describe 'Services', ->
                 UserService.findUsers(testQuery, _group)
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve the members returned', (done) ->
@@ -548,7 +507,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
             describe 'failed', ->
 
                 it 'should reject with SERVER_ERROR', (done) ->
@@ -557,7 +515,6 @@ describe 'Services', ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
-
 
         describe 'updateGeneralSettings', ->
 
@@ -571,7 +528,6 @@ describe 'Services', ->
                 UserService.updateGeneralSettings(user)
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve the promise', (done) ->
@@ -579,7 +535,6 @@ describe 'Services', ->
                     UserService.updateGeneralSettings(user).then ->
                         done()
                     httpBackend.flush()
-
 
             describe 'failed', ->
 
@@ -589,7 +544,6 @@ describe 'Services', ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
-
 
         describe 'saveUserSettings', ->
 
@@ -603,7 +557,6 @@ describe 'Services', ->
                 UserService.saveUserSettings(user)
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve the promise', (done) ->
@@ -611,7 +564,6 @@ describe 'Services', ->
                     UserService.saveUserSettings(user).then ->
                         done()
                     httpBackend.flush()
-
 
             describe 'failed with 409', ->
 
@@ -622,7 +574,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
             describe 'failed with 500', ->
 
                 it 'should reject with SERVER_ERROR otherwise', (done) ->
@@ -632,14 +583,12 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
     describe 'MessageService', ->
 
         MessageService = undefined
 
         beforeEach inject (_MessageService_) ->
             MessageService = _MessageService_
-
 
         describe 'addNewMessageToChat', ->
 
@@ -656,7 +605,6 @@ describe 'Services', ->
                     done()
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve the messages returned', (done) ->
@@ -664,7 +612,6 @@ describe 'Services', ->
                     MessageService.addNewMessageToChat(_group, messageContent).then ->
                         done()
                     httpBackend.flush()
-
 
             describe 'failed', ->
 
@@ -674,7 +621,6 @@ describe 'Services', ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
-
 
         describe 'removeMessage', ->
 
@@ -688,7 +634,6 @@ describe 'Services', ->
                 MessageService.removeMessage(_message)
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve when returned', (done) ->
@@ -696,7 +641,6 @@ describe 'Services', ->
                     MessageService.removeMessage(_message).then ->
                         done()
                     httpBackend.flush()
-
 
             describe 'failed', ->
 
@@ -706,7 +650,6 @@ describe 'Services', ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
-
 
         describe 'getInitialMessages', ->
 
@@ -721,7 +664,6 @@ describe 'Services', ->
                     done()
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve the messages returned', (done) ->
@@ -731,7 +673,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
             describe 'failed', ->
 
                 it 'should reject with SERVER_ERROR', (done) ->
@@ -740,7 +681,6 @@ describe 'Services', ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
-
 
         describe 'getMoreMessages', ->
 
@@ -757,7 +697,6 @@ describe 'Services', ->
                     done()
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve the messages returned', (done) ->
@@ -766,7 +705,6 @@ describe 'Services', ->
                         expect(messages).toEqual(['message1', 'message2'])
                         done()
                     httpBackend.flush()
-
 
             describe 'failed', ->
 
@@ -777,14 +715,12 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
     describe 'ItemService', ->
 
         ItemService = undefined
 
         beforeEach inject (_ItemService_) ->
             ItemService = _ItemService_
-
 
         describe 'getInitialItems', ->
 
@@ -799,7 +735,6 @@ describe 'Services', ->
                     done()
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve the items returned', (done) ->
@@ -809,7 +744,6 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
             describe 'failed', ->
 
                 it 'should reject with SERVER_ERROR', (done) ->
@@ -818,7 +752,6 @@ describe 'Services', ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
-
 
         describe 'updateItemLocation', ->
 
@@ -837,7 +770,6 @@ describe 'Services', ->
                     done()
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve returned', (done) ->
@@ -845,7 +777,6 @@ describe 'Services', ->
                     ItemService.updateItemLocation(_item, newX, newY).then ->
                         done()
                     httpBackend.flush()
-
 
             describe 'failed', ->
 
@@ -855,7 +786,6 @@ describe 'Services', ->
                         expect(message).toEqual(Constants.Messages.SERVER_ERROR)
                         done()
                     httpBackend.flush()
-
 
         describe 'postMessageToWorkspace', ->
 
@@ -871,7 +801,6 @@ describe 'Services', ->
                 ItemService.postMessageToWorkspace(_group, message)
                 httpBackend.flush()
 
-
             describe 'successful', ->
 
                 it 'should resolve when returned', (done) ->
@@ -879,7 +808,6 @@ describe 'Services', ->
                     ItemService.postMessageToWorkspace(_group, message).then ->
                         done()
                     httpBackend.flush()
-
 
             describe 'failed', ->
 
@@ -890,9 +818,7 @@ describe 'Services', ->
                         done()
                     httpBackend.flush()
 
-
     describe 'Socket', ->
-
 
         Socket = undefined
         io = undefined
@@ -936,7 +862,6 @@ describe 'Services', ->
                 spyOn(io, 'emit')
                 socket.emit('testEvent')
                 expect(io.emit).toHaveBeenCalledWith('testEvent')
-
 
             it 'should emit a name and all params when given a name and params', ->
                 spyOn(io, 'emit')

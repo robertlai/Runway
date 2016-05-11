@@ -8,7 +8,7 @@ module.exports = express.Router()
     currentUser = req.user
     user = if currentUser
         currentUser.password = undefined
-        user = currentUser
+        currentUser
     else
         null
     res.json({

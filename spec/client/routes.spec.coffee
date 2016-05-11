@@ -44,7 +44,6 @@ describe 'Routes', ->
                 deferred.reject(value)
                 deferred.promise
 
-
     describe 'setup', ->
 
         it 'should set html5 mode with the correct options', ->
@@ -57,7 +56,6 @@ describe 'Routes', ->
             expect($httpProvider.interceptors.push).toHaveBeenCalledWith(jasmine.any(Function))
             expect($httpProvider.interceptors.length).toEqual(1)
 
-
     describe 'responseError', ->
 
         responseErrorFunction = undefined
@@ -65,7 +63,6 @@ describe 'Routes', ->
         beforeEach ->
             responseErrorFunction = $httpProvider.interceptors[0]().responseError
             spyOn(window, 'alert').and.callFake ->
-
 
         describe '401 error', ->
 
@@ -75,7 +72,6 @@ describe 'Routes', ->
             it 'should alert the NOT_AUTHORIZED message', ->
                 expect(window.alert).toHaveBeenCalledWith(Constants.Messages.NOT_AUTHORIZED)
 
-
         describe '500 error', ->
 
             beforeEach ->
@@ -83,7 +79,6 @@ describe 'Routes', ->
 
             it 'should alert anything', ->
                 expect(window.alert).not.toHaveBeenCalled()
-
 
     describe 'login', ->
 
@@ -119,7 +114,6 @@ describe 'Routes', ->
         it 'should resolve the returnStateParams', ->
             expect($injector.invoke($state.current.resolve.returnStateParams)).toEqual(loginParams.returnStateParams)
 
-
     describe 'register', ->
 
         beforeEach ->
@@ -141,7 +135,6 @@ describe 'Routes', ->
 
         it 'should resolve the title', ->
             expect($injector.invoke($state.current.resolve.$title)).toEqual('Register')
-
 
     describe 'home', ->
 
@@ -175,7 +168,6 @@ describe 'Routes', ->
         it 'should set the navBar controller', ->
             expect($state.get('home').views['navBar@'].controller).toEqual('navBarController')
 
-
     describe 'home.settings', ->
 
         it 'should set the url', ->
@@ -205,7 +197,6 @@ describe 'Routes', ->
         it 'should set the controller', ->
             expect($state.get('home.settings').controller).toEqual('settingsController')
 
-
     describe 'home.settings.general', ->
 
         it 'should set the url', ->
@@ -217,7 +208,6 @@ describe 'Routes', ->
         it 'should set the view', ->
             expect($state.get('home.settings.general').templateUrl).toEqual('/partials/settings-general.html')
 
-
     describe 'home.settings.security', ->
 
         it 'should set the url', ->
@@ -228,7 +218,6 @@ describe 'Routes', ->
 
         it 'should set the view', ->
             expect($state.get('home.settings.security').templateUrl).toEqual('/partials/settings-security.html')
-
 
     describe 'home.groups', ->
 
@@ -249,7 +238,6 @@ describe 'Routes', ->
 
         it 'should set the controller', ->
             expect($state.get('home.groups').controller).toEqual('groupsController')
-
 
     describe 'workspace', ->
 
@@ -287,7 +275,6 @@ describe 'Routes', ->
         it 'should set the controller', ->
             expect($state.get('workspace').views['content@'].controller).toEqual('workspaceController')
 
-
 describe 'Routes Authentication', ->
 
     resolvedPromiseFunc = undefined
@@ -315,7 +302,6 @@ describe 'Routes Authentication', ->
             }
             return
 
-
     beforeEach inject (_AuthService_, _$rootScope_, _$q_, _$state_, _$httpBackend_) ->
         AuthService = _AuthService_
         $rootScope = _$rootScope_
@@ -342,7 +328,6 @@ describe 'Routes Authentication', ->
         $rootScope.$broadcast('$stateChangeStart', nextState)
         expect(AuthService.getUser).toHaveBeenCalled()
 
-
     describe 'authenticated', ->
 
         it 'should not go to the login state', ->
@@ -352,7 +337,6 @@ describe 'Routes Authentication', ->
             }
             $rootScope.$broadcast('$stateChangeStart', nextState)
             expect($state.go).not.toHaveBeenCalled()
-
 
     describe 'authenticated', ->
 

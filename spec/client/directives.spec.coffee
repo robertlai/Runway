@@ -17,7 +17,6 @@ describe 'Directives', ->
         ItemService = _ItemService_
         MessageService = _MessageService_
 
-
     describe 'runwayDropzone', ->
 
         deferredGroup = undefined
@@ -57,18 +56,15 @@ describe 'Directives', ->
             it 'should define scope.hoverTextOff', ->
                 expect(scope.hoverTextOff).toEqual(jasmine.any(Function))
 
-
             describe 'scope.maxx', ->
 
                 it 'should return the width of the element', ->
                     expect(scope.maxx()).toEqual(250)
 
-
             describe 'scope.maxy', ->
 
                 it 'should return the height of the element', ->
                     expect(scope.maxy()).toEqual(500)
-
 
             describe 'scope.hoverTextOn', ->
 
@@ -80,7 +76,6 @@ describe 'Directives', ->
                     scope.hoverTextOn()
                     expect($('.dndText', element).text()).toEqual('Drop to upload')
 
-
             describe 'scope.hoverTextOff', ->
 
                 it 'should remove the class dropzoneHover', ->
@@ -90,7 +85,6 @@ describe 'Directives', ->
                 it "should set the text of the .dndText sub-element to 'Drag and drop files here'", ->
                     scope.hoverTextOff()
                     expect($('.dndText', element).text()).toEqual('Drag and drop files here')
-
 
             describe '$(element).on dragover', ->
 
@@ -114,7 +108,6 @@ describe 'Directives', ->
                     $(element).triggerHandler(mockEvent)
                     expect(scope.hoverTextOn).toHaveBeenCalled()
 
-
             describe '$(element).on dragleave', ->
 
                 mockEvent = undefined
@@ -126,7 +119,6 @@ describe 'Directives', ->
                     spyOn(scope, 'hoverTextOff').and.callThrough()
                     $(element).triggerHandler(mockEvent)
                     expect(scope.hoverTextOff).toHaveBeenCalled()
-
 
         describe 'Dropzone creation', ->
 
@@ -155,7 +147,6 @@ describe 'Directives', ->
                     acceptedFiles: 'image/*, application/pdf'
                     accept: jasmine.any(Function)
                 })
-
 
         describe 'Dropzone created', ->
 
@@ -230,14 +221,12 @@ describe 'Directives', ->
                         expect(scope.myDropzone.options.headers.y).toEqual(236)
                         done()
 
-
             describe 'file upload complete', ->
 
                 it 'should remove the compleated file from queue', ->
                     spyOn(scope.myDropzone, 'removeFile')
                     completeFunction('fake file') for completeFunction in scope.myDropzone._callbacks.complete
                     expect(scope.myDropzone.removeFile).toHaveBeenCalledWith('fake file')
-
 
         describe 'resolve scoket.group', ->
 
@@ -292,7 +281,6 @@ describe 'Directives', ->
                         expect(element.html()).toContain('ui-draggable')
                         expect(element.html()).toContain('runway-draggable=')
 
-
                 describe 'type: image', ->
 
                     it 'should create a runway-draggable item of type image', ->
@@ -304,7 +292,6 @@ describe 'Directives', ->
                         expect(element.html()).toContain('src="/api/items/file?_file=imageId"')
                         expect(element.html()).toContain('ui-draggable')
                         expect(element.html()).toContain('runway-draggable=')
-
 
                 describe 'type: image', ->
 
@@ -327,7 +314,6 @@ describe 'Directives', ->
                         scope = element.isolateScope()
                         socketCallbacksByName['newItem']({ type: 'other', _id: 'otherId', text: 'some text' })
                         expect(element.html()).toEqual('<h1 class="dndText noselect">Drag and drop files here</h1>')
-
 
     describe 'runwayDraggable', ->
 
@@ -368,7 +354,6 @@ describe 'Directives', ->
 
             it 'should set the max-width css to 50%', ->
                 expect(element.css('max-width')).toEqual('50%')
-
 
         describe 'setup without height and width params', ->
 
@@ -420,7 +405,6 @@ describe 'Directives', ->
                         expect(element.css('top')).toEqual('987%')
                         expect(element.css('left')).toEqual('789%')
 
-
                 describe 'with another item', ->
 
                     it 'should do nothing', ->
@@ -437,7 +421,6 @@ describe 'Directives', ->
                         socketCallbacksByName['updateItem']({ _id: 123321, x: 789, y: 987 })
                         expect(element.css('top')).toEqual('55%')
                         expect(element.css('left')).toEqual('14%')
-
 
         describe 'drag the element', ->
 
@@ -474,7 +457,6 @@ describe 'Directives', ->
                 }
                 $(element).triggerHandler(mockEvent, ui)
                 expect(ItemService.updateItemLocation).toHaveBeenCalledWith(321123, 100000.0 / 102, 20000 / 703)
-
 
     describe 'chatPanel', ->
 
@@ -513,7 +495,6 @@ describe 'Directives', ->
             it 'should define scope.removeMessage', ->
                 expect(scope.removeMessage).toEqual(jasmine.any(Function))
 
-
         describe 'resolve scoket.group', ->
 
             toReturn = undefined
@@ -548,7 +529,6 @@ describe 'Directives', ->
             it 'should set scope.messages to the given messages when scope.addMessageContent calls the add function', ->
                 expect(scope.messages).toEqual(toReturn)
 
-
         describe 'scope.getDomAttribute', ->
 
             beforeEach inject ($templateCache) ->
@@ -564,7 +544,6 @@ describe 'Directives', ->
             it 'should return the requested attribute of the given element', ->
                 expect(scope.getDomAttribute({ testAttr: 'test value' }, 'testAttr')).toEqual('test value')
 
-
         describe 'scope.addMessageContent', ->
 
             beforeEach inject ($templateCache) ->
@@ -576,7 +555,6 @@ describe 'Directives', ->
                 element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
                 scope = element.isolateScope()
-
 
             describe 'when scrollAtBottom will be false', ->
 
@@ -590,7 +568,6 @@ describe 'Directives', ->
                     callback = jasmine.createSpy()
                     scope.addMessageContent(callback)
                     expect(callback).toHaveBeenCalled()
-
 
             describe 'when scrollAtBottom will be true', ->
 
@@ -614,7 +591,6 @@ describe 'Directives', ->
                     scope.addMessageContent(callback)
                     expect(callback).toHaveBeenCalled()
 
-
         describe 'socket.on', ->
 
             socketCallbacksByName = {}
@@ -629,7 +605,6 @@ describe 'Directives', ->
                 element = $compile('<div chat-panel socket="socket"></div>')($rootScope)
                 $rootScope.$digest()
                 scope = element.isolateScope()
-
 
             describe 'newMessage', ->
 
@@ -647,7 +622,6 @@ describe 'Directives', ->
                     socketCallbacksByName['newMessage'](newMessage)
                     expect(scope.messages).toEqual(finalMessages)
 
-
             describe 'removeMessage', ->
 
                 it 'should call scope.addMessageContent with the add function and true', ->
@@ -663,7 +637,6 @@ describe 'Directives', ->
                     scope.messages = initialMessages
                     socketCallbacksByName['removeMessage'](messageIdToRemove)
                     expect(scope.messages).toEqual(finalMessages)
-
 
         describe 'scope.addMessageToWorkspace', ->
 
@@ -738,7 +711,6 @@ describe 'Directives', ->
                 it 'should not call MessageService.addNewMessageToChat', ->
                     expect(MessageService.addNewMessageToChat).not.toHaveBeenCalled()
 
-
         describe 'scope.removeMessage', ->
 
             beforeEach ->
@@ -754,7 +726,6 @@ describe 'Directives', ->
                 spyOn(MessageService, 'removeMessage')
                 scope.removeMessage(987789)
                 expect(MessageService.removeMessage).toHaveBeenCalledWith(987789)
-
 
         describe "$('.chatBody', element).on 'scoll'", ->
 
@@ -772,7 +743,6 @@ describe 'Directives', ->
                 scope = element.isolateScope()
                 mockEvent = $.Event('scroll')
                 scope.messages = [{ _id: 321, date: 'date1' }, { _id: 22, date: 'date2' }, { _id: 3, date: 'date3' }]
-
 
             describe 'scope.allMessagesLoaded = false and chatBody.scrollTop is 0', ->
 
@@ -843,7 +813,6 @@ describe 'Directives', ->
                         expect(scope.messages).toEqual(finalMessages)
                         done()
                     , 5
-
 
             describe 'scope.allMessagesLoaded = true and chatBody.scrollTop is 0', ->
 

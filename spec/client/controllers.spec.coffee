@@ -17,7 +17,6 @@ describe 'controllers', ->
     uibModalInstance = undefined
     uibModal = undefined
 
-
     beforeEach inject ($q, _Constants_, _$controller_, _$rootScope_, _$window_) ->
         Constants = _Constants_
         $controller = _$controller_
@@ -115,7 +114,6 @@ describe 'controllers', ->
                     done()
                 $rootScope.$digest()
 
-
         describe 'successful login with params', ->
 
             beforeEach ->
@@ -139,7 +137,6 @@ describe 'controllers', ->
                     done()
                 $rootScope.$digest()
 
-
         describe 'successful login with no params', ->
 
             beforeEach ->
@@ -158,7 +155,6 @@ describe 'controllers', ->
                     expect($state.go).toHaveBeenCalledWith(Constants.DEFAULT_ROUTE)
                     done()
                 $rootScope.$digest()
-
 
         describe 'failed login', ->
 
@@ -187,7 +183,6 @@ describe 'controllers', ->
                     done()
                 $rootScope.$digest()
 
-
     describe 'navBarController', ->
 
         navBarControllerParams = undefined
@@ -205,7 +200,6 @@ describe 'controllers', ->
         it 'should initialize scope.username to the username of the user obtained from AuthService.getUser().username', ->
             $controller('navBarController', navBarControllerParams)
             expect(scope.username).toEqual(User.username)
-
 
         describe 'scope.logout, logout successful', ->
 
@@ -226,7 +220,6 @@ describe 'controllers', ->
                     done()
                 $rootScope.$digest()
 
-
         describe 'scope.logout, logout failed', ->
 
             beforeEach ->
@@ -243,13 +236,11 @@ describe 'controllers', ->
                     done()
                 $rootScope.$digest()
 
-
     describe 'settingsController', ->
 
         settingsControllerParams = undefined
         User = undefined
         UserService = undefined
-
 
         describe 'setup', ->
 
@@ -286,7 +277,6 @@ describe 'controllers', ->
             it 'should define scope.saveUserSettings', ->
                 expect(scope.saveUserSettings).toEqual(jasmine.any(Function))
 
-
         describe 'scope.saveUserSettings', ->
 
             settingsToSave = undefined
@@ -311,7 +301,6 @@ describe 'controllers', ->
                 spyOn(UserService, 'saveUserSettings').and.callThrough()
                 $controller('settingsController', settingsControllerParams)
 
-
             describe 'UserService.saveUserSettings returns successfully', ->
 
                 it 'should resolve the promise', (done) ->
@@ -319,7 +308,6 @@ describe 'controllers', ->
                         expect(UserService.saveUserSettings).toHaveBeenCalledWith(settingsToSave)
                         done()
                     $rootScope.$digest()
-
 
             describe 'UserService.saveUserSettings fails', ->
 
@@ -333,7 +321,6 @@ describe 'controllers', ->
                         expect(scope.error).toEqual('test error message')
                         done()
                     $rootScope.$digest()
-
 
     describe 'registerController', ->
 
@@ -375,7 +362,6 @@ describe 'controllers', ->
                     done()
                 $rootScope.$digest()
 
-
         describe 'successful register', ->
 
             beforeEach ->
@@ -394,7 +380,6 @@ describe 'controllers', ->
                     expect($state.go).toHaveBeenCalledWith('login')
                     done()
                 $rootScope.$digest()
-
 
         describe 'failed register', ->
 
@@ -422,7 +407,6 @@ describe 'controllers', ->
                     expect(scope.error).toEqual('test error message')
                     done()
                 $rootScope.$digest()
-
 
     describe 'groupsController', ->
 
@@ -466,7 +450,6 @@ describe 'controllers', ->
             it 'should initialize the scope.groupType to stateParams.groupType', ->
                 expect(scope.groupType).toEqual('testGroupType')
 
-
         describe 'successfully get groups', ->
 
             beforeEach ->
@@ -479,7 +462,6 @@ describe 'controllers', ->
             it 'should set scope.groups to the returned result of GroupService.getGroups on success', ->
                 $rootScope.$digest()
                 expect(scope.groups).toEqual(['a', 'b', 'c'])
-
 
         describe 'fail getting groups', ->
 
@@ -496,7 +478,6 @@ describe 'controllers', ->
             it 'should set scope.error to the returned error of GroupService.getGroups on error', ->
                 $rootScope.$digest()
                 expect(scope.error).toEqual('test error message')
-
 
         describe 'scope.openEditGroupPropertiesModal', ->
 
@@ -520,14 +501,12 @@ describe 'controllers', ->
                     controller: 'editGroupPropertiesModalController'
                 })
 
-
             describe 'close modal successfully', ->
 
                 beforeEach ->
                     $controller('groupsController', groupsControllerParams)
                     scope.openEditGroupPropertiesModal(event, groupToEdit)
                     scope.groups = [{ _id: 36 }, { _id: 5 }, { _id: 6 }]
-
 
                 describe 'with editedGroup and no deleteGroup specified', ->
 
@@ -538,7 +517,6 @@ describe 'controllers', ->
                     it 'should replace the groups being edited in the groups list', ->
                         uibModalInstance.close([{ _id: 5, name: 'test' }])
                         expect(scope.groups).toEqual([{ _id: 36 }, { _id: 5, name: 'test' }, { _id: 6 }])
-
 
                 describe 'with editedGroup and deleteGroup = true', ->
 
@@ -551,7 +529,6 @@ describe 'controllers', ->
                     it 'should remove the groups from the groups list', ->
                         expect(scope.groups).toEqual([{ _id: 36 }, { _id: 6 }])
 
-
                 describe 'with editedGroup and deleteGroup = false', ->
 
                     beforeEach ->
@@ -562,7 +539,6 @@ describe 'controllers', ->
 
                     it 'should replace the groups being edited in the groups list', ->
                         expect(scope.groups).toEqual([{ _id: 36 }, { _id: 5, name: 'test' }, { _id: 6 }])
-
 
         describe 'fail getting groups', ->
 
@@ -579,7 +555,6 @@ describe 'controllers', ->
             it 'should set scope.error to the returned error of GroupService.getGroups on error', ->
                 $rootScope.$digest()
                 expect(scope.error).toEqual('test error message')
-
 
         describe 'scope.openEditGroupMembersModal', ->
 
@@ -605,7 +580,6 @@ describe 'controllers', ->
                     controller: 'editGroupMembersModalController'
                 })
 
-
             describe 'close modal successfully with editedGroup', ->
 
                 it 'should replace the groups being edited in the groups list', ->
@@ -613,7 +587,6 @@ describe 'controllers', ->
                     scope.groups = [{ _id: 36 }, { _id: 5 }, { _id: 6 }]
                     uibModalInstance.close({ _id: 5, name: 'test' }, false)
                     expect(scope.groups).toEqual([{ _id: 36 }, { _id: 5, name: 'test' }, { _id: 6 }])
-
 
         describe 'scope.openAddGroupModal', ->
 
@@ -630,7 +603,6 @@ describe 'controllers', ->
                     controller: 'addGroupModalController'
                 })
 
-
             describe 'close modal successfully with groupToAdd', ->
 
                 it 'should add the groupToAdd to the groups list', ->
@@ -638,7 +610,6 @@ describe 'controllers', ->
                     scope.groups = [{ _id: 5 }, { _id: 36 }, { _id: 6 }]
                     uibModalInstance.close({ _id: 27 })
                     expect(scope.groups).toEqual([{ _id: 5 }, { _id: 36 }, { _id: 6 }, { _id: 27 }])
-
 
     describe 'addGroupModalController', ->
 
@@ -674,7 +645,6 @@ describe 'controllers', ->
             it 'should define the cancel function', ->
                 expect(scope.cancel).toBeDefined()
 
-
         describe 'scope.addGroup adds successfully', ->
 
             beforeEach ->
@@ -690,7 +660,6 @@ describe 'controllers', ->
                 scope.newGroup = { name: 'testGroup' }
                 scope.addGroup().then ->
                     expect(uibModalInstance.close).toHaveBeenCalledWith({ name: 'testGroup' })
-
 
         describe "scope.addGroup doesn't add successfully", ->
 
@@ -721,7 +690,6 @@ describe 'controllers', ->
                 spyOn(uibModalInstance, 'dismiss').and.callThrough()
                 scope.cancel()
                 expect(uibModalInstance.dismiss).toHaveBeenCalled()
-
 
     describe 'editGroupPropertiesModalController', ->
 
@@ -774,8 +742,6 @@ describe 'controllers', ->
             it "should set scope.isOwner to false if the resolved user id doesn't match the groups owner", ->
                 expect(scope.isOwner).toEqual(false)
 
-
-
         describe 'scope.editGroup edits successfully', ->
 
             it 'should close the modal with the editingGroup', ->
@@ -784,7 +750,6 @@ describe 'controllers', ->
                 scope.editGroup(editingGroup).then ->
                     expect(uibModalInstance.close).toHaveBeenCalledWith([editingGroup])
                 $rootScope.$digest()
-
 
         describe "scope.editGroup doesn't edit successfully", ->
 
@@ -803,7 +768,6 @@ describe 'controllers', ->
                 scope.editGroup().catch ->
                     expect(scope.error).toEqual('test error message')
                 $rootScope.$digest()
-
 
         describe 'scope.delete', ->
 
@@ -850,7 +814,6 @@ describe 'controllers', ->
                         done()
                     $rootScope.$digest()
 
-
             describe 'delete successfully', ->
 
                 beforeEach ->
@@ -862,7 +825,6 @@ describe 'controllers', ->
                         expect(uibModalInstance.close).toHaveBeenCalledWith([editingGroup, true])
                         done()
                     $rootScope.$digest()
-
 
             describe 'delete failed', ->
 
@@ -884,7 +846,6 @@ describe 'controllers', ->
                         done()
                     $rootScope.$digest()
 
-
         describe 'scope.cancel', ->
 
             it 'should dismiss the modal', ->
@@ -892,7 +853,6 @@ describe 'controllers', ->
                 spyOn(uibModalInstance, 'dismiss').and.callThrough()
                 scope.cancel()
                 expect(uibModalInstance.dismiss).toHaveBeenCalled()
-
 
     describe 'editGroupMembersModalController', ->
 
@@ -958,7 +918,6 @@ describe 'controllers', ->
             it "should set scope.isOwner to false if the resolved user id doesn't match the groups owner", ->
                 expect(scope.isOwner).toEqual(false)
 
-
         describe 'scope.getUsers, get users successfully', ->
 
             beforeEach ->
@@ -976,7 +935,6 @@ describe 'controllers', ->
                     expect(users).toEqual('query')
                 $rootScope.$digest()
 
-
         describe 'scope.getUsers, get users failed', ->
 
             beforeEach ->
@@ -985,13 +943,11 @@ describe 'controllers', ->
                 }
                 $controller('editGroupMembersModalController', editGroupMembersModalControllerParams)
 
-
             it 'should set scope.error to the error message returned from the UserService.findUsers', (done) ->
                 scope.getUsers('query').catch ->
                     expect(scope.error).toEqual('test error message')
                     done()
                 $rootScope.$digest()
-
 
         describe 'scope.addMember, member adds successfully', ->
 
@@ -1028,7 +984,6 @@ describe 'controllers', ->
                     done()
                 $rootScope.$digest()
 
-
         describe 'scope.addMember, member add fails', ->
 
             beforeEach ->
@@ -1049,7 +1004,6 @@ describe 'controllers', ->
                     expect(scope.error).toEqual('test error message')
                     done()
                 $rootScope.$digest()
-
 
         describe 'scope.removeMember, member removal succeeds', ->
 
@@ -1083,7 +1037,6 @@ describe 'controllers', ->
                     done()
                 $rootScope.$digest()
 
-
         describe 'scope.removeMember, member removal fails', ->
 
             beforeEach ->
@@ -1104,7 +1057,6 @@ describe 'controllers', ->
                     done()
                 $rootScope.$digest()
 
-
         describe 'scope.getMemberDisplay', ->
 
             beforeEach ->
@@ -1121,7 +1073,6 @@ describe 'controllers', ->
                 }
                 expect(scope.getMemberDisplay(member)).toEqual('JustinStribling (Justin Stribling)')
 
-
         describe 'scope.close', ->
 
             beforeEach ->
@@ -1134,7 +1085,6 @@ describe 'controllers', ->
                 spyOn(uibModalInstance, 'close').and.callThrough()
                 scope.close()
                 expect(uibModalInstance.close).toHaveBeenCalledWith(editingGroup)
-
 
     describe 'workspaceController', ->
 
@@ -1170,7 +1120,6 @@ describe 'controllers', ->
             it "should emit 'groupConnect' with the username and groupId tot he socket", ->
                 expect(scope.socket.emit).toHaveBeenCalledWith('groupConnect', testUser, stateParams.groupId)
 
-
         describe 'server emits setGroupId', ->
 
             beforeEach ->
@@ -1195,7 +1144,6 @@ describe 'controllers', ->
                     expect(_group).toEqual('testGroupId')
                     done()
                 $rootScope.$digest()
-
 
         describe 'server emits notAllowed', ->
 

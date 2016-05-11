@@ -34,8 +34,7 @@ describe 'test', ->
                     userAgent
                         .post('/login')
                         .send({ username: 'testingUser', password: 'testingPassword' })
-                        .end ->
-                            done()
+                        .end done
 
 
     it 'should do it', (done) ->
