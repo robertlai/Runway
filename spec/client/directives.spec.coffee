@@ -94,16 +94,25 @@ describe 'Directives', ->
                     mockEvent = $.Event('dragover')
 
                 it 'should set scope.mouseX to the x location of the mouse', ->
-                    mockEvent.clientX = 26
+                    mockEvent.originalEvent = {
+                        clientX: 26
+                        clientY: 702
+                    }
                     $(element).triggerHandler(mockEvent)
                     expect(scope.mouseX).toEqual(26)
 
                 it 'should set scope.mouseY to the y location of the mouse', ->
-                    mockEvent.clientY = 702
+                    mockEvent.originalEvent = {
+                        clientY: 702
+                    }
                     $(element).triggerHandler(mockEvent)
                     expect(scope.mouseY).toEqual(702)
 
                 it 'should call scope.hoverTextOn', ->
+                    mockEvent.originalEvent = {
+                        clientX: 26
+                        clientY: 702
+                    }
                     spyOn(scope, 'hoverTextOn').and.callThrough()
                     $(element).triggerHandler(mockEvent)
                     expect(scope.hoverTextOn).toHaveBeenCalled()

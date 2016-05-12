@@ -46,8 +46,8 @@ angular.module('runwayAppDirectives', ['runwayAppConstants', 'runwayAppServices'
 
         $(element)
             .on 'dragover', (e) ->
-                scope.mouseX = e.clientX
-                scope.mouseY = e.clientY
+                scope.mouseX = e.originalEvent.clientX
+                scope.mouseY = e.originalEvent.clientY
                 scope.hoverTextOn()
             .on 'dragleave', (e) ->
                 scope.hoverTextOff()
