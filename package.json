@@ -24,7 +24,7 @@
     "del": "2.2.0",
     "dropzone": "4.2.0",
     "express": "4.13.1",
-    "express-session": "1.0.0",
+    "express-session": "1.15.6",
     "gulp": "3.9.1",
     "gulp-autoprefixer": "3.1.0",
     "gulp-coffeelint": "0.6.0",
